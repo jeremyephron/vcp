@@ -20,7 +20,8 @@ Vcp::GetTypeId()
   static TypeId tid = TypeId("ns3::Vcp")
     .SetParent<TcpCongestionOps>()
     .SetGroupName("Internet")
-    .AddConstructor<Vcp>();
+    .AddConstructor<Vcp>()
+  ;
 
   return tid;
 }
@@ -113,5 +114,38 @@ Vcp::Fork()
 {
   return CopyObject<Vcp>(this);
 }
-    
+
+void
+Vcp::CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event)
+{
+  NS_LOG_FUNCTION(this << tcb << event);
+
+  switch (event) {
+    case TcpSocketState::CA_EVENT_ECN_IS_CE:
+      break;
+    case TcpSocketState::CA_EVENT_ECN_NO_CE:
+      break;
+    default:
+      break;
+  }
+}
+
+void
+Vcp::MultiplicativeIncrease()
+{
+
+}
+
+void
+Vcp::AdditiveIncrease()
+{
+
+}
+
+void
+Vcp::MultiplicativeDecrease()
+{
+
+}
+
 } // namespace ns3

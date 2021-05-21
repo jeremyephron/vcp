@@ -151,7 +151,7 @@ main (int argc, char *argv[])
    * levels for different component (scripts/modules). You can read more
    * about that at https://www.nsnam.org/docs/manual/html/logging.html.
    */
-  LogComponentEnable("BufferBloatExample", LOG_LEVEL_DEBUG);
+  LogComponentEnable("MyExample", LOG_LEVEL_DEBUG);
 
   std::string bwHostStr = std::to_string(bwHost) + "Mbps";
   std::string bwNetStr = std::to_string(bwNet) + "Mbps";
