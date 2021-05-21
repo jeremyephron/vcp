@@ -44,7 +44,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("BufferBloatExample");
+NS_LOG_COMPONENT_DEFINE ("MyExample");
 
 static double TRACE_START_TIME = 0.05;
 
