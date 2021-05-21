@@ -11,10 +11,11 @@
 
 #include "ns3/tcp-congestion-ops.h"
 #include "ns3/tcp-socket-state.h"
+#include "ns3/timer.h"
 
 namespace ns3 {
   
-class Vcp : public TcpCongestionOps {
+class Vcp : public TcpNewReno {
 public:
   static TypeId GetTypeId();
 
@@ -26,33 +27,32 @@ public:
 
   std::string GetName() const;
 
-  void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-  uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
-  Ptr<TcpCongestionOps> Fork();
-  void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt);
-  void CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event);
+  void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt) override;
+  void CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event) override;
+
+  void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+  Ptr<TcpCongestionOps> Fork() override;
 
 private:
   /* Load state of the current connection. */
   typedef enum {
-    LOAD_LOW = 0,
-    LOAD_HIGH,
-    LOAD_OVERLOAD
+    LOAD_NOT_SUPPORTED = 0x0,
+    LOAD_LOW           = 0x1,
+    LOAD_HIGH          = 0x2,
+    LOAD_OVERLOAD      = 0x3,
   } LoadState_t;
 
-  LoadState_t m_loadState {LOAD_LOW};
-
   /* Additive increase factor: cwnd(t + 1) := cwnd(t) + alpha. */
-  float m_alpha {1.0};
+  const float m_alpha {1.0};
 
   /* Multiplicative decrease factor: cwnd(t + 1) := cwnd(t) * beta. */
-  float m_beta {0.875};
+  const float m_beta {0.875};
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
-  float m_xi {0.0625};
+  const float m_xi {0.0625};
 
   /* Load factor estimation interval in ms. */
-  uint32_t m_estInterval {200};
+  const int64_t m_estInterval {200};
 
   /* MI, AI, and MD algorithms. */
   void MultiplicativeIncrease();
@@ -60,18 +60,25 @@ private:
   void MultiplicativeDecrease();
 
   /* Scaled MI and AI params based on flow-specific RTT. */
-  inline float GetScaledXi(uint32_t rtt) {
+  inline float GetScaledXi(int64_t rtt) {
     return pow(1 + m_xi, rtt / m_estInterval) - 1;
   }
 
-  inline float GetScaledAlpha(uint32_t rtt) {
+  inline float GetScaledAlpha(int64_t rtt) {
     return m_alpha * (rtt / m_estInterval) * (rtt / m_estInterval);
   }
 
-  uint32_t SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-  void CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
+  /* The load state of the connection. */
+  LoadState_t m_loadState {LOAD_LOW};
+
+  /* The last recorded RTT for the connection. */
+  int64_t m_lastRtt {m_estInterval};
+
+  /* Timer to freeze cwnd after decreasing. */
+  Timer m_mdTimer;
 
   uint32_t m_cWndCnt {0};
+
 
 };
 
