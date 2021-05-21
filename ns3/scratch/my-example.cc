@@ -244,6 +244,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
+  Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("On"));
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
 

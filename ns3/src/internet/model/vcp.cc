@@ -56,6 +56,7 @@ void
 Vcp::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked);
+  NS_LOG_FUNCTION(this << tcb << tcb->m_ectCodePoint);
 
   uint32_t w = tcb->m_cWnd / tcb->m_segmentSize;
   NS_LOG_DEBUG("w in segments " << w << " m_cWndCnt " << m_cWndCnt << " segments acked " << segmentsAcked);
