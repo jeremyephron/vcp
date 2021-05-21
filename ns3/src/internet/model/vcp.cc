@@ -74,7 +74,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Update RTT and load state
   m_lastRtt = rtt.GetMilliSeconds();
-  m_loadState = (LoadState_t)tcb->m_ecnState;
+  m_loadState = (LoadState_t)tcb->m_ectCodePoint;
 
   NS_LOG_DEBUG("timer left " << m_mdTimer.GetDelayLeft() << " timer is expired " << m_mdTimer.IsExpired());
 
