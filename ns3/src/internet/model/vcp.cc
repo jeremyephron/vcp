@@ -124,7 +124,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 void
 Vcp::CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event)
 {
-  NS_LOG_FUNCTION(this << tcb << TcpSocketState::TcpCongStateName[event]);
+  NS_LOG_FUNCTION(this << tcb << event);
 
   switch (event) {
     case TcpSocketState::CA_EVENT_ECN_IS_CE:
