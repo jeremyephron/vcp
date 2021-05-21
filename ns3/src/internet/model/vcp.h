@@ -28,7 +28,6 @@ public:
   std::string GetName() const;
 
   void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt) override;
-  void CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event) override;
 
   void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
   Ptr<TcpCongestionOps> Fork() override;
