@@ -116,7 +116,7 @@ Vcp::Fork()
 }
 
 void
-PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
+Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
 }
