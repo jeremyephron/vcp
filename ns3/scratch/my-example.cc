@@ -142,7 +142,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
                 "TcpLinuxReno, TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, "
                 "TcpScalable, TcpVeno, TcpBic, TcpYeah, TcpIllinois, "
-                "TcpWestwood, TcpLedbat, TcpLp, TcpDctcp",
+                "TcpWestwood, TcpLedbat, TcpLp, TcpDctcp", "Vcp"
                 transport_prot);
   cmd.Parse (argc, argv);
 
