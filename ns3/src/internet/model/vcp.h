@@ -54,9 +54,9 @@ private:
   const int64_t m_estInterval {200};
 
   /* MI, AI, and MD algorithms. */
-  void MultiplicativeIncrease();
-  void AdditiveIncrease();
-  void MultiplicativeDecrease();
+  void MultiplicativeIncrease(Ptr<TcpSocketState> tcb);
+  void AdditiveIncrease(Ptr<TcpSocketState> tcb);
+  void MultiplicativeDecrease(Ptr<TcpSocketState> tcb);
 
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline float GetScaledXi(int64_t rtt) {

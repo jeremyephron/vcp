@@ -66,17 +66,36 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
 
+  // Update load state
+  m_loadState = (LoadState_t)tcb->m_ectCodePoint;
+
   // If the load bits are not supported, fall back to TCP New Reno
   if (m_loadState == LOAD_NOT_SUPPORTED) {
     TcpNewReno::PktsAcked(tcb, segmentsAcked, rtt);
     return;
   }
 
-  // Update RTT and load state
+  // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
-  m_loadState = (LoadState_t)tcb->m_ectCodePoint;
 
-  NS_LOG_DEBUG("timer left " << m_mdTimer.GetDelayLeft() << " timer is expired " << m_mdTimer.IsExpired());
+
+  // TODO: mdTimer
+
+  switch (m_loadState) {
+    case LOAD_LOW:
+      MultiplicativeIncrease(tcb);
+      break;
+    case LOAD_HIGH:
+      AdditiveIncrease(tcb);
+      break;
+    case LOAD_OVERLOAD:
+      MultiplicativeDecrease(tcb);
+      m_mdTimer.Schedule(Time(m_estInterval * 1000000))
+      return;
+    default:
+      NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
+      return;
+  }
 
 }
 
@@ -97,21 +116,21 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 //}
 
 void
-Vcp::MultiplicativeIncrease()
+Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
 {
-
+  tcb->m_cWnd = tcb->m_cWnd * (1 + GetScaledXi(m_lastRtt));
 }
 
 void
-Vcp::AdditiveIncrease()
+Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
 {
-
+  tcb->m_cWnd = tcb->m_cWnd + GetScaledAlpha(m_lastRtt);
 }
 
 void
-Vcp::MultiplicativeDecrease()
+Vcp::MultiplicativeDecrease(Ptr<TcpSocketState> tcb)
 {
-
+  tcb->m_cWnd = tcb->m_cWnd * m_beta;
 }
 
 } // namespace ns3
