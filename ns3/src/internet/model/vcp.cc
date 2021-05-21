@@ -90,7 +90,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
       break;
     case LOAD_OVERLOAD:
       MultiplicativeDecrease(tcb);
-      m_mdTimer.Schedule(Time(m_estInterval * 1000000))
+      m_mdTimer.Schedule(Time(m_estInterval * 1000000));
       return;
     default:
       NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
