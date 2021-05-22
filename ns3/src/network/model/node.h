@@ -22,6 +22,7 @@
 #define NODE_H
 
 #include <vector>
+#include <queue>
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
