@@ -218,7 +218,7 @@ Node::GetPersistentQueueSize(Ptr<NetDevice> device) {
 void
 Node::track_queue_sizes() {
   for (size_t i = 0; i < m_devices.size(); i++) {
-      std::queue<uint32_t>> queue_sizes = m_queue_sizes_by_device[i];
+      std::queue<uint32_t> queue_sizes = m_queue_sizes_by_device[i];
       if (queue_sizes.size() >= 20) {
         m_persistent_queue_size_sums[i] -= queue_sizes.front();
         queue_sizes.pop();
