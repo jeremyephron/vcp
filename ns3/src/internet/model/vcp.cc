@@ -115,19 +115,34 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 void
 Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
 {
+  NS_LOG_FUNCTION(this << tcb);
+  NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
+
   tcb->m_cWnd = tcb->m_cWnd * (1 + GetScaledXi(m_lastRtt));
+
+  NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }
 
 void
 Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
 {
+  NS_LOG_FUNCTION(this << tcb);
+  NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
+
   tcb->m_cWnd = tcb->m_cWnd + GetScaledAlpha(m_lastRtt);
+
+  NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }
 
 void
 Vcp::MultiplicativeDecrease(Ptr<TcpSocketState> tcb)
 {
+  NS_LOG_FUNCTION(this << tcb);
+  NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
+
   tcb->m_cWnd = tcb->m_cWnd * m_beta;
+
+  NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }
 
 void
