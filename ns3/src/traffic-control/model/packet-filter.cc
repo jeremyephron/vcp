@@ -25,7 +25,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PacketFilter");
 
-NS_OBJECT_ENSURE_REGISTERED (PacketFilter);
+// NS_OBJECT_ENSURE_REGISTERED (PacketFilter);
 
 TypeId 
 PacketFilter::GetTypeId (void)

@@ -30,7 +30,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TrafficControlLayer");
 
-NS_OBJECT_ENSURE_REGISTERED (TrafficControlLayer);
+//NS_OBJECT_ENSURE_REGISTERED (TrafficControlLayer);
 
 TypeId
 TrafficControlLayer::GetTypeId (void)
