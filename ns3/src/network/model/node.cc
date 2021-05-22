@@ -35,8 +35,6 @@
 
 namespace ns3 {
 
-class
-
 NS_LOG_COMPONENT_DEFINE ("Node");
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
