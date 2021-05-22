@@ -135,8 +135,10 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION(this << tcb);
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
+  NS_LOG_DEBUG("Previous cwndFrac = " << m_cWndFractional);
 
   m_cWndFractional = m_cWndFractional + GetScaledAlpha(m_lastRtt);
+  NS_LOG_DEBUG("New cwndFrac = " << m_cWndFractional);
   tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
 
   NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
