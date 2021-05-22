@@ -72,6 +72,7 @@ def build(bld):
         'helper/simple-net-device-helper.cc',
         '../traffic-control/model/traffic-control-layer.cc',
         '../traffic-control/model/queue-disc.cc',
+        '../traffic-control/model/packet-filter.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
@@ -171,7 +172,8 @@ def build(bld):
         'helper/delay-jitter-estimation.h',
         'helper/simple-net-device-helper.h',
         '../traffic-control/model/traffic-control-layer.h',
-        '../traffic-control/model/queue-disc.cc',
+        '../traffic-control/model/queue-disc.h',
+        '../traffic-control/model/packet-filter.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
