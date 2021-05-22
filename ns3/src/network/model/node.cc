@@ -115,7 +115,7 @@ Node::Construct (void)
 {
   NS_LOG_FUNCTION (this);
   m_id = NodeList::Add (this);
-  m_queue_monitor_timer.SetFunction(&Node::track_queue_sizes, this);
+  m_queue_monitor_timer.SetFunction(&Node::TrackQueueSizes, this);
   m_queue_monitor_timer.Schedule(Time(10000000));
 }
 
@@ -233,7 +233,7 @@ Node::GetPersistentQueueSize(Ptr<const NetDevice> device) {
 }
 
 void
-Node::track_queue_sizes() {
+Node::TrackQueueSizes() {
   for (size_t i = 0; i < m_devices.size(); i++) {
       std::queue<uint32_t> queue_sizes = m_queue_sizes_by_device[i];
       if (queue_sizes.size() >= 20) {
@@ -241,14 +241,14 @@ Node::track_queue_sizes() {
         queue_sizes.pop();
       }
 
-      Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
-      Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
+      //Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
+      //Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
       //uint32_t cur_size = qd->GetNPackets();
       //queue_sizes.push(cur_size);
       //m_persistent_queue_size_sums[i] += cur_size; 
   }
 
-  m_queue_monitor_timer.SetFunction(&Node::track_queue_sizes, this);
+  m_queue_monitor_timer.SetFunction(&Node::TrackQueueSizes, this);
   m_queue_monitor_timer.Cancel();
   m_queue_monitor_timer.Schedule(Time(10000000));
 }
