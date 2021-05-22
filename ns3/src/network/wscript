@@ -70,7 +70,7 @@ def build(bld):
         'helper/trace-helper.cc',
         'helper/delay-jitter-estimation.cc',
         'helper/simple-net-device-helper.cc',
-        '../../traffic-control/model/traffic-control-layer.cc',
+        '../traffic-control/model/traffic-control-layer.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
@@ -169,7 +169,7 @@ def build(bld):
         'helper/trace-helper.h',
         'helper/delay-jitter-estimation.h',
         'helper/simple-net-device-helper.h',
-        '../traffic-control/model/traffic-control-layer.cc',
+        '../traffic-control/model/traffic-control-layer.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
