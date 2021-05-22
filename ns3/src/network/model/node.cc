@@ -31,6 +31,7 @@
 #include "ns3/assert.h"
 #include "ns3/global-value.h"
 #include "ns3/boolean.h"
+#include "ns3/traffic-control-layer.h"
 
 namespace ns3 {
 
