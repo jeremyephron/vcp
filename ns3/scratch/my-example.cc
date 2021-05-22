@@ -150,13 +150,13 @@ TraceRtt2 (Ptr<OutputStreamWrapper> rttStream)
 static void
 UpgradeLinkCapacity (Ptr<NetDevice> dev)
 {
-  dev->SetAttribute("DataRate", DataRateValue("20Mbps"));
+  dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
 }
 
 static void
 DowngradeLinkCapacity (Ptr<NetDevice> dev)
 {
-  dev->SetDataRate("DataRate", DataRateValue("10Mbps"));
+  dev->SetDataRate("DataRate", DataRateValue(DataRate("10Mbps")));
 }
 
 int
