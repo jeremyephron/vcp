@@ -36,7 +36,7 @@ class Application;
 class Packet;
 class Address;
 class Time;
-
+class TrafficControlLayer;
 
 /**
  * \ingroup network

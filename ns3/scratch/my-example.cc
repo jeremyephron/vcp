@@ -209,16 +209,20 @@ main (int argc, char *argv[])
    */
   NS_LOG_DEBUG("Configuring Channels...");
 
-  PointToPointHelper hostLink;
-  hostLink.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
-  hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
-  hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
+  PointToPointHelper host1Link;
+  host1Link.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
+  host1Link.SetChannelAttribute ("Delay", StringValue (delayStr));
+  host1Link.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
+
+  PointToPointHelper host2Link;
+  host2Link.SetDeviceAttribute("DataRate", StringValue(bwHostStr));
+  host2Link.SetChannelAttribute("Delay", StringValue(delayStr));
+  host2Link.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
 
   PointToPointHelper bottleneckLink;
-  bottleneckLink.SetDeviceAttribute ("DataRate", StringValue (bwNetStr));
-  bottleneckLink.SetChannelAttribute ("Delay", StringValue (delayStr));
-  bottleneckLink.SetQueue ("ns3::DropTailQueue",
-                           "MaxSize", StringValue ("1p"));
+  bottleneckLink.SetDeviceAttribute("DataRate", StringValue (bwNetStr));
+  bottleneckLink.SetChannelAttribute("Delay", StringValue (delayStr));
+  bottleneckLink.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
 
   /******** Create NetDevices ********/
   NS_LOG_DEBUG("Creating NetDevices...");
@@ -229,8 +233,9 @@ main (int argc, char *argv[])
    */
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
-  NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
-  NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
+  NetDeviceContainer h1s0_NetDevices = host1Link.Install(h1, s0);
+  NetDeviceContainer h2s0_NetDevices = host2Link.Install(h2, s0);
+  NetDeviceContainer s0h3_NetDevices = bottleneckLink.Install(s0, h3);
 
   /******** Set TCP defaults ********/
   PppHeader ppph;
@@ -266,22 +271,25 @@ main (int argc, char *argv[])
   // DONE: Read documentation for PfifoFastQueueDisc and use the correct
   //       attribute name to set the size of the bottleneck queue.
   TrafficControlHelper tchPfifo;
-  tchPfifo.SetRootQueueDisc ("ns3::RedQueueDisc",
+  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "UseEcn", BooleanValue(true));
 
-  tchPfifo.Install (h1s0_NetDevices);
-  QueueDiscContainer s0h2_QueueDiscs = tchPfifo.Install (s0h2_NetDevices);
+  tchPfifo.Install(h1s0_NetDevices);
+  tchPfifo.Install(h2s0_NetDevices);
+  QueueDiscContainer s0h3_QueueDiscs = tchPfifo.Install(s0h3_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
-  s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
+  s0h3_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
                             MakeBoundCallback (&QueueOccupancyTracer, qStream));
 
   /* Set IP addresses of the nodes in the network */
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");
-  Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
+  Ipv4InterfaceContainer h1s0_interfaces = address.Assign(h1s0_NetDevices);
   address.NewNetwork ();
-  Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h2_NetDevices);
+  Ipv4InterfaceContainer h2s0_interfaces = address.Assign(h2s0_NetDevices);
+  address.NewNetwork ();
+  Ipv4InterfaceContainer s0h3_interfaces = address.Assign(s0h3_NetDevices);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -291,7 +299,7 @@ main (int argc, char *argv[])
   /* The receiver application */
   uint16_t receiverPort = 5001;
   // DONE: Provide the correct IP address below for the receiver
-  AddressValue receiverAddress (InetSocketAddress (s0h2_interfaces.GetAddress(1),
+  AddressValue receiverAddress (InetSocketAddress (s0h3_interfaces.GetAddress(1),
                                                    receiverPort));
   PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
                                    receiverAddress.Get());
@@ -299,7 +307,7 @@ main (int argc, char *argv[])
                                TypeIdValue (TcpSocketFactory::GetTypeId ()));
 
   // DONE: Install the receiver application on the correct host.
-  ApplicationContainer receiverApp = receiverHelper.Install (h2);
+  ApplicationContainer receiverApp = receiverHelper.Install (h3);
   receiverApp.Start (Seconds (0.0));
   receiverApp.Stop (Seconds ((double)time));
 
@@ -311,9 +319,13 @@ main (int argc, char *argv[])
   ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
 
   // DONE: Install the source application on the correct host.
-  ApplicationContainer sourceApp = ftp.Install (h1);
-  sourceApp.Start (Seconds (0.0));
-  sourceApp.Stop (Seconds ((double)time));
+  ApplicationContainer sourceApp1 = ftp.Install (h1);
+  sourceApp1.Start (Seconds (0.0));
+  sourceApp1.Stop (Seconds ((double)time));
+
+  ApplicationContainer sourceApp2 = ftp.Install(h2);
+  sourceApp2.Start(Seconds(time / 2.0));
+  sourceApp2.Stop(Seconds((double)time));
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
