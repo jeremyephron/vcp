@@ -541,12 +541,18 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
       load_factor /= ((dr.Get().GetBitRate() / 1000 * 8) * 0.2);
       
       Ipv4Header ipHeader = header;
+      Packet pack = *packet;
+      Header header;
+      pack.RemoveHeader(header);
       if (load_factor < 0.8) { 
-          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT1);
+          //ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT1); 
+          dynamic_cast<TcpHeader>(header).SetFlags(TcpHeader::Flags_t::CWR); 
       } else if (load_factor < 1) {
-          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT0);
+          //ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT0);
+          dynamic_cast<TcpHeader>(header).SetFlags(TcpHeader::Flags_t::ECE); 
       } else {
-        ipHeader.SetEcn(Ipv4Header::EcnType::ECN_CE);
+        //ipHeader.SetEcn(Ipv4Header::EcnType::ECN_CE);
+        dynamic_cast<TcpHeader>(header).SetFlags(TcpHeader::Flags_t::ECE & TcpHeader::Flags_t::CWR); 
       }
           
       ucb (rtentry, p, header);
