@@ -71,7 +71,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   if (!m_cWndFractionalInit) {
     m_cWndFractional = static_cast<double>(tcb->m_cWnd);
-    m_cWndFractionalInit = True;
+    m_cWndFractionalInit = true;
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
