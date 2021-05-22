@@ -210,9 +210,9 @@ public:
    */
   static bool ChecksumEnabled (void);
 
-  size_t GetRecentPacketArrivals(Ptr<Device> device);
+  size_t GetRecentPacketArrivals(Ptr<NetDevice> device);
 
-  uint32_t GetPersistentQueueSize(Ptr<Device> Device);
+  uint32_t GetPersistentQueueSize(Ptr<NetDevice> Device);
 
 protected:
   /**
@@ -299,7 +299,7 @@ private:
 
   std::vector<std::queue<uint32_t>> m_queue_sizes_by_device;
 
-  std::vector<std::<queue<Time>> m_recent_packet_receive_times;
+  std::vector<std::queue<Time>> m_recent_packet_receive_times;
 
   Timer m_queue_monitor_timer;
 };
