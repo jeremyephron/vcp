@@ -75,6 +75,7 @@ private:
 
   /* Timer to freeze cwnd after decreasing. */
   Timer m_mdTimer;
+  bool m_mdFreeze {false};
 
   uint32_t m_cWndCnt {0};
 

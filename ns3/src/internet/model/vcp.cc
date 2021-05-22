@@ -18,7 +18,7 @@ TypeId
 Vcp::GetTypeId()
 {
   static TypeId tid = TypeId("ns3::Vcp")
-    .SetParent<TcpCongestionOps>()
+    .SetParent<TcpNewReno>()
     .SetGroupName("Internet")
     .AddConstructor<Vcp>()
   ;
@@ -77,9 +77,25 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
+  NS_LOG_DEBUG("before schedule " << m_mdTimer.isExpired());
+  m_mdTimer.Schedule(rtt);
+  NS_LOG_DEBUG("after schedule " << m_mdTimer.isExpired());
 
+  // Freeze cwnd after MD
+  if (m_mdFreeze && !m_mdTimer.IsExpired()) {
+    return;
+  } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
+    m_mdFreeze = false;
+    m_mdTimer.Schedule(rtt);
+    AdditiveIncrease(tcb);
+    return;
+  }
 
-  // TODO: mdTimer
+  // Perform AI for one RTT after 
+  if (!m_mdFreeze && !m_mdTimer.IsExpired()) {
+    AdditiveIncrease(tcb);
+    return;
+  } 
 
   switch (m_loadState) {
     case LOAD_LOW:
@@ -91,29 +107,13 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
     case LOAD_OVERLOAD:
       MultiplicativeDecrease(tcb);
       m_mdTimer.Schedule(Time(m_estInterval * 1000000));
+      m_mdFreeze = true;
       return;
     default:
       NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
       return;
   }
-
 }
-
-//void
-//Vcp::CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event)
-//{
-//  NS_LOG_FUNCTION(this << tcb << event);
-//  NS_LOG_DEBUG("CwndEvent: ecnState " << tcb->m_ecnState << " ectCodePoint " << tcb->m_ectCodePoint);
-//
-//  switch (event) {
-//    case TcpSocketState::CA_EVENT_ECN_IS_CE:
-//      break;
-//    case TcpSocketState::CA_EVENT_ECN_NO_CE:
-//      break;
-//    default:
-//      break;
-//  }
-//}
 
 void
 Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
