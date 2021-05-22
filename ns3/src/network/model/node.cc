@@ -79,7 +79,7 @@ Node::GetTypeId (void)
 
 Node::Node()
   : m_id (0),
-    m_sid (0)
+    m_sid (0),
 {
   NS_LOG_FUNCTION (this);
   Construct ();
@@ -87,7 +87,7 @@ Node::Node()
 
 Node::Node(uint32_t sid)
   : m_id (0),
-    m_sid (sid)
+    m_sid (sid),
 { 
   NS_LOG_FUNCTION (this << sid);
   Construct ();
@@ -98,6 +98,8 @@ Node::Construct (void)
 {
   NS_LOG_FUNCTION (this);
   m_id = NodeList::Add (this);
+  m_queue_monitor_timer.SetFunction(&Node::track_queue_sizes, this);
+  m_queue_monitor_timer.Schedule(Time(10000000));
 }
 
 Node::~Node ()
@@ -130,6 +132,14 @@ uint32_t
 Node::AddDevice (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
+  
+  std::queue<Time> packet_arrivals;
+  m_recent_packet_receive_times.push_back(packet_arrivals);
+  
+  std::queue<uint32_t> queue_sizes;
+  m_queue_sizes_by_device.push_back(queue_sizes);
+  m_persistent_queue_size_sums.push_back(0);
+
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   device->SetNode (this);
@@ -179,6 +189,50 @@ Node::GetNApplications (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_applications.size ();
+}
+
+size_t
+Node::GetRecentPacketArrivals(Ptr<Device> device) {
+  if (device->GetIfIndex() >= m_devices.size()) {
+    return 0;
+  }
+
+  std::queue<Time> packet_arrivals = m_recent_packet_receive_times[device->GetIfIndex()];
+  int64_t now_ms = GetLocalTime().ToInteger(Time::Unit::MS);
+  // Remove non-recent arrivals from queue:
+  while (!packet_arrivals.empty() &&
+          (now_ms -
+           packet_arrivals.front().ToInteger(Time::Unit::MS) > 200)) {
+    packet_arrivals.pop();
+  }
+
+  return packet_arrivals.size();
+}
+
+uint32_t
+Node::GetPersistentQueueSize(Ptr<Device> device) {
+  return m_persistent_queue_size_sums[device->GetIfIndex()] /
+      m_queue_sizes_by_device[device->GetIfIndex()].size();
+}
+
+void
+Node::track_queue_sizes() {
+  for (size_t i = 0; i < m_devices.size(); i++) {
+      std::queue<uint32_t>> queue_sizes = m_queue_sizes_by_device[i];
+      if (queue_sizes.size() >= 20) {
+        m_persistent_queue_size_sums[i] -= queue_sizes.front();
+        queue_sizes.pop();
+      }
+      uint32_t cur_size = GetObject<TrafficControlLayer>()->
+                          GetRootQueueDiscOnDevice(m_devices[i])->
+                          GetNPackets();
+      queue_sizes.push(cur_size);
+      m_persistent_queue_size_sums[i] += cur_size; 
+  }
+
+  m_queue_monitor_timer.SetFunction(&Node::track_queue_sizes, this);
+  m_queue_monitor_timer.Cancel();
+  m_queue_monitor_timer.Schedule(Time(10000000));
 }
 
 void 
@@ -309,9 +363,11 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
                  "when transferring events from one node to another.");
   NS_LOG_DEBUG ("Node " << GetId () << " ReceiveFromDevice:  dev "
                         << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
-                        << ") Packet UID " << packet->GetUid ());
+                        << ") Packet UID " << packet->GetUid ()); 
+  if (device->GetIfIndex() < m_devices.size()) {
+    m_recent_packet_receive_times[device->GetIfIndex()].push(GetLocalTime());
+  }
   bool found = false;
-
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
        i != m_handlers.end (); i++)
     {

@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
+#include "ns3/timer.h"
 
 namespace ns3 {
 
@@ -209,6 +210,9 @@ public:
    */
   static bool ChecksumEnabled (void);
 
+  size_t GetRecentPacketArrivals(Ptr<Device> device);
+
+  uint32_t GetPersistentQueueSize(Ptr<Device> Device);
 
 protected:
   /**
@@ -266,6 +270,8 @@ private:
    */
   void Construct (void);
 
+  void track_queue_sizes();
+
   /**
    * \brief Protocol handler entry.
    * This structure is used to demultiplex all the protocols.
@@ -288,6 +294,14 @@ private:
   std::vector<Ptr<Application> > m_applications; //!< Applications associated to this node
   ProtocolHandlerList m_handlers; //!< Protocol handlers in the node
   DeviceAdditionListenerList m_deviceAdditionListeners; //!< Device addition listeners in the node
+
+  std::vector<uint32_t> m_persistent_queue_size_sums;
+
+  std::vector<std::queue<uint32_t>> m_queue_sizes_by_device;
+
+  std::vector<std::<queue<Time>> m_recent_packet_receive_times;
+
+  Timer m_queue_monitor_timer;
 };
 
 } // namespace ns3
