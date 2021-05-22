@@ -30,7 +30,8 @@
 #include "ns3/node.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
-#include "ns3/data-rate"
+#include "ns3/data-rate.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -534,10 +535,10 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
       double load_factor = node->GetRecentPacketArrivals(idev) +
                             0.5 * node->GetPersistentQueueSize(idev);
       Ptr<NetDevice> dst_dev = rtentry->GetOutputDevice();
-      NS_ASSRERT (dst_dev->IsPointToPoint());
+      NS_ASSERT (dst_dev->IsPointToPoint());
       DataRateValue dr;
       dst_dev->GetAttribute("DataRate", dr);
-      load_factor /= ((dr.Get().GetBitRate() / 1000 * 8) * 0.2)
+      load_factor /= ((dr.Get().GetBitRate() / 1000 * 8) * 0.2);
       
       Ipv4Header ipHeader = header;
       if (load_factor < 0.8) { 

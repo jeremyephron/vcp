@@ -211,9 +211,9 @@ public:
    */
   static bool ChecksumEnabled (void);
 
-  size_t GetRecentPacketArrivals(Ptr<NetDevice> device);
+  size_t GetRecentPacketArrivals(Ptr<const NetDevice> device);
 
-  uint32_t GetPersistentQueueSize(Ptr<NetDevice> Device);
+  uint32_t GetPersistentQueueSize(Ptr<const NetDevice> Device);
 
 protected:
   /**

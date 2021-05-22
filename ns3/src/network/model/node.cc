@@ -33,8 +33,21 @@
 #include "ns3/boolean.h"
 #include "ns3/traffic-control-layer.h"
 
+#include "ns3/test.h"
+#include "ns3/uinteger.h"
+#include "ns3/pointer.h"
+#include "ns3/string.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/node-container.h"
+#include "ns3/traffic-control-layer.h"
+#include "ns3/traffic-control-helper.h"
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/data-rate.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/queue.h"
+#include "ns3/config.h"
 
 namespace ns3 {
 
@@ -196,7 +209,7 @@ Node::GetNApplications (void) const
 }
 
 size_t
-Node::GetRecentPacketArrivals(Ptr<NetDevice> device) {
+Node::GetRecentPacketArrivals(Ptr<const NetDevice> device) {
   if (device->GetIfIndex() >= m_devices.size()) {
     return 0;
   }
@@ -214,7 +227,7 @@ Node::GetRecentPacketArrivals(Ptr<NetDevice> device) {
 }
 
 uint32_t
-Node::GetPersistentQueueSize(Ptr<NetDevice> device) {
+Node::GetPersistentQueueSize(Ptr<const NetDevice> device) {
   return m_persistent_queue_size_sums[device->GetIfIndex()] /
       m_queue_sizes_by_device[device->GetIfIndex()].size();
 }
