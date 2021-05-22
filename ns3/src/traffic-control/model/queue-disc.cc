@@ -35,7 +35,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("QueueDisc");
 
 
-// NS_OBJECT_ENSURE_REGISTERED (QueueDiscClass);
+NS_OBJECT_ENSURE_REGISTERED (QueueDiscClass);
 
 TypeId QueueDiscClass::GetTypeId (void)
 {
