@@ -19,7 +19,8 @@
  *
  * Bufferbloat Topology
  *
- *    h1-----------------s0-----------------h2
+ *    h1-----------------s0-----------------h3
+ *    h2-----------------|
  *
  *  Usage (e.g.):
  *    ./waf --run 'bufferbloat --time=60 --bwNet=10 --delay=1 --maxQ=100'
@@ -191,11 +192,12 @@ main (int argc, char *argv[])
 
   NodeContainer nodes;
   // DONE: Read documentation for NodeContainer object and create 3 nodes.
-  nodes.Create(3);
+  nodes.Create(4);
 
   Ptr<Node> h1 = nodes.Get(0);
-  Ptr<Node> s0 = nodes.Get(1);
-  Ptr<Node> h2 = nodes.Get(2);
+  Ptr<Node> h2 = nodes.Get(1);
+  Ptr<Node> s0 = nodes.Get(2);
+  Ptr<Node> h3 = nodes.Get(3);
 
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are

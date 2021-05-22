@@ -39,9 +39,7 @@
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
-#include "ns3/simulator.h"
 #include "ns3/node-container.h"
-#include "ns3/traffic-control-layer.h"
 #include "ns3/traffic-control-helper.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/data-rate.h"
@@ -241,7 +239,7 @@ Node::TrackQueueSizes() {
         queue_sizes.pop();
       }
 
-      //Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
+      Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
       //Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
       //uint32_t cur_size = qd->GetNPackets();
       //queue_sizes.push(cur_size);
