@@ -70,9 +70,9 @@ def build(bld):
         'helper/trace-helper.cc',
         'helper/delay-jitter-estimation.cc',
         'helper/simple-net-device-helper.cc',
-        '../traffic-control/model/traffic-control-layer.cc',
-        '../traffic-control/model/queue-disc.cc',
-        '../traffic-control/model/packet-filter.cc',
+        #'../traffic-control/model/traffic-control-layer.cc',
+        #'../traffic-control/model/queue-disc.cc',
+        #'../traffic-control/model/packet-filter.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
