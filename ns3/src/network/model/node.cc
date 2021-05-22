@@ -226,7 +226,7 @@ Node::track_queue_sizes() {
       }
 
       Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
-      //Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
+      Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
       //uint32_t cur_size = qd->GetNPackets();
       //queue_sizes.push(cur_size);
       //m_persistent_queue_size_sums[i] += cur_size; 
