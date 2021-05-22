@@ -69,9 +69,15 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
   // Update load state
   m_loadState = (LoadState_t)tcb->m_ectCodePoint;
 
+  if (!m_cWndFractionalInit) {
+    m_cWndFractional = static_cast<double>(tcb->m_cWnd);
+    m_cWndFractionalInit = True;
+  }
+
   // If the load bits are not supported, fall back to TCP New Reno
   if (m_loadState == LOAD_NOT_SUPPORTED) {
     TcpNewReno::PktsAcked(tcb, segmentsAcked, rtt);
+    m_cWndFractional = static_cast<double>(tcb->m_cWnd);
     return;
   }
 
@@ -118,7 +124,8 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
   NS_LOG_FUNCTION(this << tcb);
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
 
-  tcb->m_cWnd = tcb->m_cWnd * (1 + GetScaledXi(m_lastRtt));
+  m_cWndFractional = m_cWndFractional * (1.f + GetScaledXi(m_lastRtt));
+  tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
 
   NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }
@@ -129,7 +136,8 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
   NS_LOG_FUNCTION(this << tcb);
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
 
-  tcb->m_cWnd = tcb->m_cWnd + GetScaledAlpha(m_lastRtt);
+  m_cWndFractional = m_cWndFractional + GetScaledAlpha(m_lastRtt);
+  tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
 
   NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }
@@ -140,7 +148,8 @@ Vcp::MultiplicativeDecrease(Ptr<TcpSocketState> tcb)
   NS_LOG_FUNCTION(this << tcb);
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
 
-  tcb->m_cWnd = tcb->m_cWnd * m_beta;
+  m_cWndFractional = m_cWndFractional * m_beta;
+  tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
 
   NS_LOG_DEBUG("New cwnd = " << tcb->m_cWnd);
 }

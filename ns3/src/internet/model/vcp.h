@@ -42,13 +42,13 @@ private:
   } LoadState_t;
 
   /* Additive increase factor: cwnd(t + 1) := cwnd(t) + alpha. */
-  const float m_alpha {1.0};
+  const double m_alpha {1.0};
 
   /* Multiplicative decrease factor: cwnd(t + 1) := cwnd(t) * beta. */
-  const float m_beta {0.875};
+  const double m_beta {0.875};
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
-  const float m_xi {0.0625};
+  const double m_xi {0.0625};
 
   /* Load factor estimation interval in ms. */
   const int64_t m_estInterval {200};
@@ -63,11 +63,11 @@ private:
   void EndMdFreezePeriod();
 
   /* Scaled MI and AI params based on flow-specific RTT. */
-  inline float GetScaledXi(int64_t rtt) {
+  inline double GetScaledXi(int64_t rtt) {
     return pow(1 + m_xi, rtt / m_estInterval) - 1;
   }
 
-  inline float GetScaledAlpha(int64_t rtt) {
+  inline double GetScaledAlpha(int64_t rtt) {
     return m_alpha * (rtt / m_estInterval) * (rtt / m_estInterval);
   }
 
@@ -81,7 +81,9 @@ private:
   Timer m_mdTimer;
   bool m_mdFreeze {false};
 
-  uint32_t m_cWndCnt {0};
+  /* Fractional cwnd. */
+  double m_cWndFractional;
+  bool m_cWndFractionalInit {false};
 
 
 };
