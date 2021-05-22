@@ -271,7 +271,7 @@ private:
    */
   void Construct (void);
 
-  void track_queue_sizes();
+  void TrackQueueSizes();
 
   /**
    * \brief Protocol handler entry.
