@@ -90,13 +90,13 @@ TraceCwnd (Ptr<OutputStreamWrapper> cwndStream)
                                  MakeBoundCallback (&CwndTracer, cwndStream));
 }
 
-static void
-TraceCwnd2 (Ptr<OutputStreamWrapper> cwndStream)
-{
-    Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
-                                 MakeBoundCallback (&CwndTracer, cwndStream));
-
-}
+//static void
+//TraceCwnd2 (Ptr<OutputStreamWrapper> cwndStream)
+//{
+//    Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+//                                 MakeBoundCallback (&CwndTracer, cwndStream));
+//
+//}
 
 
 static void
@@ -129,23 +129,23 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
                                  MakeBoundCallback (&RttTracer, rttStream));
 }
 
-static void
-TraceRtt2 (Ptr<OutputStreamWrapper> rttStream)
-{
-  // DONE: In the TraceCwnd function above, you learned how to trace congestion
-  //       window size of a TCP socket. Take a look at the documentation for
-  //       TCP Sockets and find the name of the TraceSource in order to trace
-  //       the round trip time (delay) experienced by the flow.
-  //
-  // HINT: TCP Socket is implemented on multiple classes in NS3. The trace
-  //       source you are looking for might be in any of them.
-  /* Note how the path is constructed for configuring the TraceSource. NS-3
-   * keeps a hierarchical list of all available modules created for the
-   * simulation
-   */
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT",
-                                 MakeBoundCallback (&RttTracer, rttStream));
-}
+//static void
+//TraceRtt2 (Ptr<OutputStreamWrapper> rttStream)
+//{
+//  // DONE: In the TraceCwnd function above, you learned how to trace congestion
+//  //       window size of a TCP socket. Take a look at the documentation for
+//  //       TCP Sockets and find the name of the TraceSource in order to trace
+//  //       the round trip time (delay) experienced by the flow.
+//  //
+//  // HINT: TCP Socket is implemented on multiple classes in NS3. The trace
+//  //       source you are looking for might be in any of them.
+//  /* Note how the path is constructed for configuring the TraceSource. NS-3
+//   * keeps a hierarchical list of all available modules created for the
+//   * simulation
+//   */
+//  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT",
+//                                 MakeBoundCallback (&RttTracer, rttStream));
+//}
 
 static void
 UpgradeLinkCapacity (Ptr<NetDevice> dev)
