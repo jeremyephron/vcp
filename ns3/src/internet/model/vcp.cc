@@ -83,7 +83,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
     return;
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
     m_mdFreeze = false;
-    m_mdTimer.SetFunction([](){});
+    m_mdTimer.SetFunction(&Vcp::Noop, this);
     m_mdTimer.Schedule(rtt);
   }
 
@@ -102,9 +102,9 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
       break;
     case LOAD_OVERLOAD:
       MultiplicativeDecrease(tcb);
-      m_mdTimer.SetFunction([this]() { m_mdFreeze = false; });
-      m_mdTimer.Schedule(Time(m_estInterval * 1000000));
       m_mdFreeze = true;
+      m_mdTimer.SetFunction(&Vcp::EndMdFreezePeriod, this);
+      m_mdTimer.Schedule(Time(m_estInterval * 1000000));
       return;
     default:
       NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
@@ -128,6 +128,17 @@ void
 Vcp::MultiplicativeDecrease(Ptr<TcpSocketState> tcb)
 {
   tcb->m_cWnd = tcb->m_cWnd * m_beta;
+}
+
+void
+Vcp::Noop()
+{
+}
+
+void
+Vcp::EndMdFreezePeriod()
+{
+  m_mdFreeze = false;
 }
 
 } // namespace ns3

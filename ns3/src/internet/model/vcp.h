@@ -58,6 +58,10 @@ private:
   void AdditiveIncrease(Ptr<TcpSocketState> tcb);
   void MultiplicativeDecrease(Ptr<TcpSocketState> tcb);
 
+  /* Timer functions */
+  void Noop();
+  void EndMdFreezePeriod();
+
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline float GetScaledXi(int64_t rtt) {
     return pow(1 + m_xi, rtt / m_estInterval) - 1;
