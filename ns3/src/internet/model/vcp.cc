@@ -77,18 +77,14 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
-  NS_LOG_DEBUG("before schedule " << m_mdTimer.IsExpired());
-  m_mdTimer.Schedule(Time(rtt.GetNanoSeconds()));
-  NS_LOG_DEBUG("after schedule " << m_mdTimer.IsExpired());
 
   // Freeze cwnd after MD
   if (m_mdFreeze && !m_mdTimer.IsExpired()) {
     return;
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
     m_mdFreeze = false;
+    m_mdTimer.SetFunction([](){});
     m_mdTimer.Schedule(rtt);
-    AdditiveIncrease(tcb);
-    return;
   }
 
   // Perform AI for one RTT after 
@@ -106,6 +102,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
       break;
     case LOAD_OVERLOAD:
       MultiplicativeDecrease(tcb);
+      m_mdTimer.SetFunction([this]() { m_mdFreeze = false; });
       m_mdTimer.Schedule(Time(m_estInterval * 1000000));
       m_mdFreeze = true;
       return;
