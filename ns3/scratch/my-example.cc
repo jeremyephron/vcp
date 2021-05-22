@@ -129,7 +129,7 @@ main (int argc, char *argv[])
    */
   int bwHost = 1000; // Mbps
   int bwNet = 10; // Mbps
-  int delay = 1; // milliseconds
+  int delay = 10; // milliseconds
   int time = 60; // seconds
   int maxQ = 100; // packets
   std::string transport_prot = "TcpNewReno";
