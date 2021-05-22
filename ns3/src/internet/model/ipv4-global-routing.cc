@@ -546,7 +546,7 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
       //} else if (load_factor < 1) {
       //    ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT0);
       //} else {
-          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_CE);
+          ipHeader.SetEcn(3);
       //}
           
       ucb (rtentry, p, header);
