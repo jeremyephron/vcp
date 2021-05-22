@@ -77,9 +77,9 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
-  NS_LOG_DEBUG("before schedule " << m_mdTimer.isExpired());
+  NS_LOG_DEBUG("before schedule " << m_mdTimer.IsExpired());
   m_mdTimer.Schedule(rtt);
-  NS_LOG_DEBUG("after schedule " << m_mdTimer.isExpired());
+  NS_LOG_DEBUG("after schedule " << m_mdTimer.IsExpired());
 
   // Freeze cwnd after MD
   if (m_mdFreeze && !m_mdTimer.IsExpired()) {
