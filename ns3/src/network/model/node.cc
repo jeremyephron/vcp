@@ -33,21 +33,8 @@
 #include "ns3/boolean.h"
 #include "ns3/traffic-control-layer.h"
 
-#include "ns3/test.h"
-#include "ns3/uinteger.h"
-#include "ns3/pointer.h"
-#include "ns3/string.h"
-#include "ns3/double.h"
-#include "ns3/log.h"
-#include "ns3/simulator.h"
-#include "ns3/node-container.h"
-#include "ns3/traffic-control-layer.h"
-#include "ns3/traffic-control-helper.h"
-#include "ns3/simple-net-device-helper.h"
-#include "ns3/data-rate.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/queue.h"
-#include "ns3/config.h"
 
 namespace ns3 {
 
