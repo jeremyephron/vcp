@@ -91,6 +91,15 @@ TraceCwnd (Ptr<OutputStreamWrapper> cwndStream)
 }
 
 static void
+TraceCwnd2 (Ptr<OutputStreamWrapper> cwndStream)
+{
+    Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+                                 MakeBoundCallback (&CwndTracer, cwndStream));
+
+}
+
+
+static void
 RttTracer (Ptr<OutputStreamWrapper> stream,
            Time oldval, Time newval)
 {
@@ -118,6 +127,36 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
    */
   Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/RTT",
                                  MakeBoundCallback (&RttTracer, rttStream));
+}
+
+static void
+TraceRtt2 (Ptr<OutputStreamWrapper> rttStream)
+{
+  // DONE: In the TraceCwnd function above, you learned how to trace congestion
+  //       window size of a TCP socket. Take a look at the documentation for
+  //       TCP Sockets and find the name of the TraceSource in order to trace
+  //       the round trip time (delay) experienced by the flow.
+  //
+  // HINT: TCP Socket is implemented on multiple classes in NS3. The trace
+  //       source you are looking for might be in any of them.
+  /* Note how the path is constructed for configuring the TraceSource. NS-3
+   * keeps a hierarchical list of all available modules created for the
+   * simulation
+   */
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT",
+                                 MakeBoundCallback (&RttTracer, rttStream));
+}
+
+static void
+UpgradeLinkCapacity (Ptr<PointToPointNetDevice> dev)
+{
+  dev->SetDataRate(DataRate("20Mbps"));
+}
+
+static void
+DowngradeLinkCapacity (Ptr<PointToPointNetDevice> dev)
+{
+  dev->SetDataRate(DataRate("10Mbps"));
 }
 
 int
@@ -177,9 +216,17 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> cwndStream;
   cwndStream = asciiTraceHelper.CreateFileStream (cwndStreamName);
 
+  std::string cwndStreamName2 = dir + "cwnd2.tr";
+  Ptr<OutputStreamWrapper> cwndStream2;
+  cwndStream2 = asciiTraceHelper.CreateFileStream (cwndStreamName2);
+
   std::string rttStreamName = dir + "rtt.tr";
   Ptr<OutputStreamWrapper> rttStream;
   rttStream = asciiTraceHelper.CreateFileStream (rttStreamName);
+
+  std::string rttStreamName2 = dir + "rtt2.tr";
+  Ptr<OutputStreamWrapper> rttStream2;
+  rttStream2 = asciiTraceHelper.CreateFileStream (rttStreamName2);
 
   /* In order to run simulations in NS-3, you need to set up your network all
    * the way from the physical layer to the application layer. But don't worry!
@@ -328,9 +375,17 @@ main (int argc, char *argv[])
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd2, cwndStream2);
 
   /* Start tracing the RTT after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
+
+  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0));
+  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0));
+  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0));
+  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0));
+  
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
