@@ -375,11 +375,11 @@ main (int argc, char *argv[])
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
-  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd2, cwndStream2);
+  //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd2, cwndStream2);
 
   /* Start tracing the RTT after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
-  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
+  //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0));
   Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0));
