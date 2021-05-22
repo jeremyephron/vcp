@@ -35,6 +35,8 @@
 
 namespace ns3 {
 
+class
+
 NS_LOG_COMPONENT_DEFINE ("Node");
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
@@ -226,7 +228,7 @@ Node::track_queue_sizes() {
       }
       uint32_t cur_size = GetObject<TrafficControlLayer>()->
                           GetRootQueueDiscOnDevice(m_devices[i])->
-                          GetNPackets();
+                          QueueDisc::GetNPackets();
       queue_sizes.push(cur_size);
       m_persistent_queue_size_sums[i] += cur_size; 
   }
