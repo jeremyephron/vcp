@@ -239,7 +239,7 @@ Node::TrackQueueSizes() {
         queue_sizes.pop();
       }
 
-      Ptr<TrafficControlLayer> tc = GetObject<TrafficControlLayer>();
+      Ptr<TrafficControlLayer> tc = this->GetObject<TrafficControlLayer>();
       //Ptr<QueueDisc> qd = tc->GetRootQueueDiscOnDevice(m_devices[i]);
       //uint32_t cur_size = qd->GetNPackets();
       //queue_sizes.push(cur_size);
