@@ -156,7 +156,7 @@ UpgradeLinkCapacity (Ptr<NetDevice> dev)
 static void
 DowngradeLinkCapacity (Ptr<NetDevice> dev)
 {
-  dev->SetDataRate("DataRate", DataRateValue(DataRate("10Mbps")));
+  dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
 }
 
 int
