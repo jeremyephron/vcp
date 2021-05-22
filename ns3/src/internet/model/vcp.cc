@@ -87,19 +87,19 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
   m_lastRtt = rtt.GetMilliSeconds();
 
   // Freeze cwnd after MD
-  if (m_mdFreeze && !m_mdTimer.IsExpired()) {
-    return;
-  } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
-    m_mdFreeze = false;
-    m_mdTimer.SetFunction(&Vcp::Noop, this);
-    m_mdTimer.Schedule(rtt);
-  }
+  //if (m_mdFreeze && !m_mdTimer.IsExpired()) {
+  //  return;
+  //} else if (m_mdFreeze && m_mdTimer.IsExpired()) {
+  //  m_mdFreeze = false;
+  //  m_mdTimer.SetFunction(&Vcp::Noop, this);
+  //  m_mdTimer.Schedule(rtt);
+  //}
 
-  // Perform AI for one RTT after 
-  if (!m_mdFreeze && !m_mdTimer.IsExpired()) {
-    AdditiveIncrease(tcb);
-    return;
-  } 
+  //// Perform AI for one RTT after 
+  //if (!m_mdFreeze && !m_mdTimer.IsExpired()) {
+  //  AdditiveIncrease(tcb);
+  //  return;
+  //} 
 
   switch (m_loadState) {
     case LOAD_LOW:
