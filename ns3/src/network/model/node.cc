@@ -79,7 +79,7 @@ Node::GetTypeId (void)
 
 Node::Node()
   : m_id (0),
-    m_sid (0),
+    m_sid (0)
 {
   NS_LOG_FUNCTION (this);
   Construct ();
@@ -87,7 +87,7 @@ Node::Node()
 
 Node::Node(uint32_t sid)
   : m_id (0),
-    m_sid (sid),
+    m_sid (sid)
 { 
   NS_LOG_FUNCTION (this << sid);
   Construct ();
@@ -192,7 +192,7 @@ Node::GetNApplications (void) const
 }
 
 size_t
-Node::GetRecentPacketArrivals(Ptr<Device> device) {
+Node::GetRecentPacketArrivals(Ptr<NetDevice> device) {
   if (device->GetIfIndex() >= m_devices.size()) {
     return 0;
   }
@@ -210,7 +210,7 @@ Node::GetRecentPacketArrivals(Ptr<Device> device) {
 }
 
 uint32_t
-Node::GetPersistentQueueSize(Ptr<Device> device) {
+Node::GetPersistentQueueSize(Ptr<NetDevice> device) {
   return m_persistent_queue_size_sums[device->GetIfIndex()] /
       m_queue_sizes_by_device[device->GetIfIndex()].size();
 }
