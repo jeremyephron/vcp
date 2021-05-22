@@ -30,6 +30,7 @@
 #include "ns3/node.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
+#include "ns3/data-rate"
 
 namespace ns3 {
 
@@ -528,6 +529,25 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
   if (rtentry != 0)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
+      
+      Ptr<Node> node = idev->GetNode();
+      double load_factor = node->GetRecentPacketArrivals(idev) +
+                            0.5 * node->GetPersistentQueueSize(idev);
+      Ptr<NetDevice> dst_dev = rtentry->GetOutputDevice();
+      NS_ASSRERT (dst_dev->IsPointToPoint());
+      DataRateValue dr;
+      dst_dev->GetAttribute("DataRate", dr);
+      load_factor /= ((dr.Get().GetBitRate() / 1000 * 8) * 0.2)
+      
+      Ipv4Header ipHeader = header;
+      if (load_factor < 0.8) { 
+          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT1);
+      } else if (load_factor < 1) {
+          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_ECT0);
+      } else {
+          ipHeader.SetEcn(Ipv4Header::EcnType::ECN_CE);
+      }
+          
       ucb (rtentry, p, header);
       return true;
     }
