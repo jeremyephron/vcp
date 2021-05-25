@@ -2697,7 +2697,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
   // (VCP): Add vcp packet tag
   VcpPacketTag vcpTag;
-  vcpTag.SetLoad(m_tcb->vcpLoad);
+  vcpTag.SetLoad(m_tcb->m_vcpLoad);
   p->AddPacketTag(vcpTag);
 
   TcpHeader header;
