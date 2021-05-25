@@ -43,6 +43,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/data-rate.h"
 #include "ns3/object.h"
+#include "ns3/vcp-packet-tag.h"
 #include "tcp-socket-base.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -1170,6 +1171,11 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     {
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_ECN_NO_CE);
     }
+
+  // (VCP): add tag for vcp/ecn bits
+  VcpPacketTag vcpTag;
+  vcpTag.SetLoad((VcpPacketTag::LoadType)header.GetEcn());
+  packet->AddPacketTag(vcpTag);
 
   DoForwardUp (packet, fromAddress, toAddress);
 }
