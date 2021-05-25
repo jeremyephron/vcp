@@ -1489,13 +1489,17 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
           // Receiver sets ECE flags when it receives a packet with CE bit on or sender hasn’t responded to ECN echo sent by receiver
           if (m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD || m_tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
             {
-              SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE, vcpLoad);
+              // (VCP)
+              m_tcb->m_vcpLoad = vcpLoad;
+              SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE);
               NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_SENDING_ECE");
               m_tcb->m_ecnState = TcpSocketState::ECN_SENDING_ECE;
             }
           else
             {
-              SendEmptyPacket (TcpHeader::ACK, vcpLoad);
+              // (VCP)
+              m_tcb->m_vcpLoad = vcpLoad;
+              SendEmptyPacket (TcpHeader::ACK);
             }
         }
       else
@@ -2679,7 +2683,7 @@ TcpSocketBase::Destroy6 (void)
 
 /* Send an empty packet with specified TCP flags */
 void
-TcpSocketBase::SendEmptyPacket (uint8_t flags, VcpPacketTag::LoadType load)
+TcpSocketBase::SendEmptyPacket (uint8_t flags)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (flags));
 
@@ -2693,7 +2697,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags, VcpPacketTag::LoadType load)
 
   // (VCP): Add vcp packet tag
   VcpPacketTag vcpTag;
-  vcpTag.SetLoad(load);
+  vcpTag.SetLoad(m_tcb->vcpLoad);
   p->AddPacketTag(vcpTag);
 
   TcpHeader header;

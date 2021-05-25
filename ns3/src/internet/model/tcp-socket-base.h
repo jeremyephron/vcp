@@ -32,7 +32,6 @@
 #include "ns3/data-rate.h"
 #include "ns3/node.h"
 #include "ns3/tcp-socket-state.h"
-#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 
@@ -784,10 +783,7 @@ protected:
    *
    * \param flags the packet's flags
    */
-  virtual void SendEmptyPacket (
-    uint8_t flags,
-    VcpPacketTag::LoadType load = VcpPacketTag::LOAD_NOT_SUPPORTED
-  );
+  virtual void SendEmptyPacket (uint8_t flags);
 
   /**
    * \brief Send reset and tear down this socket
