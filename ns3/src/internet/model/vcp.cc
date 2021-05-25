@@ -67,9 +67,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
 
   // Update load state
-  m_loadState = (LoadState_t)tcb->m_ectCodePoint;
-  m_loadState = LOAD_HIGH;
-  NS_LOG_DEBUG(tcb->m_ectCodePoint);
+  m_loadState = (LoadState_t)tcb->m_vcpLoad;
 
   if (!m_cWndFractionalInit) {
     m_cWndFractional = static_cast<double>(tcb->m_cWnd);
@@ -111,7 +109,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
     case LOAD_OVERLOAD:
       MultiplicativeDecrease(tcb);
       m_mdFreeze = true;
-      m_mdTimer.SetFunction(&Vcp::EndMdFreezePeriod, this);
+      m_mdTimer.SetFunction(&Vcp::Noop, this);
       m_mdTimer.Schedule(Time(m_estInterval * 1000000));
       return;
     default:
@@ -166,7 +164,6 @@ Vcp::Noop()
 void
 Vcp::EndMdFreezePeriod()
 {
-  m_mdFreeze = false;
 }
 
 } // namespace ns3
