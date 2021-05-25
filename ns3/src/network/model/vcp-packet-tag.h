@@ -12,6 +12,13 @@ namespace ns3 {
 class VcpPacketTag : public Tag
 {
 public:
+  enum LoadType {
+    LOAD_NOT_SUPPORTED = 0,
+    LOAD_LOW,
+    LOAD_HIGH,
+    LOAD_OVERLOAD
+  };
+
   VcpPacketTag ();
 
   LoadType GetLoad() const;
@@ -25,13 +32,6 @@ public:
   void Print (std::ostream &os) const;
 
 private:
-  enum LoadType {
-    LOAD_NOT_SUPPORTED = 0,
-    LOAD_LOW,
-    LOAD_HIGH,
-    LOAD_OVERLOAD
-  };
-
   LoadType m_load {LOAD_NOT_SUPPORTED};
 
 };
