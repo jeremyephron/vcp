@@ -564,6 +564,10 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
                                  << " flags " << TcpHeader::FlagsToString (outgoing.GetFlags ())
                                  << " data size " << packet->GetSize ());
   // XXX outgoingHeader cannot be logged
+  
+  // (VCP)
+  VcpPacketTag vcpTag;
+  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
 
   TcpHeader outgoingHeader = outgoing;
   /** \todo UrgentPointer */
@@ -584,6 +588,12 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
       header.SetSource (saddr);
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);
+
+      // (VCP)
+      if (hasVcpTag) {
+        header.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+      }
+
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       if (ipv4->GetRoutingProtocol () != 0)

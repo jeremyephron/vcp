@@ -1458,6 +1458,11 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 {
   NS_LOG_FUNCTION (this << tcpHeader);
 
+  // (VCP): Get vcp tag
+  VcpPacketTag vcpTag;
+  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
+  VcpPacketTag::LoadType vcpLoad = hasVcpTag ? vcpTag.GetLoad() : VcpPacketTag::LOAD_NOT_SUPPORTED;
+
   // Extract the flags. PSH, URG, CWR and ECE are disregarded.
   uint8_t tcpflags = tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG | TcpHeader::CWR | TcpHeader::ECE);
 
@@ -1484,13 +1489,13 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
           // Receiver sets ECE flags when it receives a packet with CE bit on or sender hasn’t responded to ECN echo sent by receiver
           if (m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD || m_tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
             {
-              SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE);
+              SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE, vcpLoad);
               NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_SENDING_ECE");
               m_tcb->m_ecnState = TcpSocketState::ECN_SENDING_ECE;
             }
           else
             {
-              SendEmptyPacket (TcpHeader::ACK);
+              SendEmptyPacket (TcpHeader::ACK, vcpLoad);
             }
         }
       else
@@ -1775,6 +1780,12 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
+  
+  // (VCP): Get vcp tag
+  VcpPacketTag vcpTag;
+  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
+  VcpPacketTag::LoadType vcpLoad = hasVcpTag ? vcpTag.GetLoad() : VcpPacketTag::LOAD_NOT_SUPPORTED;
+  m_tcb->m_vcpLoad = vcpLoad;
 
   uint32_t previousLost = m_txBuffer->GetLost ();
   uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
@@ -2668,7 +2679,7 @@ TcpSocketBase::Destroy6 (void)
 
 /* Send an empty packet with specified TCP flags */
 void
-TcpSocketBase::SendEmptyPacket (uint8_t flags)
+TcpSocketBase::SendEmptyPacket (uint8_t flags, VcpPacketTag::LoadType load)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (flags));
 
@@ -2679,6 +2690,12 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
 
   Ptr<Packet> p = Create<Packet> ();
+
+  // (VCP): Add vcp packet tag
+  VcpPacketTag vcpTag;
+  vcpTag.SetLoad(load);
+  p->AddPacketTag(vcpTag);
+
   TcpHeader header;
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
