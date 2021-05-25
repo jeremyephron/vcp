@@ -30,6 +30,7 @@
 #include "ns3/node.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
+#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 
@@ -528,7 +529,16 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
   if (rtentry != 0)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
-      ucb (rtentry, p, header);
+      
+      Ipv4Header h = header;
+      Packet pack = *p;
+      VcpPacketTag vcpTag;
+      if (p->PeekPacketTag (vcpTag)) {
+        h.SetEcn((Ipv4Header::EcnType) vcpTag.GetLoad ());
+        pack->RemovePacketTag (vcpTag);
+      }
+
+      ucb (rtentry, Ptr<Packet>(&pack), h);
       return true;
     }
   else
