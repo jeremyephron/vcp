@@ -535,7 +535,7 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
       VcpPacketTag vcpTag;
       if (p->PeekPacketTag (vcpTag)) {
         h.SetEcn((Ipv4Header::EcnType) vcpTag.GetLoad ());
-        pack->RemovePacketTag (vcpTag);
+        pack.RemovePacketTag (vcpTag);
       }
 
       ucb (rtentry, Ptr<Packet>(&pack), h);
