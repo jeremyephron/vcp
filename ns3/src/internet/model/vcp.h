@@ -2,7 +2,7 @@
  * vcp.h
  * 
  * Authors: Jeremy Barenholtz <jeremye@cs.stanford.edu>
- *          Mathew Hogan <mhogan1>
+ *          Mathew Hogan <mhogan1@stanford.edu>
  */
 
 #pragma once
@@ -85,7 +85,6 @@ private:
   /* Fractional cwnd. */
   double m_cWndFractional;
   bool m_cWndFractionalInit {false};
-
 
 };
 

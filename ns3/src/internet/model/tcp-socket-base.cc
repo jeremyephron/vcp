@@ -1171,6 +1171,9 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_ECN_NO_CE);
     }
 
+  // Pass IP header ECN information along
+  tcpHeader
+
   DoForwardUp (packet, fromAddress, toAddress);
 }
 
