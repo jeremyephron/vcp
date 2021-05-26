@@ -1072,6 +1072,8 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   Ipv4Header ipHeader = header;
   Ptr<Packet> packet = p->Copy ();
 
+  NS_LOG_DEBUG("(VCP) ip header: " << ipHeader);
+
   // (VCP): TODO
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
