@@ -1083,7 +1083,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     bool isDataPacket = packet->GetSize() != 32; // 52 - 20
     NS_LOG_DEBUG("(VCP) isDataPacket=" << isDataPacket << ", packet->GetSize()=" << packet->GetSize());
 
-    if (isDataPacket && vcpTag.GetLoad() > ipHeader.GetEcn()) {
+    if (isDataPacket && (Ipv4Header::EcnType)vcpTag.GetLoad() > ipHeader.GetEcn()) {
       NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
       ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
     } else if (vcpTag.GetLoad() <= ipHeader.GetEcn()) {
