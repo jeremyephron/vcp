@@ -591,8 +591,11 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
     outgoingHeader.SetFlags(flags);
 
     NS_LOG_DEBUG("(VCP) packet has vcp tag, vcpLoad=" << vcpTag.GetLoad()
-                 << ", tcpFlags= " << TcpHeader::FlagsToString(flags)
+                 << ", tcpFlags=" << TcpHeader::FlagsToString(flags)
                  << ", tcpHeader=" << outgoingHeader); // TODO: delete
+
+    // Remove tag after transferring info to TCP ECN bits
+    packet->RemovePacketTag(vcpTag);
   }
 
   /** \todo UrgentPointer */
