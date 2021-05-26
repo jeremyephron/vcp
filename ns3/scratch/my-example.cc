@@ -148,15 +148,17 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 //}
 
 static void
-UpgradeLinkCapacity (Ptr<NetDevice> dev)
+UpgradeLinkCapacity (Ptr<NetDevice> dev, TrafficControlHelper tch)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
+  tch.SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
 }
 
 static void
-DowngradeLinkCapacity (Ptr<NetDevice> dev)
+DowngradeLinkCapacity (Ptr<NetDevice> dev, TrafficControlHelper tch)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+  tch.SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
 }
 
 int
@@ -318,8 +320,9 @@ main (int argc, char *argv[])
   // DONE: Read documentation for PfifoFastQueueDisc and use the correct
   //       attribute name to set the size of the bottleneck queue.
   TrafficControlHelper tchPfifo;
-  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc",
-                             "MaxSize", StringValue(maxQStr));
+  tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
+                             "MaxSize", StringValue(maxQStr),
+                             "DataRate", StringValue(bwNetStr));
 
   tchPfifo.Install(h1s0_NetDevices);
   tchPfifo.Install(h2s0_NetDevices);
@@ -381,10 +384,10 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0));
-  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0));
-  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0));
-  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0));
+  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
+  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
+  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
+  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
   
 
   /******** Run the Actual Simulation ********/
