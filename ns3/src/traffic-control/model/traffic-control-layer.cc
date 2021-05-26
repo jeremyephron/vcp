@@ -398,7 +398,8 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
 
       Ipv4Header ipHeader;
-      item->GetPacket()->PeekHeader(ipHeader);
+      // item->GetPacket()->PeekHeader(ipHeader);
+      ipHeader = item->GetHeader();
       NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
 
       qDisc->Enqueue (item);
