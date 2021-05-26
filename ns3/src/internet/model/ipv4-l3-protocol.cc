@@ -656,11 +656,10 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
     {
+      NS_LOG_LOGIC ("Forwarding to raw socket"); 
       Ptr<Ipv4RawSocketImpl> socket = *i;
-      NS_LOG_LOGIC ("Forwarding to raw socket "); 
       socket->ForwardUp (packet, ipHeader, ipv4Interface);
     }
-  NS_LOG_DEBUG("TESTING");
 
   if (m_enableDpd && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
     {
@@ -669,6 +668,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       return;
     }
 
+  NS_LOG_DEBUG("routing protocol: " << m_routingProtocol->GetTypeId());
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
   if (!m_routingProtocol->RouteInput (packet, ipHeader, device,
                                       MakeCallback (&Ipv4L3Protocol::IpForward, this),
