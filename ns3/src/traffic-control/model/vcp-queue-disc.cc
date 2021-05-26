@@ -92,8 +92,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   }
 
   TcpHeader tcpHeader;
-  item->GetPacket ()->PeekHeader (tcpHeader,
-          (uint32_t) tcpHeader.GetSerializedSize ());
+  item->GetPacket ()->PeekHeader (tcpHeader);
   //TODO what happens if this router receives a non-TCP packet?
   if (!(tcpHeader.GetFlags () & TcpHeader::Flags_t::ACK)) {
     double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
