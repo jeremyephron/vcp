@@ -151,14 +151,14 @@ static void
 UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
-  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
+  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("20Mbps")));
 }
 
 static void
 DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("10Mbps")));
 }
 
 int
