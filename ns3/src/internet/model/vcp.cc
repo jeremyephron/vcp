@@ -79,8 +79,9 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // If the load bits are not supported, fall back to TCP New Reno
   if (m_loadState == LOAD_NOT_SUPPORTED) {
-    TcpNewReno::PktsAcked(tcb, segmentsAcked, rtt);
-    m_cWndFractional = static_cast<double>(tcb->m_cWnd);
+    // TODO: What to do if not supported?
+    // TcpNewReno::PktsAcked(tcb, segmentsAcked, rtt);
+    // m_cWndFractional = static_cast<double>(tcb->m_cWnd);
     return;
   }
 
