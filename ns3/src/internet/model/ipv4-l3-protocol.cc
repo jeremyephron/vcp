@@ -585,7 +585,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 
     Ipv4Header ipHeader;
     p->PeekHeader(ipHeader);
-    NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn());
+    NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn() << " packet size=" << p->GetSize());
   }
 
   int32_t interface = GetInterfaceForDevice(device);
