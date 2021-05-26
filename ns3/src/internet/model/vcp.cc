@@ -68,6 +68,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Update load state
   m_loadState = (LoadState_t)tcb->m_vcpLoad;
+  NS_LOG_DEBUG("(VCP) m_loadState=" << m_loadState);
 
   if (!m_cWndFractionalInit) {
     m_cWndFractional = static_cast<double>(tcb->m_cWnd);
