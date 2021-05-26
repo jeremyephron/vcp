@@ -1343,6 +1343,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
         }
 
       // Initialize cWnd and ssThresh
+      NS_LOG_DEBUG("Setting cwnd from " << m_tcb->m_cWnd << " to " << GetInitialCwnd () * GetSegSize ()); // (VCP): TODO: delete
       m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
       m_tcb->m_cWndInfl = m_tcb->m_cWnd;
       m_tcb->m_ssThresh = GetInitialSSThresh ();
