@@ -598,6 +598,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
 
       // (VCP)
       if (hasVcpTag) {
+        NS_LOG_DEBUG("(VCP) packet size=" << packet->GetSize());
         header.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
         packet->RemovePacketTag(vcpTag);
       }
