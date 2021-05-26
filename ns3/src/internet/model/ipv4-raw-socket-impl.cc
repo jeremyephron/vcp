@@ -12,7 +12,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
 #include "ns3/log.h"
-#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 
@@ -479,14 +478,6 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
       data.packet = copy;
       data.fromIp = ipHeader.GetSource ();
       data.fromProtocol = ipHeader.GetProtocol ();
-
-      // (VCP): TODO check more info
-      if (data.packet) {
-        VcpPacketTag vcpTag;
-        bool hasVcpTag = data.packet->PeekPacketTag(vcpTag);
-        NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
-      }
-
       m_recv.push_back (data);
       NotifyDataRecv ();
       return true;
