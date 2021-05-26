@@ -271,7 +271,7 @@ main (int argc, char *argv[])
   TrafficControlHelper tchPfifo2;
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
-                             "LinkBandwidth", StringValue(bwHostStr));
+                             "LinkBandwidth", StringValue(bwNetStr));
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
   s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
