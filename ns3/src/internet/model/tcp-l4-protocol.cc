@@ -439,11 +439,11 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << incomingIpHeader << incomingInterface);
 
   // (VCP): TODO check more info
-  if (packet) {
+  //if (packet) {
     // VcpPacketTag vcpTag;
     // bool hasVcpTag = packet->PeekPacketTag(vcpTag);
     NS_LOG_DEBUG("(VCP) ip header ecn: " << incomingIpHeader.GetEcn());
-  }
+  //}
 
   TcpHeader incomingTcpHeader;
   IpL4Protocol::RxStatus checksumControl;
