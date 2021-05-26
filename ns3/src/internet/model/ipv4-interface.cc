@@ -213,6 +213,9 @@ void
 Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
 {
   NS_LOG_FUNCTION (this << *p << dest);
+
+  NS_LOG_DEBUG("(VCP) ip header ecn=" << hdr.GetEcn());
+
   if (!IsUp ())
     {
       return;
@@ -236,7 +239,6 @@ Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
     {
       if (dest == (*i).GetLocal ())
         {
-          NS_LOG_DEBUG("(VCP) ip header ecn=" << hdr.GetEcn());
           p->AddHeader (hdr);
           m_tc->Receive (m_device, p, Ipv4L3Protocol::PROT_NUMBER,
                          m_device->GetBroadcast (),
