@@ -2707,6 +2707,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   p->ReplacePacketTag(vcpTag);
 
   TcpHeader header;
+  // TODO: (VCP) set ecn bits
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
   if (flags & TcpHeader::FIN)

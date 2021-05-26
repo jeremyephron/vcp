@@ -572,11 +572,27 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
                                  << " data size " << packet->GetSize ());
   // XXX outgoingHeader cannot be logged
   
+  TcpHeader outgoingHeader = outgoing;
+
   // (VCP)
   VcpPacketTag vcpTag;
-  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
+  if (packet->PeekPacketTag(vcpTag)) {
 
-  TcpHeader outgoingHeader = outgoing;
+    TcpHeader::Flags_t flags;
+    if (vcpTag.GetLoad() == VcpPacketTag::LOAD_LOW) {
+      flags = TcpHeader::ECE;
+    } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_HIGH) {
+      flags = TcpHeader::CWR;
+    } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_OVERLOAD) {
+      flags = TcpHeader::ECE | TcpHeader::CWR;
+    } else {
+      flags = TcpHeader::NONE;
+    }
+    outgoingHeader.SetFlags(flags);
+
+    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet.ToString());
+  }
+
   /** \todo UrgentPointer */
   /* outgoingHeader.SetUrgentPointer (0); */
   if (Node::ChecksumEnabled ())
@@ -596,13 +612,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);
 
-      // (VCP)
-      if (hasVcpTag) {
-        header.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
-        packet->RemovePacketTag(vcpTag);
-        NS_LOG_DEBUG("(VCP) packet size=" << packet->GetSize() << ", ip header ecn=" << header.GetEcn());
-      }
-
+      
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       if (ipv4->GetRoutingProtocol () != 0)
