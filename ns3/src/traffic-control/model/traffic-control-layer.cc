@@ -24,6 +24,7 @@
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/queue-disc.h"
+#include "ns3/ipv4-header.h"
 #include <tuple>
 
 namespace ns3 {
