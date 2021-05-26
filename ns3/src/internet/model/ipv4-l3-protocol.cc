@@ -1076,6 +1076,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
     NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    NS_LOG_DEBUG("(VCP) existing ip header ecn=" << ipHeader.GetEcn());
 
     // TODO: How to reliably check for data packets?
     // *HACK*
