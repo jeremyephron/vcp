@@ -7,7 +7,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE("VcpQueueDisc");
 
-NS_LOG_ENSURE_REGISTERED(VcpQueueDisc);
+NS_OBJECT_ENSURE_REGISTERED(VcpQueueDisc);
 
 TypeId VcpQueueDisc::GetTypeId (void)
 {
@@ -106,8 +106,23 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   }
 
   item->GetPacket ()->AddPacketTag (vcpTag);
- 
-  return FifoQueueDisc::DoEnqueue(item);
+
+  if (GetCurrentSize () + item > GetMaxSize ())
+    {
+      NS_LOG_LOGIC ("Queue full -- dropping pkt");
+      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+      return false;
+    }
+
+  bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
+
+  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
+  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
+
+  return retval; 
 }
 
 void
@@ -123,8 +138,8 @@ void
 VcpQueueDisc::SampleQueueSize()
 {
   if (recent_queue_sizes.size () >=
-          m_timeInterval.ToInteger(Time::Unit::MS) /
-          m_QueueSampleInterval.ToInteger(Time::Unit::MS))
+          (size_t) (m_timeInterval.ToInteger(Time::Unit::MS) /
+          m_QueueSampleInterval.ToInteger(Time::Unit::MS)))
   {
     m_qsizes_sum -= recent_queue_sizes.front ();
     recent_queue_sizes.pop ();
