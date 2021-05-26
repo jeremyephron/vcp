@@ -30,6 +30,7 @@
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/queue.h"
 #include "ns3/vcp-packet-tag.h"
+#include "ns3/ipv4-queue-disc-item.h"
 
 namespace ns3 {
 
