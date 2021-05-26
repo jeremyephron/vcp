@@ -921,9 +921,11 @@ QueueDisc::Dequeue (void)
       item = DoDequeue ();
 
       // (VCP): TODO check more info
-      VcpPacketTag vcpTag;
-      bool hasVcpTag = item->GetPacket()->PeekPacketTag(vcpTag);
-      NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
+      if (item) {
+        VcpPacketTag vcpTag;
+        bool hasVcpTag = item->GetPacket()->PeekPacketTag(vcpTag);
+        NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
+      }
     }
 
   NS_ASSERT (m_nPackets == m_stats.nTotalEnqueuedPackets - m_stats.nTotalDequeuedPackets);
