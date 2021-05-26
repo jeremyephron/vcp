@@ -61,6 +61,14 @@ Vcp::Fork()
   return CopyObject<Vcp>(this);
 }
 
+uint32_t
+Vcp::GetSsThresh (Ptr<const TcpSocketState> state, uint32_t bytesInFlight)
+{
+  NS_LOG_FUNCTION (this << state << bytesInFlight);
+
+  return std::max (2 * state->m_segmentSize, bytesInFlight / 2);
+}
+
 void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {

@@ -31,6 +31,7 @@ public:
 
   // void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
   Ptr<TcpCongestionOps> Fork() override;
+  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
 
 private:
   /* Load state of the current connection. */
