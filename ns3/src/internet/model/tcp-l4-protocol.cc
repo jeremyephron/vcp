@@ -590,8 +590,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
     }
     outgoingHeader.SetFlags(flags);
 
-    Packet::EnablePrinting ();
-    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
+    NS_LOG_DEBUG("(VCP) packet has vcp tag, tcpHeader=" << outgoingHeader); // TODO: delete
   }
 
   /** \todo UrgentPointer */
@@ -603,9 +602,6 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
   outgoingHeader.InitializeChecksum (saddr, daddr, PROT_NUMBER);
 
   packet->AddHeader (outgoingHeader);
-
-    Packet::EnablePrinting ();
-    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
 
   Ptr<Ipv4> ipv4 =
     m_node->GetObject<Ipv4> ();
