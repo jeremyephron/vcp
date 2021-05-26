@@ -158,7 +158,7 @@ static void
 DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-  qdiscs->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
 }
 
 int
