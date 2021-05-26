@@ -1861,7 +1861,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_tcb->m_ecnState = TcpSocketState::ECN_ECE_RCVD;
           if (m_tcb->m_congState != TcpSocketState::CA_CWR)
             {
-              EnterCwr (currentDelivered);
+              // (VCP): TODO: is this valid?
+              // EnterCwr (currentDelivered);
             }
         }
     }
