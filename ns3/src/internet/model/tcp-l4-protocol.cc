@@ -590,7 +590,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
     }
     outgoingHeader.SetFlags(flags);
 
-    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet); // TODO: delete
+    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
   }
 
   /** \todo UrgentPointer */
