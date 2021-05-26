@@ -604,6 +604,9 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
 
   packet->AddHeader (outgoingHeader);
 
+    Packet::EnablePrinting ();
+    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
+
   Ptr<Ipv4> ipv4 =
     m_node->GetObject<Ipv4> ();
   if (ipv4 != 0)
