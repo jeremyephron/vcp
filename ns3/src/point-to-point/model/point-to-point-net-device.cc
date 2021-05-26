@@ -368,6 +368,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
       //
       ProcessHeader (packet, protocol);
 
+      // (VCP): TODO: delete
+      Ipv4Header ipHeader;
+      packet->PeekHeader(ipHeader);
+      NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn());
+
       if (!m_promiscCallback.IsNull ())
         {
           m_macPromiscRxTrace (originalPacket);
