@@ -371,6 +371,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
   if (ndi == m_netDevices.end () || ndi->second.m_rootQueueDisc == 0)
     {
+      NS_LOG_DEBUG("(VCP) IF");
       // The device has no attached queue disc, thus add the header to the packet and
       // send it directly to the device if the selected queue is not stopped
       if (!devQueueIface || !devQueueIface->GetTxQueue (txq)->IsStopped ())
@@ -387,6 +388,7 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
     }
   else
     {
+      NS_LOG_DEBUG("(VCP) ELSE");
       // Enqueue the packet in the queue disc associated with the netdevice queue
       // selected for the packet and try to dequeue packets from such queue disc
       item->SetTxQueueIndex (txq);
