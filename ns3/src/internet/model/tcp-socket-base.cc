@@ -1607,7 +1607,8 @@ TcpSocketBase::EnterCwr (uint32_t currentDelivered)
   if (!m_congestionControl->HasCongControl ())
     {
       // If there is a recovery algorithm, invoke it.
-      m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
+      // (VCP): TODO: okay to disable this?
+      // m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
       NS_LOG_INFO ("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd
                     << ", ssthresh to " << m_tcb->m_ssThresh
                     << ", recover to " << m_recover);
