@@ -3411,6 +3411,7 @@ TcpSocketBase::BytesInFlight () const
 uint32_t
 TcpSocketBase::Window (void) const
 {
+  NS_LOG_DEBUG("(VCP) m_cWnd=" << m_tcb->m_cWnd.Get () << ", m_rWnd=" << m_rWnd.Get());
   return std::min (m_rWnd.Get (), m_tcb->m_cWnd.Get ());
 }
 
