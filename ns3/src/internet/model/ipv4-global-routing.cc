@@ -533,9 +533,10 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
       Ipv4Header h = header;
       Packet pack = *p;
       VcpPacketTag vcpTag;
-      if (p->PeekPacketTag (vcpTag)) {
-        h.SetEcn((Ipv4Header::EcnType) vcpTag.GetLoad ());
-        pack.RemovePacketTag (vcpTag);
+      if (p->PeekPacketTag(vcpTag)) {
+        NS_LOG_DEBUG("Ipv4 ECN set to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+        h.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad ());
+        pack.RemovePacketTag(vcpTag);
       }
 
       ucb (rtentry, Ptr<Packet>(&pack), h);
