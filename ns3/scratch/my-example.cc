@@ -384,10 +384,6 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  auto m = Config::LookupMatches("/NodeList/3/$ns3::TcpL4Protocol/SocketList/0");
-  NS_LOG_DEBUG("MATCH " << m.GetN());
-  NS_LOG_DEBUG("MATCH " << m.Get(0)->GetInstanceTypeId());
-
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
   Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
   Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
