@@ -787,20 +787,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
   // can construct the header here
   Ipv4Header ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
-  VcpPacketTag vcpTag;
-  if (packet->PeekPacketTag(vcpTag)) {
-    NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
-    TcpHeader tcpHeader;
-    packet->PeekHeader(tcpHeader);
-    if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
-        NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
-        ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
-        packet->RemovePacketTag(vcpTag);
-    }
-  } else {
-    NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
-  }
-
+  
   // Handle a few cases:
   // 1) packet is passed in with a route entry
   // 1a) packet is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
@@ -1074,14 +1061,25 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   NS_LOG_FUNCTION (this << rtentry << p << header);
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
 
-  // (VCP): TODO
-  VcpPacketTag vcpTag;
-  bool hasVcpTag = p->PeekPacketTag(vcpTag);
-  NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
-
   // Forwarding
   Ipv4Header ipHeader = header;
   Ptr<Packet> packet = p->Copy ();
+
+  // (VCP): TODO
+  VcpPacketTag vcpTag;
+  if (packet->PeekPacketTag(vcpTag)) {
+    NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    TcpHeader tcpHeader;
+    packet->PeekHeader(tcpHeader);
+    if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
+        NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+        ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+        packet->RemovePacketTag(vcpTag);
+    }
+  } else {
+    NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
+  }
+
   int32_t interface = GetInterfaceForDevice (rtentry->GetOutputDevice ());
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   if (ipHeader.GetTtl () == 0)
