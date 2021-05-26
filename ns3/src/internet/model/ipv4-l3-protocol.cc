@@ -577,6 +577,12 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << 
                 m_node->GetId ());
 
+  // (VCP): TODO check more info
+  if (p) {
+    VcpPacketTag vcpTag;
+    bool hasVcpTag = p->PeekPacketTag(vcpTag);
+    NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
+  }
 
   int32_t interface = GetInterfaceForDevice(device);
   NS_ASSERT_MSG (interface != -1, "Received a packet from an interface that is not known to IPv4");
