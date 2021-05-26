@@ -778,6 +778,12 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
   // can construct the header here
   Ipv4Header ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
+  VcpPacketTag vcpTag;
+  if (packet->PeekPacketTag(vcpTag)) {
+    NS_LOG_DEBUG("Ipv4 ECN set to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+    packet->RemovePacketTag(vcpTag);
+  }
 
   // Handle a few cases:
   // 1) packet is passed in with a route entry
