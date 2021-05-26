@@ -63,8 +63,8 @@ private:
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_timeInterval;      //!< time interval throughout which to sample load factor vars
   Time m_QueueSampleInterval; //!< Interval at which to sample queue size
-  double m_kq;              //!< K_q constant used while calculating VCP load factor
-  double m_target_util;     //!< Target utilization of link capacity (set close to 1)
+  double m_kq {0.5};              //!< K_q constant used while calculating VCP load factor
+  double m_target_util {1.0};     //!< Target utilization of link capacity (set close to 1)
 
   // ** Variables maintained by RED
   uint32_t m_qsizes_sum;            //!< Sum of queue sizes queue

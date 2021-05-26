@@ -102,7 +102,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
                      ((m_target_util * m_linkBandwidth.GetBitRate () / 1000 * 8) *
                       (m_timeInterval.ToInteger(Time::Unit::MS) / 1000));
 
-  NS_LOG_DEBUG("(VCP) load_factor=" << load_factor);
+  NS_LOG_DEBUG("(VCP) persist_q_size=" << persist_q_size << ", recent_arrivals=" << recent_arrivals << ", " << "load_factor=" << load_factor);
   
   VcpPacketTag vcpTag;
   if (load_factor < 0.8) {
