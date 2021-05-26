@@ -1116,6 +1116,9 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     }
 
   m_unicastForwardTrace (ipHeader, packet, interface);
+
+  NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+
   SendRealOut (rtentry, packet, ipHeader);
 }
 
