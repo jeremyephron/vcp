@@ -1175,7 +1175,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   // (VCP): add tag for vcp/ecn bits
   VcpPacketTag vcpTag;
   vcpTag.SetLoad((VcpPacketTag::LoadType)header.GetEcn());
-  packet->AddPacketTag(vcpTag);
+  packet->ReplacePacketTag(vcpTag);
 
   DoForwardUp (packet, fromAddress, toAddress);
 }
@@ -2698,7 +2698,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   // (VCP): Add vcp packet tag
   VcpPacketTag vcpTag;
   vcpTag.SetLoad(m_tcb->m_vcpLoad);
-  p->AddPacketTag(vcpTag);
+  p->ReplacePacketTag(vcpTag);
 
   TcpHeader header;
   SequenceNumber32 s = m_tcb->m_nextTxSequence;

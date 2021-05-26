@@ -30,6 +30,7 @@
 #include "ns3/node.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
+#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 

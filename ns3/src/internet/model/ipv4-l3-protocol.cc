@@ -782,16 +782,16 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   Ipv4Header ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
-    NS_LOG_LOGIC("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
     TcpHeader tcpHeader;
     packet->PeekHeader(tcpHeader);
     if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
-        NS_LOG_LOGIC("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+        NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
         ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
         packet->RemovePacketTag(vcpTag);
     }
   } else {
-    NS_LOG_DEBUG("(VCP) vcp tag does not exist");
+    NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
   }
 
   // Handle a few cases:
