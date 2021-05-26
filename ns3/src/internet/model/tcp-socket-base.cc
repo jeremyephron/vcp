@@ -1173,6 +1173,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     }
 
   // (VCP): add tag for vcp/ecn bits
+  NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
   VcpPacketTag vcpTag;
   vcpTag.SetLoad((VcpPacketTag::LoadType)header.GetEcn());
   packet->ReplacePacketTag(vcpTag);
