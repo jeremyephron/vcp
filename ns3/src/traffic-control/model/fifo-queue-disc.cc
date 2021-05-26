@@ -93,7 +93,7 @@ FifoQueueDisc::DoDequeue (void)
       return 0;
     }
 
-  // (VCP)
+  // (VCP): TODO check more info
   VcpPacketTag vcpTag;
   bool hasVcpTag = item->GetPacket()->PeekPacketTag(vcpTag);
   NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
