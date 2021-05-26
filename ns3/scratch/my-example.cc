@@ -239,7 +239,6 @@ main (int argc, char *argv[])
                             - tcph.GetSerializedSize ();
 
   NS_LOG_DEBUG("(VCP) tcpSegSize=" << tcpSegmentSize);
-  return 0;
 
   Config::SetDefault ("ns3::TcpSocket::SegmentSize",
                       UintegerValue (tcpSegmentSize));
