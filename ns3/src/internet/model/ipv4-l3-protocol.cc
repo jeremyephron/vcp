@@ -35,6 +35,7 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/traffic-control-layer.h"
+#include "ns3/vcp-packet-tag.h"
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
