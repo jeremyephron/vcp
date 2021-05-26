@@ -87,6 +87,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
   // Freeze cwnd after MD
   if (m_mdFreeze && m_mdTimer.IsRunning()) {
+    NS_LOG_DEBUG("(VCP) freezing cwnd after MD");
     return;
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
     m_mdFreeze = false;
