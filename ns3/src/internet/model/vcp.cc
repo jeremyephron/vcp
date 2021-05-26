@@ -26,12 +26,12 @@ Vcp::GetTypeId()
   return tid;
 }
 
-Vcp::Vcp()// : TcpNewReno()
+Vcp::Vcp() : TcpCongestionOps()
 {
   NS_LOG_FUNCTION(this);
 }
 
-Vcp::Vcp(const Vcp& sock) // : TcpNewReno(sock)
+Vcp::Vcp(const Vcp& sock) : TcpCongestionOps(sock)
 {
   NS_LOG_FUNCTION(this);
 }
