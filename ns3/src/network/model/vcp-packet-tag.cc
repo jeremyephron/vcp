@@ -50,7 +50,7 @@ uint32_t
 VcpPacketTag::GetSerializedSize() const
 {
   NS_LOG_FUNCTION(this);
-  return sizeof(m_load);
+  return sizeof(uint8_t);
 }
 
 void
