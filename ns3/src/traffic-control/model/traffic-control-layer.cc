@@ -319,7 +319,7 @@ TrafficControlLayer::Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
   bool found = false;
 
   Ipv4Header ipHeader;
-  packet->PeekHeader(ipHeader);
+  p->PeekHeader(ipHeader);
   NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
 
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
