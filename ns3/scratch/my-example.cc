@@ -248,8 +248,6 @@ main (int argc, char *argv[])
   Ptr<Node> s0 = nodes.Get(2);
   Ptr<Node> h3 = nodes.Get(3);
 
-  auto m = Config::LookupMatches("/NodeList");
-  NS_LOG_DEBUG("MATCH " << m.GetN());
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
    * different types of channels one can use to simulate different environments
@@ -385,6 +383,9 @@ main (int argc, char *argv[])
   /* Start tracing the RTT after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
+
+  auto m = Config::LookupMatches("/NodeList");
+  NS_LOG_DEBUG("MATCH " << m.GetN());
 
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
   Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
