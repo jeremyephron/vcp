@@ -74,8 +74,8 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
   NS_LOG_DEBUG("tcb->m_cWnd=" << tcb->m_cWnd);
-  tcb->m_cWnd = 14580;
-  return;
+  // tcb->m_cWnd = 14580;
+  // return;
 
   // Update load state
   m_loadState = (LoadState_t)tcb->m_vcpLoad;
