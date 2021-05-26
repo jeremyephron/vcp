@@ -22,6 +22,7 @@
 #include "fifo-queue-disc.h"
 #include "ns3/object-factory.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 
@@ -91,6 +92,11 @@ FifoQueueDisc::DoDequeue (void)
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
+
+  // (VCP)
+  VcpPacketTag vcpTag;
+  bool hasVcpTag = item->GetPacket()->PeekPacketTag(vcpTag);
+  NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
 
   return item;
 }
