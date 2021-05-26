@@ -67,7 +67,7 @@ private:
   double m_target_util {0.98};     //!< Target utilization of link capacity (set close to 1)
 
   // ** Variables maintained by RED
-  uint32_t m_qsizes_sum;            //!< Sum of queue sizes queue
+  uint32_t m_qsizes_sum {0};            //!< Sum of queue sizes queue
   std::queue<uint32_t> recent_queue_sizes; //!< recent samples of queue size
   std::queue<Time> recent_packet_arrivals; //!< times of recent packet arrivals 
   Timer m_queue_size_sample_timer;

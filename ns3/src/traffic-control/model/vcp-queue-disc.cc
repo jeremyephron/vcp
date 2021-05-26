@@ -64,6 +64,7 @@ VcpQueueDisc::VcpQueueDisc () :
 VcpQueueDisc::~VcpQueueDisc ()
 {
     NS_LOG_FUNCTION (this);
+    m_queue_size_sample_timer.Cancel();
 }
 
 void
