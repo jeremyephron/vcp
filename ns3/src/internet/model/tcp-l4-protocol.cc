@@ -590,6 +590,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
     }
     outgoingHeader.SetFlags(flags);
 
+    Packet::EnablePrinting ();
     NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
   }
 
