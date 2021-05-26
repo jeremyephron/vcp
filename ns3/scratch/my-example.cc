@@ -218,17 +218,9 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> cwndStream;
   cwndStream = asciiTraceHelper.CreateFileStream (cwndStreamName);
 
-  std::string cwndStreamName2 = dir + "cwnd2.tr";
-  Ptr<OutputStreamWrapper> cwndStream2;
-  cwndStream2 = asciiTraceHelper.CreateFileStream (cwndStreamName2);
-
   std::string rttStreamName = dir + "rtt.tr";
   Ptr<OutputStreamWrapper> rttStream;
   rttStream = asciiTraceHelper.CreateFileStream (rttStreamName);
-
-  std::string rttStreamName2 = dir + "rtt2.tr";
-  Ptr<OutputStreamWrapper> rttStream2;
-  rttStream2 = asciiTraceHelper.CreateFileStream (rttStreamName2);
 
   /* In order to run simulations in NS-3, you need to set up your network all
    * the way from the physical layer to the application layer. But don't worry!
@@ -241,12 +233,11 @@ main (int argc, char *argv[])
 
   NodeContainer nodes;
   // DONE: Read documentation for NodeContainer object and create 3 nodes.
-  nodes.Create(4);
+  nodes.Create(3);
 
   Ptr<Node> h1 = nodes.Get(0);
-  Ptr<Node> h2 = nodes.Get(1);
-  Ptr<Node> s0 = nodes.Get(2);
-  Ptr<Node> h3 = nodes.Get(3);
+  Ptr<Node> s0 = nodes.Get(1);
+  Ptr<Node> h2 = nodes.Get(2);
 
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
@@ -283,8 +274,7 @@ main (int argc, char *argv[])
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
   NetDeviceContainer h1s0_NetDevices = host1Link.Install(h1, s0);
-  NetDeviceContainer h2s0_NetDevices = host2Link.Install(h2, s0);
-  NetDeviceContainer s0h3_NetDevices = bottleneckLink.Install(s0, h3);
+  NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
 
   /******** Set TCP defaults ********/
   PppHeader ppph;
@@ -300,7 +290,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
-  Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("Off"));
+  // Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("Off"));
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
 
@@ -325,10 +315,9 @@ main (int argc, char *argv[])
                              "LinkBandwidth", StringValue(bwNetStr));
 
   tchPfifo.Install(h1s0_NetDevices);
-  tchPfifo.Install(h2s0_NetDevices);
-  QueueDiscContainer s0h3_QueueDiscs = tchPfifo.Install(s0h3_NetDevices);
+  QueueDiscContainer s0h2_QueueDiscs = tchPfifo.Install(s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
-  s0h3_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
+  s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
                             MakeBoundCallback (&QueueOccupancyTracer, qStream));
 
   /* Set IP addresses of the nodes in the network */
@@ -336,9 +325,7 @@ main (int argc, char *argv[])
   address.SetBase ("10.0.0.0", "255.255.255.0");
   Ipv4InterfaceContainer h1s0_interfaces = address.Assign(h1s0_NetDevices);
   address.NewNetwork ();
-  Ipv4InterfaceContainer h2s0_interfaces = address.Assign(h2s0_NetDevices);
-  address.NewNetwork ();
-  Ipv4InterfaceContainer s0h3_interfaces = address.Assign(s0h3_NetDevices);
+  Ipv4InterfaceContainer s0h2_interfaces = address.Assign(s0h2_NetDevices);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -348,7 +335,7 @@ main (int argc, char *argv[])
   /* The receiver application */
   uint16_t receiverPort = 5001;
   // DONE: Provide the correct IP address below for the receiver
-  AddressValue receiverAddress (InetSocketAddress (s0h3_interfaces.GetAddress(1),
+  AddressValue receiverAddress (InetSocketAddress (s0h2_interfaces.GetAddress(1),
                                                    receiverPort));
   PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
                                    receiverAddress.Get());
@@ -356,7 +343,7 @@ main (int argc, char *argv[])
                                TypeIdValue (TcpSocketFactory::GetTypeId ()));
 
   // DONE: Install the receiver application on the correct host.
-  ApplicationContainer receiverApp = receiverHelper.Install (h3);
+  ApplicationContainer receiverApp = receiverHelper.Install (h2);
   receiverApp.Start (Seconds (0.0));
   receiverApp.Stop (Seconds ((double)time));
 
@@ -372,9 +359,9 @@ main (int argc, char *argv[])
   sourceApp1.Start (Seconds (0.0));
   sourceApp1.Stop (Seconds ((double)time));
 
-  ApplicationContainer sourceApp2 = ftp.Install(h2);
-  sourceApp2.Start(Seconds(time / 2.0));
-  sourceApp2.Stop(Seconds((double)time));
+  //ApplicationContainer sourceApp2 = ftp.Install(h2);
+  //sourceApp2.Start(Seconds(time / 2.0));
+  //sourceApp2.Stop(Seconds((double)time));
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
@@ -384,10 +371,10 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
-  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  // Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get (0));
+  // Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
+  // Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
+  // Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
   
 
   /******** Run the Actual Simulation ********/
