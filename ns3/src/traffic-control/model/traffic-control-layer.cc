@@ -401,8 +401,8 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
       // item->GetPacket()->PeekHeader(ipHeader);
       if (DynamicCast<Ipv4QueueDiscItem>(item)) {
         ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
+        NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
       }
-      NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
 
       qDisc->Enqueue (item);
       qDisc->Run ();
