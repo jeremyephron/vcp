@@ -1175,7 +1175,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
 
   // (VCP): set state for ip header ecn bits (affects the outgoing VCP info)
   m_tcb->m_vcpLoadOut = (VcpPacketTag::LoadType)header.GetEcn();
-  NS_DEBUG_LOG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
+  NS_LOG_DEBUG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
 
   DoForwardUp (packet, fromAddress, toAddress);
 }
