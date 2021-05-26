@@ -99,11 +99,14 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   
   VcpPacketTag vcpTag;
   if (load_factor < 0.8) {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW);
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+    NS_LOG_DEBUG("Load factor: LOW"); 
   } else if (load_factor < 1) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+    NS_LOG_DEBUG("Load factor: HIGH"); 
   } else {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+    NS_LOG_DEBUG("Load factor: OVERLOAD");
   }
 
   // (VCP): TODO: is there an issue if the tag already exists?
