@@ -790,6 +790,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
         ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
         packet->RemovePacketTag(vcpTag);
     }
+  } else {
+    NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
   }
 
   // Handle a few cases:
