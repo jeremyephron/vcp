@@ -1079,7 +1079,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
 
     // TODO: How to reliably check for data packets?
     // *HACK*
-    bool isDataPacket = packet->GetSize() != 52;
+    bool isDataPacket = packet->GetSize() != 32; // 52 - 20
     NS_LOG_DEBUG("(VCP) isDataPacket=" << isDataPacket << ", packet->GetSize()=" << packet->GetSize());
 
     if (isDataPacket) {
