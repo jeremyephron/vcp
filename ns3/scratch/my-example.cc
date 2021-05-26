@@ -384,7 +384,7 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  auto m = Config::LookupMatches("/NodeList");
+  auto m = Config::LookupMatches("/NodeList/0");
   NS_LOG_DEBUG("MATCH " << m.GetN());
 
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
