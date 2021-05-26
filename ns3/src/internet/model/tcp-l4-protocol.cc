@@ -578,7 +578,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
 
-    TcpHeader::Flags_t flags;
+    uint8_t flags;
     if (vcpTag.GetLoad() == VcpPacketTag::LOAD_LOW) {
       flags = TcpHeader::ECE;
     } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_HIGH) {
@@ -590,7 +590,7 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
     }
     outgoingHeader.SetFlags(flags);
 
-    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet.ToString());
+    NS_LOG_DEBUG("(VCP) packet has vcp tag, packet=" << packet->ToString()); // TODO: delete
   }
 
   /** \todo UrgentPointer */
