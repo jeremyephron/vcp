@@ -371,7 +371,6 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
   if (ndi == m_netDevices.end () || ndi->second.m_rootQueueDisc == 0)
     {
-      NS_LOG_DEBUG("(VCP) IF");
       // The device has no attached queue disc, thus add the header to the packet and
       // send it directly to the device if the selected queue is not stopped
       if (!devQueueIface || !devQueueIface->GetTxQueue (txq)->IsStopped ())
@@ -395,6 +394,12 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
       Ptr<QueueDisc> qDisc = ndi->second.m_queueDiscsToWake[txq];
       NS_ASSERT (qDisc);
+
+
+      Ipv4Header ipHeader;
+      item->GetPacket()->PeekHeader(ipHeader);
+      NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+
       qDisc->Enqueue (item);
       qDisc->Run ();
     }
