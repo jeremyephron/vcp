@@ -151,14 +151,14 @@ static void
 UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
-  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
+  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("20Mbps")));
 }
 
 static void
 DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("10Mbps")));
 }
 
 int
@@ -322,7 +322,7 @@ main (int argc, char *argv[])
   TrafficControlHelper tchPfifo;
   tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
-                             "DataRate", StringValue(bwNetStr));
+                             "LinkBandwidth", StringValue(bwNetStr));
 
   tchPfifo.Install(h1s0_NetDevices);
   tchPfifo.Install(h2s0_NetDevices);
