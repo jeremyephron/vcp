@@ -668,7 +668,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       return;
     }
 
-  NS_LOG_DEBUG("routing protocol: " << m_routingProtocol->GetTypeId());
+  NS_LOG_DEBUG("routing protocol: " << m_routingProtocol->GetInstanceTypeId());
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
   if (!m_routingProtocol->RouteInput (packet, ipHeader, device,
                                       MakeCallback (&Ipv4L3Protocol::IpForward, this),
