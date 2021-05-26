@@ -18,7 +18,7 @@ TypeId
 Vcp::GetTypeId()
 {
   static TypeId tid = TypeId("ns3::Vcp")
-    .SetParent<TcpNewReno>()
+    .SetParent<TcpCongestionOps>()
     .SetGroupName("Internet")
     .AddConstructor<Vcp>()
   ;
