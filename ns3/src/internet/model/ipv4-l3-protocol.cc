@@ -654,13 +654,13 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
         }
     }
 
-  NS_LOG_DEBUG("TESTING");
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
     {
       Ptr<Ipv4RawSocketImpl> socket = *i;
-      NS_LOG_LOGIC ("Forwarding to raw socket " << socket->GetTypeId()); 
+      NS_LOG_LOGIC ("Forwarding to raw socket "); 
       socket->ForwardUp (packet, ipHeader, ipv4Interface);
     }
+  NS_LOG_DEBUG("TESTING");
 
   if (m_enableDpd && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
     {
