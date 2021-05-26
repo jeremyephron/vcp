@@ -1943,12 +1943,16 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
                 " in state: " << TcpSocketState::TcpCongStateName[m_tcb->m_congState] <<
                 " with m_recover: " << m_recover);
 
+
+  NS_LOG_DEBUG("(LOOKMEUP) A");
+
   // RFC 6675, Section 5, 3rd paragraph:
   // If the incoming ACK is a duplicate acknowledgment per the definition
   // in Section 2 (regardless of its status as a cumulative
   // acknowledgment), and the TCP is not currently in loss recovery
   if (isDupack)
-    {
+    
+  NS_LOG_DEBUG("(LOOKMEUP) B");
       // loss recovery check is done inside this function thanks to
       // the congestion state machine
       DupAck (currentDelivered);
@@ -1957,12 +1961,14 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
   if (ackNumber == oldHeadSequence
       && ackNumber == m_tcb->m_highTxMark)
     {
+  NS_LOG_DEBUG("(LOOKMEUP) C");
       // Dupack, but the ACK is precisely equal to the nextTxSequence
       return;
     }
   else if (ackNumber == oldHeadSequence
            && ackNumber > m_tcb->m_highTxMark)
     {
+  NS_LOG_DEBUG("(LOOKMEUP) D");
       // ACK of the FIN bit ... nextTxSequence is not updated since we
       // don't have anything to transmit
       NS_LOG_DEBUG ("Update nextTxSequence manually to " << ackNumber);
@@ -1970,11 +1976,13 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
     }
   else if (ackNumber == oldHeadSequence)
     {
+  NS_LOG_DEBUG("(LOOKMEUP) E");
       // DupAck. Artificially call PktsAcked: after all, one segment has been ACKed.
       m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
     }
   else if (ackNumber > oldHeadSequence)
     {
+  NS_LOG_DEBUG("(LOOKMEUP) F");
       // Please remember that, with SACK, we can enter here even if we
       // received a dupack.
       bytesAcked = ackNumber - oldHeadSequence;
