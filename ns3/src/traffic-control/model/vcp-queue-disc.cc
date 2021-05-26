@@ -3,6 +3,7 @@
 #include "ns3/vcp-packet-tag.h"
 #include "ns3/packet.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/tcp-header.h"
 
 namespace ns3 {
 
@@ -90,27 +91,32 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     recent_packet_arrivals.pop();
   }
 
-  double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
-  int recent_arrivals = recent_packet_arrivals.size ();
+  TcpHeader tcpHeader;
+  item->GetPacket ()->PeekHeader (tcpHeader,
+          (uint32_t) tcpHeader.GetSerializedSize ());
+  //TODO what happens if this router receives a non-TCP packet?
+  if (!(tcpHeader.GetFlags () & TcpHeader::Flags_t::ACK)) {
+    double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
+    int recent_arrivals = recent_packet_arrivals.size ();
 
-  double load_factor = recent_arrivals + m_kq * persist_q_size /
+    double load_factor = recent_arrivals + m_kq * persist_q_size /
                        ((m_target_util * m_linkBandwidth.GetBitRate () / 1000 * 8) *
                         (m_timeInterval.ToInteger(Time::Unit::MS) / 1000));
-  
-  VcpPacketTag vcpTag;
-  if (load_factor < 0.8) {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
-    NS_LOG_DEBUG("Load factor: LOW"); 
-  } else if (load_factor < 1) {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
-    NS_LOG_DEBUG("Load factor: HIGH"); 
-  } else {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
-    NS_LOG_DEBUG("Load factor: OVERLOAD");
-  }
+    VcpPacketTag vcpTag;
+    if (load_factor < 0.8) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+      NS_LOG_DEBUG("Load factor: LOW"); 
+    } else if (load_factor < 1) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+      NS_LOG_DEBUG("Load factor: HIGH"); 
+    } else {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+      NS_LOG_DEBUG("Load factor: OVERLOAD");
+    }
 
-  // (VCP): TODO: is there an issue if the tag already exists?
-  item->GetPacket ()->ReplacePacketTag (vcpTag);
+    // (VCP): TODO: is there an issue if the tag already exists?
+    item->GetPacket ()->ReplacePacketTag (vcpTag);
+  }
 
   if (GetCurrentSize () + item > GetMaxSize ())
     {
