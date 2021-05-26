@@ -29,6 +29,7 @@
 #include "queue-disc.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/queue.h"
+#include "ns3/vcp-packet-tag.h"
 
 namespace ns3 {
 
