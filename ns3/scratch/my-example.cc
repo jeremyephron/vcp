@@ -249,7 +249,7 @@ main (int argc, char *argv[])
   Ptr<Node> h3 = nodes.Get(3);
 
   auto m = Config::LookupMatches("/NodeList");
-  NS_LOG_DEBUG("MATCH " << m.Get(0)->GetTypeId());
+  NS_LOG_DEBUG("MATCH " << m.GetN());
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
    * different types of channels one can use to simulate different environments
