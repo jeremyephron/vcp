@@ -2,6 +2,7 @@
 #include "ns3/simulator.h"
 #include "ns3/vcp-packet-tag.h"
 #include "ns3/packet.h"
+#include "ns3/drop-tail-queue.h"
 
 namespace ns3 {
 
