@@ -1607,8 +1607,7 @@ TcpSocketBase::EnterCwr (uint32_t currentDelivered)
   if (!m_congestionControl->HasCongControl ())
     {
       // If there is a recovery algorithm, invoke it.
-      // (VCP): TODO: okay to disable this?
-      // m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
+      m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
       NS_LOG_INFO ("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd
                     << ", ssthresh to " << m_tcb->m_ssThresh
                     << ", recover to " << m_recover);
@@ -1658,8 +1657,7 @@ TcpSocketBase::EnterRecovery (uint32_t currentDelivered)
 
   if (!m_congestionControl->HasCongControl ())
     {
-      // (VCP): TODO
-      // m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
+      m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
       NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
                   "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
                    m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover <<
@@ -1720,8 +1718,7 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
         }
       if (!m_congestionControl->HasCongControl ())
         {
-          // (VCP): TODO
-          // m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+          m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
           NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
                        "Increase cwnd to " << m_tcb->m_cWnd);
         }
@@ -1749,8 +1746,7 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
       //     TCP socket buffer size at receiver side.
       if ((m_dupAckCount == m_retxThresh) && ((m_highRxAckMark >= m_recover) || (!m_recoverActive)))
         {
-          // (VCP): TODO
-          // EnterRecovery (currentDelivered);
+          EnterRecovery (currentDelivered);
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
       // (2) If DupAcks < DupThresh but IsLost (HighACK + 1) returns true
@@ -1759,8 +1755,7 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
       // go to step (4).
       else if (m_txBuffer->IsLost (m_highRxAckMark + m_tcb->m_segmentSize))
         {
-          // (VCP): TODO
-          // EnterRecovery (currentDelivered);
+          EnterRecovery (currentDelivered);
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
         }
       else
@@ -1866,8 +1861,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_tcb->m_ecnState = TcpSocketState::ECN_ECE_RCVD;
           if (m_tcb->m_congState != TcpSocketState::CA_CWR)
             {
-              // (VCP): TODO: is this valid?
-              // EnterCwr (currentDelivered);
+              EnterCwr (currentDelivered);
             }
         }
     }
@@ -2034,8 +2028,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
           // there is available window
           if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
             {
-              // (VCP): TODO
-              // m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+              m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
             }
 
           // If the packet is already retransmitted do not retransmit it
@@ -2095,8 +2088,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
           // and/or packet reordering
           if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
             {
-              // (VCP): TODO
-              // m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+              m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
             }
           NewAck (ackNumber, true);
         }
