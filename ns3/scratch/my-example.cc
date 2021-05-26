@@ -19,8 +19,7 @@
  *
  * Bufferbloat Topology
  *
- *    h1-----------------s0-----------------h3
- *    h2-----------------|
+ *    h1-----------------s0-----------------h2
  *
  *  Usage (e.g.):
  *    ./waf --run 'bufferbloat --time=60 --bwNet=10 --delay=1 --maxQ=100'
@@ -41,7 +40,6 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
-#include "ns3/vcp.h"
 
 using namespace ns3;
 
@@ -90,15 +88,6 @@ TraceCwnd (Ptr<OutputStreamWrapper> cwndStream)
                                  MakeBoundCallback (&CwndTracer, cwndStream));
 }
 
-//static void
-//TraceCwnd2 (Ptr<OutputStreamWrapper> cwndStream)
-//{
-//    Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
-//                                 MakeBoundCallback (&CwndTracer, cwndStream));
-//
-//}
-
-
 static void
 RttTracer (Ptr<OutputStreamWrapper> stream,
            Time oldval, Time newval)
@@ -129,38 +118,6 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
                                  MakeBoundCallback (&RttTracer, rttStream));
 }
 
-//static void
-//TraceRtt2 (Ptr<OutputStreamWrapper> rttStream)
-//{
-//  // DONE: In the TraceCwnd function above, you learned how to trace congestion
-//  //       window size of a TCP socket. Take a look at the documentation for
-//  //       TCP Sockets and find the name of the TraceSource in order to trace
-//  //       the round trip time (delay) experienced by the flow.
-//  //
-//  // HINT: TCP Socket is implemented on multiple classes in NS3. The trace
-//  //       source you are looking for might be in any of them.
-//  /* Note how the path is constructed for configuring the TraceSource. NS-3
-//   * keeps a hierarchical list of all available modules created for the
-//   * simulation
-//   */
-//  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT",
-//                                 MakeBoundCallback (&RttTracer, rttStream));
-//}
-
-//static void
-//UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
-//{
-//  dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
-//  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("20Mbps")));
-//}
-//
-//static void
-//DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
-//{
-//  dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-//  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("10Mbps")));
-//}
-
 int
 main (int argc, char *argv[])
 {
@@ -171,10 +128,10 @@ main (int argc, char *argv[])
    */
   int bwHost = 1000; // Mbps
   int bwNet = 10; // Mbps
-  int delay = 10; // milliseconds
+  int delay = 1; // milliseconds
   int time = 60; // seconds
   int maxQ = 100; // packets
-  std::string transport_prot = "TcpNewReno";
+  std::string transport_prot = "Vcp";
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("bwHost", "Bandwidth of host links (Mb/s)", bwHost);
@@ -201,7 +158,7 @@ main (int argc, char *argv[])
   std::string maxQStr = std::to_string(maxQ) + "p";
   transport_prot = std::string ("ns3::") + transport_prot;
 
-  NS_LOG_DEBUG("Bufferbloat Simulation for:" <<
+  NS_LOG_DEBUG("MyExample Simulation for:" <<
                " bwHost=" << bwHostStr << " bwNet=" << bwNetStr <<
                " delay=" << delayStr << " time=" << time << "sec" <<
                " maxQ=" << maxQStr << " protocol=" << transport_prot);
@@ -249,20 +206,16 @@ main (int argc, char *argv[])
    */
   NS_LOG_DEBUG("Configuring Channels...");
 
-  PointToPointHelper host1Link;
-  host1Link.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
-  host1Link.SetChannelAttribute ("Delay", StringValue (delayStr));
-  host1Link.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
-
-  PointToPointHelper host2Link;
-  host2Link.SetDeviceAttribute("DataRate", StringValue(bwHostStr));
-  host2Link.SetChannelAttribute("Delay", StringValue(delayStr));
-  host2Link.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
+  PointToPointHelper hostLink;
+  hostLink.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
+  hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
+  hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
   PointToPointHelper bottleneckLink;
-  bottleneckLink.SetDeviceAttribute("DataRate", StringValue (bwNetStr));
-  bottleneckLink.SetChannelAttribute("Delay", StringValue (delayStr));
-  bottleneckLink.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
+  bottleneckLink.SetDeviceAttribute ("DataRate", StringValue (bwNetStr));
+  bottleneckLink.SetChannelAttribute ("Delay", StringValue (delayStr));
+  bottleneckLink.SetQueue ("ns3::DropTailQueue",
+                           "MaxSize", StringValue ("1p"));
 
   /******** Create NetDevices ********/
   NS_LOG_DEBUG("Creating NetDevices...");
@@ -273,7 +226,7 @@ main (int argc, char *argv[])
    */
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
-  NetDeviceContainer h1s0_NetDevices = host1Link.Install(h1, s0);
+  NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
   NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
 
   /******** Set TCP defaults ********/
@@ -290,9 +243,8 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
-  // Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("Off"));
-  //Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
-    //                  TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
+  Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
+                      TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
 
   // Select TCP variant
   TypeId tcpTid;
@@ -312,10 +264,14 @@ main (int argc, char *argv[])
   TrafficControlHelper tchPfifo;
   tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
-                             "LinkBandwidth", StringValue(bwNetStr));
+                             "LinkBandwidth", StringValue(bwHostStr));
 
-  tchPfifo.Install(h1s0_NetDevices);
-  QueueDiscContainer s0h2_QueueDiscs = tchPfifo.Install(s0h2_NetDevices);
+  tchPfifo.Install (h1s0_NetDevices);
+
+  tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
+                             "MaxSize", StringValue(maxQStr),
+                             "LinkBandwidth", StringValue(bwHostStr));
+  QueueDiscContainer s0h2_QueueDiscs = tchPfifo.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
   s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
                             MakeBoundCallback (&QueueOccupancyTracer, qStream));
@@ -323,9 +279,9 @@ main (int argc, char *argv[])
   /* Set IP addresses of the nodes in the network */
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");
-  Ipv4InterfaceContainer h1s0_interfaces = address.Assign(h1s0_NetDevices);
+  Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
   address.NewNetwork ();
-  Ipv4InterfaceContainer s0h2_interfaces = address.Assign(s0h2_NetDevices);
+  Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h2_NetDevices);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -355,27 +311,15 @@ main (int argc, char *argv[])
   ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
 
   // DONE: Install the source application on the correct host.
-  ApplicationContainer sourceApp1 = ftp.Install (h1);
-  sourceApp1.Start (Seconds (0.0));
-  sourceApp1.Stop (Seconds ((double)time));
-
-  //ApplicationContainer sourceApp2 = ftp.Install(h2);
-  //sourceApp2.Start(Seconds(time / 2.0));
-  //sourceApp2.Stop(Seconds((double)time));
+  ApplicationContainer sourceApp = ftp.Install (h1);
+  sourceApp.Start (Seconds (0.0));
+  sourceApp.Stop (Seconds ((double)time));
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
-  //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd2, cwndStream2);
 
   /* Start tracing the RTT after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
-  //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
-
-  // Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get (0));
-  // Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
-  // Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
-  // Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
-  
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
