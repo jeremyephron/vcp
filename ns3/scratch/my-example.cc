@@ -84,7 +84,7 @@ CwndTracer (Ptr<OutputStreamWrapper> stream,
 }
 
 static void
-TraceCwnd (Ptr<OutputStreamWrapper> cwndStream)
+TraceCwnd (Ptr<OutputStreamWrapper> cwndStream, )
 {
   Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
                                  MakeBoundCallback (&CwndTracer, cwndStream));
@@ -248,6 +248,8 @@ main (int argc, char *argv[])
   Ptr<Node> s0 = nodes.Get(2);
   Ptr<Node> h3 = nodes.Get(3);
 
+  auto m = Config::LookupMatches("/NodeList");
+  NS_LOG_DEBUG("MATCH " << m.Get(0)->GetTypeId());
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
    * different types of channels one can use to simulate different environments
