@@ -108,6 +108,11 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_DEBUG("(VCP) persist_q_size=" << persist_q_size << ", recent_arrivals=" << recent_arrivals << ", " << "load_factor=" << load_factor);
   
   VcpPacketTag vcpTag;
+
+  if (item->GetPacket()->PeekPacketTag(vcpTag)) {
+    NS_LOG_DEBUG("(VCP) existing packet tag load=" << vcpTag.GetLoad()); // TODO: delete
+  }
+
   if (load_factor < 0.8) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
     NS_LOG_DEBUG("Load factor: LOW"); 
