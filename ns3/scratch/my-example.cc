@@ -291,8 +291,8 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
   // Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("Off"));
-  Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
-                      TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
+  //Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
+    //                  TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
 
   // Select TCP variant
   TypeId tcpTid;
