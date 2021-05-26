@@ -28,6 +28,7 @@
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 #include "ppp-header.h"
+#include "ipv4-header.h"
 
 namespace ns3 {
 
