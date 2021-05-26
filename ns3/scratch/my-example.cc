@@ -238,6 +238,9 @@ main (int argc, char *argv[])
                             - ipv4h.GetSerializedSize ()
                             - tcph.GetSerializedSize ();
 
+  NS_LOG_DEBUG("(VCP) tcpSegSize=" << tcpSegmentSize);
+  return;
+
   Config::SetDefault ("ns3::TcpSocket::SegmentSize",
                       UintegerValue (tcpSegmentSize));
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
