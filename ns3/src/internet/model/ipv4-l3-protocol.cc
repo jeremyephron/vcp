@@ -1085,6 +1085,8 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     if (isDataPacket) {
       NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
       ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+    } else {
+      NS_LOG_DEBUG("(VCP) not a data packet, ipHeader.GetEcn()=" << ipHeader.GetEcn());
     }
 
     packet->RemovePacketTag(vcpTag);
