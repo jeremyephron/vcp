@@ -152,6 +152,8 @@ main (int argc, char *argv[])
    */
   LogComponentEnable("MyExample", LOG_LEVEL_DEBUG);
 
+  Packet::EnablePrinting ();
+
   std::string bwHostStr = std::to_string(bwHost) + "Mbps";
   std::string bwNetStr = std::to_string(bwNet) + "Mbps";
   std::string delayStr = std::to_string(delay) + "ms";
