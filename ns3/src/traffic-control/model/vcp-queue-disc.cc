@@ -108,7 +108,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
                << ", kappa_q=" << kappa_q
                << ", q_tilde_l=" << q_tilde_l
                << ", gamma_l=" << gamma_l
-               << ", C_l=" << C_l,
+               << ", C_l=" << C_l
                << ", t_rho=" << t_rho
                << ", load_factor=" << load_factor);
   
@@ -121,10 +121,13 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   if (load_factor < .8 && prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
   } else if (load_factor < 1. && prevLoad <= VcpPacketTag::LOAD_LOW) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
   } else if (load_factor >= 1.) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
   }
 
   // (VCP): TODO: is there an issue if the tag already exists?
