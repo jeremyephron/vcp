@@ -206,7 +206,8 @@ public:
   EcnCodePoint_t         m_ectCodePoint {Ect0};  //!< ECT code point to use
 
   // (VCP)
-  VcpPacketTag::LoadType m_vcpLoad {VcpPacketTag::LOAD_NOT_SUPPORTED};
+  VcpPacketTag::LoadType m_vcpLoadIn {VcpPacketTag::LOAD_NOT_SUPPORTED};
+  VcpPacketTag::LoadType m_vcpLoadOut {VcpPacketTag::LOAD_NOT_SUPPORTED};
 
   /**
    * \brief Get cwnd in segments rather than bytes

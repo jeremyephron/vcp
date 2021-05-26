@@ -1153,7 +1153,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   TcpHeader tcpHeader;
   uint32_t bytesRemoved = packet->PeekHeader (tcpHeader);
 
-  NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
+  // TODO: need to change existing behavior with ip ecn bits?
   if (!IsValidTcpSegment (tcpHeader.GetSequenceNumber (), bytesRemoved,
                           packet->GetSize () - bytesRemoved))
     {
@@ -1173,11 +1173,9 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_ECN_NO_CE);
     }
 
-  // (VCP): add tag for vcp/ecn bits
-  //NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
-  VcpPacketTag vcpTag;
-  vcpTag.SetLoad((VcpPacketTag::LoadType)header.GetEcn());
-  packet->ReplacePacketTag(vcpTag);
+  // (VCP): set state for ip header ecn bits (affects the outgoing VCP info)
+  m_tcb->m_vcpLoadOut = (VcpPacketTag::LoadType)header.GetEcn();
+  NS_DEBUG_LOG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
 
   DoForwardUp (packet, fromAddress, toAddress);
 }
@@ -1460,10 +1458,19 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 {
   NS_LOG_FUNCTION (this << tcpHeader);
 
-  // (VCP): Get vcp tag
-  VcpPacketTag vcpTag;
-  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
-  VcpPacketTag::LoadType vcpLoad = hasVcpTag ? vcpTag.GetLoad() : VcpPacketTag::LOAD_NOT_SUPPORTED;
+  // (VCP): Set state from ecn bits in tcp header (affects incoming VCP info)
+  uint8_t vcpFlags = tcpHeader.GetFlags();
+  if (vcpFlags & (TcpHeader::ECE | TcpHeader::CWR)) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_OVERLOAD;
+  } else if (vcpFlags & TcpHeader::CWR) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_HIGH;
+  } else if (vcpFlags & TcpHeader::ECE) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_LOW;
+  } else {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_NOT_SUPPORTED;
+  }
+
+  NS_LOG_DEBUG("(VCP): m_tcb->m_vcpLoadIn=" << m_tcb->m_vcpLoadIn);
 
   // Extract the flags. PSH, URG, CWR and ECE are disregarded.
   uint8_t tcpflags = tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG | TcpHeader::CWR | TcpHeader::ECE);
@@ -1491,16 +1498,12 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
           // Receiver sets ECE flags when it receives a packet with CE bit on or sender hasn’t responded to ECN echo sent by receiver
           if (m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD || m_tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
             {
-              // (VCP)
-              m_tcb->m_vcpLoad = vcpLoad;
               SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE);
               NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_SENDING_ECE");
               m_tcb->m_ecnState = TcpSocketState::ECN_SENDING_ECE;
             }
           else
             {
-              // (VCP)
-              m_tcb->m_vcpLoad = vcpLoad;
               SendEmptyPacket (TcpHeader::ACK);
             }
         }
@@ -1787,14 +1790,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
   
-  // (VCP): Get vcp tag
-  VcpPacketTag vcpTag;
-  bool hasVcpTag = packet->PeekPacketTag(vcpTag);
-  VcpPacketTag::LoadType vcpLoad = hasVcpTag ? vcpTag.GetLoad() : VcpPacketTag::LOAD_NOT_SUPPORTED;
-  m_tcb->m_vcpLoad = vcpLoad;
-
-  NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag << ", m_vcpLoad=" << m_tcb->m_vcpLoad); // TODO: delete
-
   uint32_t previousLost = m_txBuffer->GetLost ();
   uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
 
@@ -1958,7 +1953,6 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
       && ackNumber == m_tcb->m_highTxMark)
     {
       // Dupack, but the ACK is precisely equal to the nextTxSequence
-      m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt); // (VCP): TODO: okay?
       return;
     }
   else if (ackNumber == oldHeadSequence
@@ -1972,8 +1966,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
   else if (ackNumber == oldHeadSequence)
     {
       // DupAck. Artificially call PktsAcked: after all, one segment has been ACKed.
-      // TODO: is commenting out below kosher?
-      // m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
+      m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
     }
   else if (ackNumber > oldHeadSequence)
     {
@@ -2703,11 +2696,10 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
   // (VCP): Add vcp packet tag
   VcpPacketTag vcpTag;
-  vcpTag.SetLoad(m_tcb->m_vcpLoad);
-  p->ReplacePacketTag(vcpTag);
+  vcpTag.SetLoad(m_tcb->m_vcpLoadOut);
+  p->AddPacketTag(vcpTag);
 
   TcpHeader header;
-  // TODO: (VCP) set ecn bits
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
   if (flags & TcpHeader::FIN)
