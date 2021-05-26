@@ -582,6 +582,10 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
     VcpPacketTag vcpTag;
     bool hasVcpTag = p->PeekPacketTag(vcpTag);
     NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag << " load=" << vcpTag.GetLoad());
+
+    Ipv4Header ipHeader;
+    packet->PeekHeader(ipHeader);
+    NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn());
   }
 
   int32_t interface = GetInterfaceForDevice(device);
