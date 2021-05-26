@@ -1153,6 +1153,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   TcpHeader tcpHeader;
   uint32_t bytesRemoved = packet->PeekHeader (tcpHeader);
 
+  NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
   if (!IsValidTcpSegment (tcpHeader.GetSequenceNumber (), bytesRemoved,
                           packet->GetSize () - bytesRemoved))
     {
@@ -1173,7 +1174,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     }
 
   // (VCP): add tag for vcp/ecn bits
-  NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
+  //NS_LOG_DEBUG("(VCP) ip header ecn: " << header.GetEcn());
   VcpPacketTag vcpTag;
   vcpTag.SetLoad((VcpPacketTag::LoadType)header.GetEcn());
   packet->ReplacePacketTag(vcpTag);
