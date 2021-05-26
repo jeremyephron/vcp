@@ -654,6 +654,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
         }
     }
 
+  NS_LOG_DEBUG("TESTING");
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
     {
       Ptr<Ipv4RawSocketImpl> socket = *i;
