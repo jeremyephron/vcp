@@ -1073,6 +1073,12 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
 {
   NS_LOG_FUNCTION (this << rtentry << p << header);
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
+
+  // (VCP): TODO
+  VcpPacketTag vcpTag;
+  bool hasVcpTag = p->PeekPacketTag(vcpTag);
+  NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
+
   // Forwarding
   Ipv4Header ipHeader = header;
   Ptr<Packet> packet = p->Copy ();
