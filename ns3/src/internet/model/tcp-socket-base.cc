@@ -1793,6 +1793,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   VcpPacketTag::LoadType vcpLoad = hasVcpTag ? vcpTag.GetLoad() : VcpPacketTag::LOAD_NOT_SUPPORTED;
   m_tcb->m_vcpLoad = vcpLoad;
 
+  NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag << ", m_vcpLoad=" << m_tcb->m_vcpLoad); // TODO: delete
+
   uint32_t previousLost = m_txBuffer->GetLost ();
   uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
 
