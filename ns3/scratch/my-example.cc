@@ -384,7 +384,7 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  auto m = Config::LookupMatches("/NodeList/1");
+  auto m = Config::LookupMatches("/NodeList/1/$ns3::TcpL4Protocol");
   NS_LOG_DEBUG("MATCH " << m.GetN());
   NS_LOG_DEBUG("MATCH " << m.Get(0)->GetInstanceTypeId());
 
