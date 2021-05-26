@@ -18,6 +18,7 @@
  */
 
 #include "traffic-control-layer.h"
+#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/log.h"
 #include "ns3/object-map.h"
