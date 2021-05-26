@@ -84,43 +84,51 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   recent_packet_arrivals.push(now);
 
   // remove old (no longer recent arrivals)
-  while (!recent_packet_arrivals.empty() &&
-          (now.ToInteger(Time::Unit::MS) -
-           recent_packet_arrivals.front().ToInteger(Time::Unit::MS) > 
-           m_timeInterval.ToInteger(Time::Unit::MS)))
-  {
-    recent_packet_arrivals.pop();
+  if (!recent_packet_arrivals.empty()) {
+    while (now.GetMilliSeconds() - recent_packet_arrivals.front().GetMilliSeconds()
+           > m_timeInterval.GetMilliSeconds()) {
+      recent_packet_arrivals.pop();
+    }
   }
 
-  // TcpHeader tcpHeader;
-  // item->GetPacket ()->PeekHeader (tcpHeader);
-  //TODO what happens if this router receives a non-TCP packet?
-  // if (!(tcpHeader.GetFlags () & TcpHeader::Flags_t::ACK)) {
   double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
   int recent_arrivals = recent_packet_arrivals.size ();
 
   // TODO: multiple enqueues causes recent arrivals to be too high?
-  double load_factor = ((recent_arrivals / 2.) + m_kq * persist_q_size)
-                       / (m_target_util * (m_linkBandwidth.GetBitRate () / (1500. * 8.))
-                          * (m_timeInterval.GetMilliSeconds() / 1000.));
+  // Use naming convention from paper for clarity
+  double lambda_l = recent_arrivals;
+  double kappa_q = m_kq;
+  double q_tilde_l = persist_q_size;
+  double gamma_l = m_target_util;
+  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.);
+  double t_rho = m_timeInterval.GetMilliSeconds() / 1000.;
+  double load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
 
-  NS_LOG_DEBUG("(VCP) persist_q_size=" << persist_q_size << ", recent_arrivals=" << recent_arrivals << ", " << "load_factor=" << load_factor);
+  NS_LOG_DEBUG("(VCP) lambda_l=" << lambda_l
+               << ", kappa_q=" << kappa_q
+               << ", q_tilde_l=" << q_tilde_l
+               << ", gamma_l=" << gamma_l
+               << ", C_l=" << C_l,
+               << ", t_rho=" << t_rho
+               << ", load_factor=" << load_factor);
   
+  // Update vcp tag with worst load (highest load factor bits)
   VcpPacketTag vcpTag;
-  if (load_factor < 0.8) {
+  VcpPacketTag::LoadType prevLoad = VcpPacketTag::LOAD_NOT_SUPPORTED;
+  if (item->GetPacket()->PeekPacketTag(vcpTag)) {
+    prevLoad = vcpTag.GetLoad();
+  }
+
+  if (load_factor < .8 && prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
-    NS_LOG_DEBUG("Load factor: LOW"); 
-  } else if (load_factor < 1) {
+  } else if (load_factor < 1. && prevLoad <= VcpPacketTag::LOAD_LOW) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
-    NS_LOG_DEBUG("Load factor: HIGH"); 
-  } else {
+  } else if (load_factor >= 1.) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
-    NS_LOG_DEBUG("Load factor: OVERLOAD");
   }
 
   // (VCP): TODO: is there an issue if the tag already exists?
   item->GetPacket ()->ReplacePacketTag (vcpTag);
-  // }
 
   if (GetCurrentSize () + item > GetMaxSize ())
     {
