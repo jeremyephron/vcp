@@ -99,7 +99,8 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
   int recent_arrivals = recent_packet_arrivals.size ();
 
-  double load_factor = (recent_arrivals + m_kq * persist_q_size)
+  // TODO: multiple enqueues causes recent arrivals to be too high?
+  double load_factor = ((recent_arrivals / 3.) + m_kq * persist_q_size)
                        / (m_target_util * (m_linkBandwidth.GetBitRate () / (1500. * 8.))
                           * (m_timeInterval.GetMilliSeconds() / 1000.));
 
