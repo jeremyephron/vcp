@@ -1069,6 +1069,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
     NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    NS_LOG_DEBUG("size " << packet->GetSize());
     NS_LOG_DEBUG(packet->ToString());
     TcpHeader tcpHeader;
     packet->PeekHeader(tcpHeader);
