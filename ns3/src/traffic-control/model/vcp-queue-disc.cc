@@ -102,7 +102,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   // TODO: multiple enqueues causes recent arrivals to be too high?
   double load_factor = ((recent_arrivals / 1.) + m_kq * persist_q_size)
-                       / (m_target_util * (m_linkBandwidth.GetBitRate () / (1500. * 8.))
+                       / (m_target_util * (m_linkBandwidth.GetBitRate () / (1000. * 8.))
                           * (m_timeInterval.GetMilliSeconds() / 1000.));
 
   NS_LOG_DEBUG("(VCP) persist_q_size=" << persist_q_size << ", recent_arrivals=" << recent_arrivals << ", " << "load_factor=" << load_factor);
