@@ -155,6 +155,7 @@ main (int argc, char *argv[])
   // (VCP): lets packets be printed
   Packet::EnablePrinting();
   Packet::EnableMetadata();
+  Packet::EnableChecking();
 
   std::string bwHostStr = std::to_string(bwHost) + "Mbps";
   std::string bwNetStr = std::to_string(bwNet) + "Mbps";
