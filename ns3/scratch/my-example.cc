@@ -243,6 +243,7 @@ main (int argc, char *argv[])
                             - tcph.GetSerializedSize ();
   tcpSegmentSize -= 10; // (VCP): TODO
   tcpSegmentSize -= 448;
+  tcpSegmentSize -= 52;
 
   NS_LOG_DEBUG("(VCP) tcpSegSize=" << tcpSegmentSize);
 
