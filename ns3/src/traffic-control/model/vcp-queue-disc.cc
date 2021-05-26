@@ -106,7 +106,8 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
   }
 
-  item->GetPacket ()->AddPacketTag (vcpTag);
+  // (VCP): TODO: is there an issue if the tag already exists?
+  item->GetPacket ()->ReplacePacketTag (vcpTag);
 
   if (GetCurrentSize () + item > GetMaxSize ())
     {
