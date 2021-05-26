@@ -57,6 +57,8 @@ private:
    */
   virtual void InitializeParams (void);
 
+  void SampleQueueSize();
+
   // ** Variables supplied by user
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_timeInterval;      //!< time interval throughout which to sample load factor vars

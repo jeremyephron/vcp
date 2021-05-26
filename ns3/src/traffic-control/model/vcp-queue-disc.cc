@@ -1,6 +1,7 @@
 #include "vcp-queue-disc.h"
 #include "ns3/simulator.h"
 #include "ns3/vcp-packet-tag.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 
@@ -76,14 +77,14 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_FUNCTION (this << item);
 
   // add to recent arrivals queue
-  now = Simulator::Now();
+  Time now = Simulator::Now();
   recent_packet_arrivals.push(now);
 
   // remove old (no longer recent arrivals)
   while (!recent_packet_arrivals.empty() &&
           (now.ToInteger(Time::Unit::MS) -
            recent_packet_arrivals.front().ToInteger(Time::Unit::MS) > 
-           m_timeInterval.ToInteger(Time::Unit::MS))
+           m_timeInterval.ToInteger(Time::Unit::MS)))
   {
     recent_packet_arrivals.pop();
   }
@@ -92,16 +93,16 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   int recent_arrivals = recent_packet_arrivals.size ();
 
   double load_factor = recent_arrivals + m_kq * persist_q_size /
-                       ((m_target_util * m_linkBandwith.Get ().GetBitRate () / 1000 * 8) *
+                       ((m_target_util * m_linkBandwidth.Get ().GetBitRate () / 1000 * 8) *
                         (m_timeInterval.ToInteger(Time::Unit::MS) / 1000));
   
   VcpPacketTag vcpTag;
   if (load_factor < 0.8) {
-    vcpTag.setLoad (VcpPacketTag::LoadType::LOAD_LOW);
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW);
   } else if (load_factor < 1) {
-    vcpTag.setLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
   } else {
-    vcpTag.setLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
   }
 
   item->GetPacket ()->AddPacketTag (vcpTag);
