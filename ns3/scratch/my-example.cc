@@ -93,7 +93,7 @@ TraceCwnd (Ptr<OutputStreamWrapper> cwndStream)
 //static void
 //TraceCwnd2 (Ptr<OutputStreamWrapper> cwndStream)
 //{
-//    Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+//    Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/1/CongestionWindow",
 //                                 MakeBoundCallback (&CwndTracer, cwndStream));
 //
 //}

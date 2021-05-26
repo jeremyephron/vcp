@@ -43,7 +43,7 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
   // If the load bits are not supported, fall back to TCP New Reno
   if (m_loadState == LOAD_NOT_SUPPORTED) {
-    TcpNewReno::IncreaseWindow(tcb, segmentsAcked);
+    // TcpNewReno::IncreaseWindow(tcb, segmentsAcked);
   } else {
     // Do nothing. Window is increased when receiving an ACK. See PktsAcked()
   }
@@ -65,8 +65,8 @@ void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
-  //tcb->m_cWnd = 14580*15;
-  //return;
+  tcb->m_cWnd = 14580*15;
+  return;
 
   // Update load state
   m_loadState = (LoadState_t)tcb->m_vcpLoad;
