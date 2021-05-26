@@ -1073,7 +1073,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   Ptr<Packet> packet = p->Copy ();
 
   NS_LOG_DEBUG("(VCP) ip ecn=" << ipHeader.GetEcn() << ", ip header: " << ipHeader);
-  NS_LOG_DEBUG("(VCP) packet=" p->ToString());
+  NS_LOG_DEBUG("(VCP) packet=" << p->ToString());
 
   // (VCP): TODO
   VcpPacketTag vcpTag;
