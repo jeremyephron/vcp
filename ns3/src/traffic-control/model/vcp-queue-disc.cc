@@ -112,6 +112,8 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
     NS_LOG_DEBUG("Load factor: OVERLOAD");
   }
+  //TODO: delete
+  vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
 
   // (VCP): TODO: is there an issue if the tag already exists?
   item->GetPacket ()->ReplacePacketTag (vcpTag);
