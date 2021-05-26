@@ -118,6 +118,13 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     NS_LOG_DEBUG("Load factor: OVERLOAD");
   }
 
+  Ipv4Header ipHeader;
+  if (DynamicCast<Ipv4QueueDiscItem>(item)) {
+    ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
+    NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+  }
+
+
   // (VCP): TODO: is there an issue if the tag already exists?
   item->GetPacket ()->ReplacePacketTag (vcpTag);
   // }
