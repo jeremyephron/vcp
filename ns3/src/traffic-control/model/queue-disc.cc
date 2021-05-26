@@ -1055,6 +1055,12 @@ QueueDisc::DequeuePacket ()
           // If the item is not null, add the header to the packet.
           if (item != 0)
             {
+              Ipv4Header ipHeader;
+              if (DynamicCast<Ipv4QueueDiscItem>(item)) {
+                ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
+                NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+              }
+
               item->AddHeader ();
             }
           // Here, Linux tries bulk dequeues

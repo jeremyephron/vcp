@@ -101,6 +101,8 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   double load_factor = recent_arrivals + m_kq * persist_q_size /
                      ((m_target_util * m_linkBandwidth.GetBitRate () / 1000 * 8) *
                       (m_timeInterval.ToInteger(Time::Unit::MS) / 1000));
+
+  
   VcpPacketTag vcpTag;
   if (load_factor < 0.8) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 

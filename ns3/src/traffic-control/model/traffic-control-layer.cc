@@ -399,7 +399,6 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
 
 
       Ipv4Header ipHeader;
-      // item->GetPacket()->PeekHeader(ipHeader);
       if (DynamicCast<Ipv4QueueDiscItem>(item)) {
         ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
         NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
