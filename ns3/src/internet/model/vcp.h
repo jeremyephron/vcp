@@ -15,7 +15,7 @@
 
 namespace ns3 {
   
-class Vcp : public TcpNewReno {
+class Vcp : public TcpCongestionOps {
 public:
   static TypeId GetTypeId();
 
@@ -29,7 +29,7 @@ public:
 
   void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt) override;
 
-  void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
+  // void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
   Ptr<TcpCongestionOps> Fork() override;
 
 private:

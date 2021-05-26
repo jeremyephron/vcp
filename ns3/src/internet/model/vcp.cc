@@ -26,28 +26,28 @@ Vcp::GetTypeId()
   return tid;
 }
 
-Vcp::Vcp() : TcpNewReno()
+Vcp::Vcp()// : TcpNewReno()
 {
   NS_LOG_FUNCTION(this);
 }
 
-Vcp::Vcp(const Vcp& sock) : TcpNewReno(sock)
+Vcp::Vcp(const Vcp& sock) // : TcpNewReno(sock)
 {
   NS_LOG_FUNCTION(this);
 }
 
 Vcp::~Vcp() {}
 
-void
-Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
-{
-  // If the load bits are not supported, fall back to TCP New Reno
-  if (m_loadState == LOAD_NOT_SUPPORTED) {
-    TcpNewReno::IncreaseWindow(tcb, segmentsAcked);
-  } else {
-    // Do nothing. Window is increased when receiving an ACK. See PktsAcked()
-  }
-}
+//void
+//Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
+//{
+//  // If the load bits are not supported, fall back to TCP New Reno
+//  if (m_loadState == LOAD_NOT_SUPPORTED) {
+//    TcpNewReno::IncreaseWindow(tcb, segmentsAcked);
+//  } else {
+//    // Do nothing. Window is increased when receiving an ACK. See PktsAcked()
+//  }
+//}
 
 std::string
 Vcp::GetName() const
