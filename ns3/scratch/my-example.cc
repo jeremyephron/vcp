@@ -147,19 +147,19 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 //                                 MakeBoundCallback (&RttTracer, rttStream));
 //}
 
-static void
-UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
-{
-  dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
-  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("20Mbps")));
-}
-
-static void
-DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
-{
-  dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("10Mbps")));
-}
+//static void
+//UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
+//{
+//  dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
+//  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("20Mbps")));
+//}
+//
+//static void
+//DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
+//{
+//  dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+//  qdisc->SetAttribute("LinkBandwidth", DataRateValue(DataRate("10Mbps")));
+//}
 
 int
 main (int argc, char *argv[])
