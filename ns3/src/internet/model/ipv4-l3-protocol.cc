@@ -1078,8 +1078,8 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
 
     // TODO: How to reliably check for data packets?
-    // This hack should work for our simulations
-    bool isDataPacket = packet->GetSize() >= 1000;
+    // *HACK*
+    bool isDataPacket = packet->GetSize() != 52;
     NS_LOG_DEBUG(packet->ToString());
 
     if (isDataPacket) {
