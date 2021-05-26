@@ -1071,13 +1071,13 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
     NS_LOG_DEBUG("size " << packet->GetSize());
     NS_LOG_DEBUG(packet->ToString());
-    TcpHeader tcpHeader;
-    packet->PeekHeader(tcpHeader);
-    if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
-        NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    //TcpHeader tcpHeader;
+    //packet->PeekHeader(tcpHeader);
+    //if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
+    //    NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
         ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
         packet->RemovePacketTag(vcpTag);
-    }
+    //}
   } else {
     NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
   }
