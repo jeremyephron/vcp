@@ -35,6 +35,8 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/traffic-control-layer.h"
+#include "ns3/vcp-packet-tag.h"
+#include "ns3/tcp-header.h"
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
@@ -778,6 +780,19 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
   // can construct the header here
   Ipv4Header ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
+  VcpPacketTag vcpTag;
+  if (packet->PeekPacketTag(vcpTag)) {
+    NS_LOG_LOGIC("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+    TcpHeader tcpHeader;
+    packet->PeekHeader(tcpHeader);
+    if (!(tcpHeader.GetFlags() & TcpHeader::Flags_t::ACK)) {
+        NS_LOG_LOGIC("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+        ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+        packet->RemovePacketTag(vcpTag);
+    }
+  } else {
+    NS_LOG_DEBUG("(VCP) vcp tag does not exist");
+  }
 
   // Handle a few cases:
   // 1) packet is passed in with a route entry
