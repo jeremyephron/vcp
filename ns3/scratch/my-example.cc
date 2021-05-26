@@ -148,17 +148,17 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 //}
 
 static void
-UpgradeLinkCapacity (Ptr<NetDevice> dev, TrafficControlHelper tch)
+UpgradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
-  tch.SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
+  qdisc->SetAttribute("DataRate", DataRateValue(DataRate("20Mbps")));
 }
 
 static void
-DowngradeLinkCapacity (Ptr<NetDevice> dev, TrafficControlHelper tch)
+DowngradeLinkCapacity (Ptr<NetDevice> dev, Ptr<QueueDisc> qdisc)
 {
   dev->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
-  tch.SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
+  qdiscs->SetAttribute("DataRate", DataRateValue(DataRate("10Mbps")));
 }
 
 int
@@ -384,10 +384,10 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
   //Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt2, rttStream2);
 
-  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
-  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
-  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
-  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), tchPfifo);
+  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
+  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
   
 
   /******** Run the Actual Simulation ********/
