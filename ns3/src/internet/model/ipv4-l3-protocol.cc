@@ -1016,6 +1016,9 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       else
         {
           CallTxTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
+
+          NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+
           outInterface->Send (packet, ipHeader, target);
         }
     }
