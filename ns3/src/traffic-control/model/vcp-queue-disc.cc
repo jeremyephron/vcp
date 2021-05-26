@@ -4,6 +4,7 @@
 #include "ns3/packet.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/tcp-header.h"
+#include "ns3/ipv4-queue-disc-item.h"
 
 namespace ns3 {
 
