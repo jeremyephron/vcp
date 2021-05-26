@@ -575,28 +575,28 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
   TcpHeader outgoingHeader = outgoing;
 
   // (VCP)
-  VcpPacketTag vcpTag;
-  if (packet->PeekPacketTag(vcpTag)) {
+  //VcpPacketTag vcpTag;
+  //if (packet->PeekPacketTag(vcpTag)) {
 
-    uint8_t flags;
-    if (vcpTag.GetLoad() == VcpPacketTag::LOAD_LOW) {
-      flags = TcpHeader::ECE;
-    } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_HIGH) {
-      flags = TcpHeader::CWR;
-    } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_OVERLOAD) {
-      flags = TcpHeader::ECE | TcpHeader::CWR;
-    } else {
-      flags = TcpHeader::NONE;
-    }
-    outgoingHeader.SetFlags(flags);
+  //  uint8_t flags;
+  //  if (vcpTag.GetLoad() == VcpPacketTag::LOAD_LOW) {
+  //    flags = TcpHeader::ECE;
+  //  } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_HIGH) {
+  //    flags = TcpHeader::CWR;
+  //  } else if (vcpTag.GetLoad() == VcpPacketTag::LOAD_OVERLOAD) {
+  //    flags = TcpHeader::ECE | TcpHeader::CWR;
+  //  } else {
+  //    flags = TcpHeader::NONE;
+  //  }
+  //  outgoingHeader.SetFlags(flags);
 
-    NS_LOG_DEBUG("(VCP) packet has vcp tag, vcpLoad=" << vcpTag.GetLoad()
-                 << ", tcpFlags=" << TcpHeader::FlagsToString(flags)
-                 << ", tcpHeader=" << outgoingHeader); // TODO: delete
+  //  NS_LOG_DEBUG("(VCP) packet has vcp tag, vcpLoad=" << vcpTag.GetLoad()
+  //               << ", tcpFlags=" << TcpHeader::FlagsToString(flags)
+  //               << ", tcpHeader=" << outgoingHeader); // TODO: delete
 
-    // Remove tag after transferring info to TCP ECN bits
-    packet->RemovePacketTag(vcpTag);
-  }
+  //  // Remove tag after transferring info to TCP ECN bits
+  //  packet->RemovePacketTag(vcpTag);
+  //}
 
   /** \todo UrgentPointer */
   /* outgoingHeader.SetUrgentPointer (0); */
