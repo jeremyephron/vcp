@@ -93,7 +93,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   int recent_arrivals = recent_packet_arrivals.size ();
 
   double load_factor = recent_arrivals + m_kq * persist_q_size /
-                       ((m_target_util * m_linkBandwidth.Get ().GetBitRate () / 1000 * 8) *
+                       ((m_target_util * m_linkBandwidth.GetBitRate () / 1000 * 8) *
                         (m_timeInterval.ToInteger(Time::Unit::MS) / 1000));
   
   VcpPacketTag vcpTag;
@@ -107,7 +107,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   item->GetPacket ()->AddPacketTag (vcpTag);
  
-  FifoQueueDisc::DoEnqueue(item);
+  return FifoQueueDisc::DoEnqueue(item);
 }
 
 void
