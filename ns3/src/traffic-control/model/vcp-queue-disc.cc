@@ -94,13 +94,12 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
   int recent_arrivals = recent_packet_arrivals.size ();
 
-  // TODO: multiple enqueues causes recent arrivals to be too high?
   // Use naming convention from paper for clarity
   double lambda_l = recent_arrivals;
   double kappa_q = m_kq;
   double q_tilde_l = persist_q_size;
   double gamma_l = m_target_util;
-  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.);
+  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.); // TODO: divide by 1000?
   double t_rho = m_timeInterval.GetMilliSeconds() / 1000.;
   double load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
 
@@ -130,7 +129,6 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
   }
 
-  // (VCP): TODO: is there an issue if the tag already exists?
   item->GetPacket ()->ReplacePacketTag (vcpTag);
 
   if (GetCurrentSize () + item > GetMaxSize ())
