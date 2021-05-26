@@ -1951,6 +1951,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
   // in Section 2 (regardless of its status as a cumulative
   // acknowledgment), and the TCP is not currently in loss recovery
   if (isDupack)
+    {
     
   NS_LOG_DEBUG("(LOOKMEUP) B");
       // loss recovery check is done inside this function thanks to
