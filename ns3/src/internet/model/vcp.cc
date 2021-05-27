@@ -36,7 +36,9 @@ Vcp::Vcp(const Vcp& sock) : TcpCongestionOps(sock)
   NS_LOG_FUNCTION(this);
 }
 
-Vcp::~Vcp() {}
+Vcp::~Vcp() {
+  m_mdTimer.Cancel();
+}
 
 //void
 //Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
