@@ -1177,6 +1177,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   m_tcb->m_vcpLoadOut = (VcpPacketTag::LoadType)header.GetEcn();
   NS_LOG_DEBUG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
 
+  SendEmptyPacket (TcpHeader::ACK);
   DoForwardUp (packet, fromAddress, toAddress);
 }
 
