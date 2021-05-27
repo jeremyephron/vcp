@@ -168,6 +168,7 @@ VcpQueueDisc::InitializeParams (void)
 void
 VcpQueueDisc::SampleQueueSize()
 {
+  NS_LOG_FUNCTION (this);
   if (recent_queue_sizes.size () >=
           (size_t) (m_timeInterval.ToInteger(Time::Unit::MS) /
           m_QueueSampleInterval.ToInteger(Time::Unit::MS)))
@@ -177,6 +178,9 @@ VcpQueueDisc::SampleQueueSize()
   }
 
   uint32_t cur_size = GetCurrentSize ().GetValue ();
+
+  NS_LOG_DEBUG ("Current queue size=" << cur_size);
+  
   recent_queue_sizes.push (cur_size);
   m_qsizes_sum += cur_size;
 
