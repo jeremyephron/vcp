@@ -2697,9 +2697,6 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
   Ptr<Packet> p = Create<Packet> ();
   
-  // Remove tag after transferring info to TCP ECN bits
-  packet->RemovePacketTag(vcpTag);
-
   TcpHeader header;
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
