@@ -179,7 +179,7 @@ VcpQueueDisc::SampleQueueSize()
 
   uint32_t cur_size = GetCurrentSize ().GetValue ();
 
-  NS_LOG_DEBUG ("Current queue size=" << cur_size);
+  NS_LOG_DEBUG ("(VCP) Current queue size=" << cur_size);
   
   recent_queue_sizes.push (cur_size);
   m_qsizes_sum += cur_size;
