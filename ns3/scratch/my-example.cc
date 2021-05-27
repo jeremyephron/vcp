@@ -318,7 +318,7 @@ main (int argc, char *argv[])
   // DONE: Read documentation for BulkSendHelper to figure out the name of the
   //       Attribute for setting the destination address for the sender.
   ftp.SetAttribute ("Remote", receiverAddress);
-  ftp.SetAttribute ("SendSize", UintegerValue (800));
+  ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
 
   // DONE: Install the source application on the correct host.
   ApplicationContainer sourceApp = ftp.Install (h1);
