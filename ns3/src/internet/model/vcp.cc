@@ -139,7 +139,7 @@ void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
-  NS_LOG_DEBUG("tcb->m_cWnd=" << tcb->m_cWnd);
+  NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
   // // tcb->m_cWnd = 14580;
   // // return;
 
@@ -168,6 +168,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
     NS_LOG_DEBUG("(VCP) freezing cwnd after MD");
     return;
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
+    NS_LOG_DEBUG("(VCP) one RTT of additive increase after MD freeze period");
     m_mdFreeze = false;
     m_mdTimer.SetFunction(&Vcp::Noop, this);
     m_mdTimer.Schedule(rtt);
