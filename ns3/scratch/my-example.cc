@@ -41,6 +41,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
 #include "ns3/flow-monitor.h"
+#include "ns3/flow-monitor-helper.h"
 
 using namespace ns3;
 
