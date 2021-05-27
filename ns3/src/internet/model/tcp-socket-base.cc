@@ -3476,7 +3476,6 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
   NS_LOG_DEBUG ("Data segment, seq=" << tcpHeader.GetSequenceNumber () <<
                 " pkt size=" << p->GetSize () );
 
-  NS_LOG_DEBUG("LOOKMEUP A"); // TODO: delete
   // Put into Rx buffer
   SequenceNumber32 expectedSeq = m_tcb->m_rxBuffer->NextRxSequence ();
   if (!m_tcb->m_rxBuffer->Add (p, tcpHeader))
@@ -3496,11 +3495,8 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
   // Notify app to receive if necessary
   if (expectedSeq < m_tcb->m_rxBuffer->NextRxSequence ())
     { // NextRxSeq advanced, we have something to send to the app
-  NS_LOG_DEBUG("LOOKMEUP B"); // TODO: delete
       if (!m_shutdownRecv)
         {
-  NS_LOG_DEBUG("LOOKMEUP B.1"); // TODO: delete
-          SendEmptyPacket(TcpHeader::ACK);
           NotifyDataRecv ();
         }
       // Handle exceptions
@@ -3512,7 +3508,6 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
       // invoke peer close procedure
       if (m_tcb->m_rxBuffer->Finished () && (tcpHeader.GetFlags () & TcpHeader::FIN) == 0)
         {
-  NS_LOG_DEBUG("LOOKMEUP B.2"); // TODO: delete
           DoPeerClose ();
           return;
         }
@@ -3520,7 +3515,6 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
   // Now send a new ACK packet acknowledging all received and delivered data
   if (m_tcb->m_rxBuffer->Size () > m_tcb->m_rxBuffer->Available () || m_tcb->m_rxBuffer->NextRxSequence () > expectedSeq + p->GetSize ())
     { // A gap exists in the buffer, or we filled a gap: Always ACK
-  NS_LOG_DEBUG("LOOKMEUP C"); // TODO: delete
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_NON_DELAYED_ACK);
       if (m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD || m_tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
         {
@@ -3535,10 +3529,8 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
     }
   else
     { // In-sequence packet: ACK if delayed ack count allows
-  NS_LOG_DEBUG("LOOKMEUP D"); // TODO: delete
       if (++m_delAckCount >= m_delAckMaxCount)
         {
-  NS_LOG_DEBUG("LOOKMEUP D.1"); // TODO: delete
           m_delAckEvent.Cancel ();
           m_delAckCount = 0;
           m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_NON_DELAYED_ACK);
@@ -3556,12 +3548,10 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
         }
       else if (!m_delAckEvent.IsExpired ())
         {
-  NS_LOG_DEBUG("LOOKMEUP D.2"); // TODO: delete
           m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_DELAYED_ACK);
         }
       else if (m_delAckEvent.IsExpired ())
         {
-  NS_LOG_DEBUG("LOOKMEUP D.3"); // TODO: delete
           m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_DELAYED_ACK);
           m_delAckEvent = Simulator::Schedule (m_delAckTimeout,
                                                &TcpSocketBase::DelAckTimeout, this);
