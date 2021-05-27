@@ -79,6 +79,8 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
+  NS_LOG_DEBUG("(VCP) packet=" << item->GetPacket()->ToString());
+
   // add to recent arrivals queue
   Time now = Simulator::Now();
   recent_packet_arrivals.push(now);
