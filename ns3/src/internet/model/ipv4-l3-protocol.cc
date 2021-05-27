@@ -1079,19 +1079,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   VcpPacketTag vcpTag;
   if (packet->PeekPacketTag(vcpTag)) {
     NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
-
-    // TODO: How to reliably check for data packets?
-    // *HACK*
-    bool isDataPacket = packet->GetSize() != 32; // 52 - 20
-    NS_LOG_DEBUG("(VCP) isDataPacket=" << isDataPacket << ", packet->GetSize()=" << packet->GetSize());
-
-    if (isDataPacket) {
-      NS_LOG_DEBUG("(VCP) not an ack packet, setting ECN to " << (Ipv4Header::EcnType)vcpTag.GetLoad());
-      ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
-    } else {
-      NS_LOG_DEBUG("(VCP) not a data packet, ipHeader.GetEcn()=" << ipHeader.GetEcn());
-    }
-
+    ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
     packet->RemovePacketTag(vcpTag);
   } else {
     NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
