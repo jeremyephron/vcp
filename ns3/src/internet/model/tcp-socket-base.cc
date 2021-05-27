@@ -1177,7 +1177,6 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   m_tcb->m_vcpLoadOut = (VcpPacketTag::LoadType)header.GetEcn();
   NS_LOG_DEBUG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
 
-  SendEmptyPacket (TcpHeader::ACK);
   DoForwardUp (packet, fromAddress, toAddress);
 }
 
@@ -1462,6 +1461,8 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
                << ", tcpHeader=" << tcpHeader); // TODO: delete
 
 
+  SendEmptyPacket (TcpHeader::ACK); // TODO: is this okay? Some acks are sent before process established and then ack is never sent again
+  
   // (VCP): Set state from ecn bits in tcp header (affects incoming VCP info)
   uint8_t vcpFlags = tcpHeader.GetFlags();
   if ((vcpFlags & TcpHeader::ECE) && (vcpFlags & TcpHeader::CWR)) {
