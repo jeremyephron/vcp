@@ -1463,7 +1463,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 
   // (VCP): Set state from ecn bits in tcp header (affects incoming VCP info)
   uint8_t vcpFlags = tcpHeader.GetFlags();
-  if (vcpFlags & (TcpHeader::ECE | TcpHeader::CWR)) {
+  if ((vcpFlags & TcpHeader::ECE) && (vcpFlags & TcpHeader::CWR)) {
     m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_OVERLOAD;
   } else if (vcpFlags & TcpHeader::CWR) {
     m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_HIGH;
