@@ -254,7 +254,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
-  Config::SetDefault ("ns3::TcpSocketBase::DelAckCount", UintegerValue (0)); 
+  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0)); 
 
   // Select TCP variant
   TypeId tcpTid;
