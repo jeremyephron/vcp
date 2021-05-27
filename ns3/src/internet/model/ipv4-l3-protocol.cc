@@ -668,7 +668,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
   VcpPacketTag vcpTag;
   if (p->PeekPacketTag(vcpTag)) {
     ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
-    NS_LOG_DEBUG("(VCP) after setting: ipHeader.GetEcn()" << ipHeader.GetEcn() << ", packet=" << p->ToString()); // TODO: delete
+    NS_LOG_DEBUG("(VCP) after setting: ipHeader.GetEcn()=" << ipHeader.GetEcn() << ", packet=" << p->ToString()); // TODO: delete
   }
 
   if (!m_routingProtocol->RouteInput (packet, ipHeader, device,
