@@ -2696,11 +2696,9 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
 
   Ptr<Packet> p = Create<Packet> ();
-
-  // (VCP): Add vcp packet tag
-  VcpPacketTag vcpTag;
-  vcpTag.SetLoad(m_tcb->m_vcpLoadOut);
-  p->AddPacketTag(vcpTag);
+  
+  // Remove tag after transferring info to TCP ECN bits
+  packet->RemovePacketTag(vcpTag);
 
   TcpHeader header;
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
@@ -2713,6 +2711,23 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     {
       ++s;
     }
+
+  // (VCP)
+  if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_LOW) {
+    flags |= TcpHeader::ECE;
+  } else if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_HIGH) {
+    flags |= TcpHeader::CWR;
+  } else if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_OVERLOAD) {
+    flags |= (TcpHeader::ECE | TcpHeader::CWR);
+  } else {
+    flags &= ~(TcpHeader::ECE | TcpHeader::CWR);
+  }
+
+  header.SetFlags(flags);
+
+  NS_LOG_DEBUG("(VCP) packet has vcp tag, vcpLoad=" << m_tcb->m_vcpLoadOut
+               << ", tcpFlags=" << TcpHeader::FlagsToString(flags)
+               << ", tcpHeader=" << header); // TODO: delete
 
   AddSocketTags (p);
 
