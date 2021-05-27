@@ -120,12 +120,16 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     prevLoad = vcpTag.GetLoad();
   }
 
-  if (load_factor < .8 && prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
-    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
-  } else if (load_factor < 1. && prevLoad <= VcpPacketTag::LOAD_LOW) {
-    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
-    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
+  if (load_factor < .8) {
+    if (prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
+    }
+  } else if (load_factor < 1.) {
+    if (prevLoad <= VcpPacketTag::LOAD_LOW) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
+    }
   } else if (load_factor >= 1.) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
     NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
