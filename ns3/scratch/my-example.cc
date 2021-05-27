@@ -40,6 +40,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
+#include "ns3/flow-monitor.h"
 
 using namespace ns3;
 
@@ -157,7 +158,7 @@ main (int argc, char *argv[])
   Packet::EnableChecking();
 
   std::string bwHostStr = std::to_string(bwHost) + "Mbps";
-  std::string bwNetStr = std::to_string(bwNet) + "Kbps";
+  std::string bwNetStr = std::to_string(bwNet) + "Mbps";
   std::string delayStr = std::to_string(delay) + "ms";
   std::string maxQStr = std::to_string(maxQ) + "p";
   transport_prot = std::string("ns3::") + transport_prot;
@@ -324,6 +325,13 @@ main (int argc, char *argv[])
   ApplicationContainer sourceApp = ftp.Install (h1);
   sourceApp.Start (Seconds (0.0));
   sourceApp.Stop (Seconds ((double)time));
+
+  // Flow monitor
+  Ptr<FlowMonitor> flowMonitor;
+  FlowMonitorHelper flowHelper;
+  flowMonitor = flowHelper.InstallAll();
+  
+  flowMonitor->SerializeToXmlFile(dir + "flow_monitor.xml", false, false);
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
