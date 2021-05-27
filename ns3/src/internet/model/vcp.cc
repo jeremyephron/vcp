@@ -66,7 +66,7 @@ Vcp::GetSsThresh (Ptr<const TcpSocketState> state, uint32_t bytesInFlight)
 {
   NS_LOG_FUNCTION (this << state << bytesInFlight);
 
-  return state->m_cWnd;
+  return static_cast<uint32_t>(m_cWndFractional);
 }
 
 void
