@@ -328,11 +328,11 @@ main (int argc, char *argv[])
   sourceApp.Stop (Seconds ((double)time));
 
   // Flow monitor
-  Ptr<FlowMonitor> flowMonitor;
-  FlowMonitorHelper flowHelper;
-  flowMonitor = flowHelper.InstallAll();
-  
-  flowMonitor->SerializeToXmlFile(dir + "flow_monitor.xml", true, true);
+  //Ptr<FlowMonitor> flowMonitor;
+  //FlowMonitorHelper flowHelper;
+  //flowMonitor = flowHelper.InstallAll();
+  //
+  //flowMonitor->SerializeToXmlFile(dir + "flow_monitor.xml", true, true);
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
