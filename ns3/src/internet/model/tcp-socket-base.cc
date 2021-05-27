@@ -1457,6 +1457,9 @@ void
 TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
   NS_LOG_FUNCTION (this << tcpHeader);
+  NS_LOG_DEBUG("(VCP) tcpFlags=" << TcpHeader::FlagsToString(tcpHeader.GetFlags())
+               << ", tcpHeader=" << tcpHeader); // TODO: delete
+
 
   // (VCP): Set state from ecn bits in tcp header (affects incoming VCP info)
   uint8_t vcpFlags = tcpHeader.GetFlags();
