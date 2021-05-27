@@ -169,6 +169,9 @@ void
 VcpQueueDisc::SampleQueueSize()
 {
   NS_LOG_FUNCTION (this);
+
+  NS_LOG_DEBUG("(VCP) this=" << this); // TODO: delete
+
   if (recent_queue_sizes.size () >=
           (size_t) (m_timeInterval.ToInteger(Time::Unit::MS) /
           m_QueueSampleInterval.ToInteger(Time::Unit::MS)))
