@@ -157,7 +157,7 @@ main (int argc, char *argv[])
   Packet::EnableChecking();
 
   std::string bwHostStr = std::to_string(bwHost) + "Mbps";
-  std::string bwNetStr = std::to_string(bwNet) + "Mbps";
+  std::string bwNetStr = std::to_string(bwNet) + "Kbps";
   std::string delayStr = std::to_string(delay) + "ms";
   std::string maxQStr = std::to_string(maxQ) + "p";
   transport_prot = std::string("ns3::") + transport_prot;
