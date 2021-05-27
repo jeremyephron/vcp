@@ -3500,6 +3500,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
       if (!m_shutdownRecv)
         {
   NS_LOG_DEBUG("LOOKMEUP B.1"); // TODO: delete
+          SendEmptyPacket(TcpHeader::Ack);
           NotifyDataRecv ();
         }
       // Handle exceptions
