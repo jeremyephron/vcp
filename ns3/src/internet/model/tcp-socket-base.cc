@@ -1956,6 +1956,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
       && ackNumber == m_tcb->m_highTxMark)
     {
       // Dupack, but the ACK is precisely equal to the nextTxSequence
+      m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
       return;
     }
   else if (ackNumber == oldHeadSequence
