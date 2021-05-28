@@ -180,7 +180,7 @@ Vcp::CongControl(
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
     m_mdFreeze = false;
     m_mdTimer.SetFunction(&Vcp::Noop, this);
-    m_mdTimer.Schedule(rtt);
+    m_mdTimer.Schedule(80 * 10000000);
     NS_LOG_DEBUG("(VCP) set additive increase RTT=" << rtt);
   }
 
