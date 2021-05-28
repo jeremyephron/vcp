@@ -82,10 +82,10 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_DEBUG("(VCP) packet=" << item->GetPacket()->ToString());
   NS_LOG_DEBUG("(VCP) VcpQueueDisc::this=" << this);
 
-  // add to recent arrivals queue
+  // add to recent arrivals queue 
   Time now = Simulator::Now();
   recent_packet_arrivals.push(now);
-
+  /*
   // remove old (no longer recent arrivals)
   if (!recent_packet_arrivals.empty()) {
     while (now.GetMilliSeconds() - recent_packet_arrivals.front().GetMilliSeconds()
@@ -140,7 +140,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   }
 
   item->GetPacket ()->ReplacePacketTag (vcpTag);
-
+*/
   if (GetCurrentSize () + item > GetMaxSize ())
     {
       NS_LOG_LOGIC ("Queue full -- dropping pkt");
@@ -157,6 +157,79 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
   return retval; 
+}
+
+Ptr<QueueDiscItem>
+VcpQueueDisc::DoDequeue (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
+
+  if (!item)
+    {
+      NS_LOG_LOGIC ("Queue empty");
+      return 0;
+    }
+
+  Time now = Simulator::Now();
+
+  if (!recent_packet_arrivals.empty()) {
+    while (now.GetMilliSeconds() - recent_packet_arrivals.front().GetMilliSeconds()
+           > m_timeInterval.GetMilliSeconds()) {
+      recent_packet_arrivals.pop();
+    }
+  }
+
+  double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
+  int recent_arrivals = recent_packet_arrivals.size ();
+
+  // Use naming convention from paper for clarity
+  double lambda_l = recent_arrivals;
+  double kappa_q = m_kq;
+  double q_tilde_l = persist_q_size;
+  double gamma_l = m_target_util;
+  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.); // TODO: divide by 1000?
+  double t_rho = m_timeInterval.GetMilliSeconds() / 1000.;
+  double load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
+
+  // TODO: address this below
+  load_factor = load_factor * 1.;
+
+  NS_LOG_DEBUG("(VCP) lambda_l=" << lambda_l
+               << ", kappa_q=" << kappa_q
+               << ", q_tilde_l=" << q_tilde_l
+               << ", gamma_l=" << gamma_l
+               << ", C_l=" << C_l
+               << ", t_rho=" << t_rho
+               << ", load_factor=" << load_factor);
+  
+  // Update vcp tag with worst load (highest load factor bits)
+  VcpPacketTag vcpTag;
+  VcpPacketTag::LoadType prevLoad = VcpPacketTag::LOAD_NOT_SUPPORTED;
+  if (item->GetPacket()->PeekPacketTag(vcpTag)) {
+    prevLoad = vcpTag.GetLoad();
+  }
+
+  if (load_factor < .8) {
+    if (prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
+    }
+  } else if (load_factor < 1.) {
+    if (prevLoad <= VcpPacketTag::LOAD_LOW) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
+    }
+  } else if (load_factor >= 1.) {
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
+  }
+
+  item->GetPacket ()->ReplacePacketTag (vcpTag);
+
+
+  return item;
 }
 
 void
