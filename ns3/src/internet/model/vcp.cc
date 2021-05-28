@@ -193,7 +193,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
       MultiplicativeDecrease(tcb);
       m_mdFreeze = true;
       m_mdTimer.SetFunction(&Vcp::Noop, this);
-      m_mdTimer.Schedule(Time(m_estInterval * 500000)); // TODO: wrong time
+      m_mdTimer.Schedule(Time(m_estInterval * 10000)); // TODO: wrong time
       return;
     default:
       NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
