@@ -49,7 +49,7 @@ private:
   const double m_beta {0.875};
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
-  const double m_xi {0.0625}; // TODO: changed from correct val of 0.0625
+  const double m_xi {0.0125}; // TODO: changed from correct val of 0.0625
 
   /* Load factor estimation interval in ms. */
   const int64_t m_estInterval {200};
@@ -65,7 +65,7 @@ private:
 
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline double GetScaledXi(int64_t rtt) {
-    return pow(1 + m_xi, static_cast<double>(80) / m_estInterval) - 1;
+    return pow(1 + m_xi, static_cast<double>(rtt) / m_estInterval) - 1;
   }
 
   inline double GetScaledAlpha(int64_t rtt) {
