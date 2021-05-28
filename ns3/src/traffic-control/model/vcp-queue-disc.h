@@ -47,6 +47,7 @@ protected:
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
 
+  Ptr<QueueDiscItem> VcpQueueDisc::DoDequeue (void);
   /**
    * \brief Initialize the queue parameters.
    *
