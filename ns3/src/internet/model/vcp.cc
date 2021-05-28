@@ -86,7 +86,7 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
   // return;
 
   // Update load state
-  m_loadState = (LoadState_t)tcb->m_vcpLoad;
+  m_loadState = (LoadState_t)tcb->m_vcpLoadIn;
   NS_LOG_DEBUG("(VCP) m_loadState=" << m_loadState);
 
   if (!m_cWndFractionalInit) {
