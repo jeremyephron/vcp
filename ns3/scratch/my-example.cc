@@ -271,6 +271,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0)); 
   Config::SetDefault ("ns3::TcpSocket::DelAckTimeout", TimeValue (Time (0)));
   Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
+  Config::SetDefault ("ns3::TcpSocketState::EnablePacing", BooleanValue (false));
 
   // Select TCP variant
   TypeId tcpTid;
