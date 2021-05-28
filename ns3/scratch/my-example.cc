@@ -327,7 +327,7 @@ main (int argc, char *argv[])
   sourceApp.Start (Seconds (0.0));
   sourceApp.Stop (Seconds ((double)time));
 
-  hostLink.EnableAsciiAll(asciiTraceHelper.createFileStream(dir + "p2p.tr"));
+  hostLink.EnableAsciiAll(asciiTraceHelper.CreateFileStream(dir + "p2p.tr"));
   hostLink.EnablePcapAll("p2pCap");
 
   /* Start tracing cwnd of the connection after the connection is established */
