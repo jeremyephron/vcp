@@ -3780,24 +3780,24 @@ TcpSocketBase::ReTxTimeout ()
   m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_LOSS);
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
   m_tcb->m_congState = TcpSocketState::CA_LOSS;
-  m_tcb->m_cWnd = m_tcb->m_segmentSize;
-  m_tcb->m_cWndInfl = m_tcb->m_cWnd;
+  //m_tcb->m_cWnd = m_tcb->m_segmentSize;
+  //m_tcb->m_cWndInfl = m_tcb->m_cWnd;
 
   m_pacingTimer.Cancel ();
 
-  NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
-                m_tcb->m_ssThresh << ", restart from seqnum " <<
-                m_txBuffer->HeadSequence () << " doubled rto to " <<
-                m_rto.Get ().GetSeconds () << " s");
+  //NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
+  //              m_tcb->m_ssThresh << ", restart from seqnum " <<
+  //              m_txBuffer->HeadSequence () << " doubled rto to " <<
+  //              m_rto.Get ().GetSeconds () << " s");
 
-  NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
-                 BytesInFlight ());
+  //NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
+  //               BytesInFlight ());
 
   SendPendingData (m_connected);
 
-  NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
-                 "In flight (" << BytesInFlight () <<
-                 ") there is more than one segment (" << m_tcb->m_segmentSize << ")");
+  //NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
+  //               "In flight (" << BytesInFlight () <<
+  //               ") there is more than one segment (" << m_tcb->m_segmentSize << ")");
 }
 
 void
