@@ -138,8 +138,79 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 void
+Vcp::CongControl(
+    Ptr<TcpSocketState> tcb,
+    const TcpRateOps::TcpRateConnection &rc,
+    const TcpRateOps::TcpRateSample &rs)
+{
+  Time rtt = tcb->m_lastRtt.Get();
+
+  NS_LOG_FUNCTION(this << tcb << rc << rs);
+  NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
+  // // tcb->m_cWnd = 14580;
+  // // return;
+
+  // Update load state
+  m_loadState = (LoadState_t)tcb->m_vcpLoadIn;
+  NS_LOG_DEBUG("(VCP) m_loadState=" << m_loadState);
+
+  if (!m_cWndFractionalInit) {
+    m_cWndFractional = static_cast<double>(tcb->m_cWnd);
+    m_cWndFractionalInit = true;
+  }
+
+  // If the load bits are not supported, fall back to TCP New Reno
+  if (m_loadState == LOAD_NOT_SUPPORTED) {
+    // TODO: What to do if not supported?
+    // TcpNewReno::PktsAcked(tcb, segmentsAcked, rtt);
+    // m_cWndFractional = static_cast<double>(tcb->m_cWnd);
+    return;
+  }
+
+  // Update RTT
+  m_lastRtt = rtt.GetMilliSeconds();
+
+  // Freeze cwnd after MD
+  if (m_mdFreeze && m_mdTimer.IsRunning()) {
+    NS_LOG_DEBUG("(VCP) freezing cwnd after MD");
+    return;
+  } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
+    m_mdFreeze = false;
+    m_mdTimer.SetFunction(&Vcp::Noop, this);
+    m_mdTimer.Schedule(rtt);
+  }
+
+  // Perform AI for one RTT after 
+  if (!m_mdFreeze && m_mdTimer.IsRunning()) {
+    NS_LOG_DEBUG("(VCP) one RTT of additive increase after MD freeze period");
+    AdditiveIncrease(tcb);
+    return;
+  } 
+
+  switch (m_loadState) {
+    case LOAD_LOW:
+      MultiplicativeIncrease(tcb);
+      break;
+    case LOAD_HIGH:
+      AdditiveIncrease(tcb);
+      break;
+    case LOAD_OVERLOAD:
+      MultiplicativeDecrease(tcb);
+      m_mdFreeze = true;
+      m_mdTimer.SetFunction(&Vcp::Noop, this);
+      m_mdTimer.Schedule(Time(m_estInterval * 1000000));
+      break;
+    default:
+      NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
+      break;
+  }
+}
+
+void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
+  return;
+
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
   NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
   // // tcb->m_cWnd = 14580;
