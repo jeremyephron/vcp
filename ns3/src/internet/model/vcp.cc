@@ -146,13 +146,12 @@ Vcp::CongControl(
     const TcpRateOps::TcpRateConnection &rc,
     const TcpRateOps::TcpRateSample &rs)
 {
+  return;
   // (VCP) TODO: potential place to do CC
   Time rtt = tcb->m_lastRtt.Get();
 
   NS_LOG_FUNCTION(this << tcb << &rc << &rs);
   NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
-  // // tcb->m_cWnd = 14580;
-  // // return;
 
   // Update load state
   m_loadState = (LoadState_t)tcb->m_vcpLoadIn;
@@ -214,12 +213,10 @@ void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   // (VCP) TODO: potential place to do CC
-  return;
+  // return;
 
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
   NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
-  // // tcb->m_cWnd = 14580;
-  // // return;
 
   // Update load state
   m_loadState = (LoadState_t)tcb->m_vcpLoadIn;

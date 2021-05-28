@@ -34,7 +34,7 @@ public:
     const TcpRateOps::TcpRateConnection &rc,
     const TcpRateOps::TcpRateSample &rs);
 
-  bool HasCongControl() const { return true; }
+  bool HasCongControl() const { return false; }
 
   void IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) override;
   Ptr<TcpCongestionOps> Fork() override;
