@@ -122,8 +122,8 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 static void
 TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
 {
-  FlowMonitor::FlowStats stats = flowMonitor->GetStatsForFlow(1);
-  *stream->GetStream() << stats.txBytes << std::endl;
+  FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
+  *stream->GetStream() << stats[1].txBytes << std::endl;
 
   Simulator::Schedule(Seconds(1.0), &TraceThroughput, flowMonitor, stream);
 }
