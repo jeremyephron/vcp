@@ -65,7 +65,7 @@ private:
 
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline double GetScaledXi(int64_t rtt) {
-    return pow(1 + m_xi, static_cast<double>(rtt) / m_estInterval) - 1;
+    return pow(1 + m_xi, static_cast<double>(80) / m_estInterval) - 1;
   }
 
   inline double GetScaledAlpha(int64_t rtt) {
