@@ -125,7 +125,7 @@ TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[1].txBytes << std::endl;
 
-  Simulator::Schedule(Seconds(1.0), &TraceThroughput, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
 }
 
 int
