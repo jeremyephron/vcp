@@ -107,7 +107,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   double load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
 
   // TODO: address this below
-  load_factor = load_factor * 1.3;
+  load_factor = load_factor * 1.;
 
   NS_LOG_DEBUG("(VCP) lambda_l=" << lambda_l
                << ", kappa_q=" << kappa_q
