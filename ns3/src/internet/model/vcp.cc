@@ -141,7 +141,7 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 bool
-Vcp::HasCongControl()
+Vcp::HasCongControl() const
 {
   return true;
 }
