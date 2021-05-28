@@ -143,7 +143,7 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 bool
 Vcp::HasCongControl() const
 {
-  return true;
+  return false;
 }
 
 void
@@ -152,7 +152,7 @@ Vcp::CongControl(
     const TcpRateOps::TcpRateConnection &rc,
     const TcpRateOps::TcpRateSample &rs)
 {
-  // return;
+  return;
   // (VCP) TODO: potential place to do CC
   Time rtt = tcb->m_lastRtt.Get();
 
@@ -219,7 +219,7 @@ void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   // (VCP) TODO: potential place to do CC
-  return;
+  // return;
 
   NS_LOG_FUNCTION(this << tcb << segmentsAcked << rtt);
   NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
