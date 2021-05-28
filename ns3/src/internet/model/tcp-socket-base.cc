@@ -3793,7 +3793,7 @@ TcpSocketBase::ReTxTimeout ()
   //NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
   //               BytesInFlight ());
 
-  // SendPendingData (m_connected);
+  SendPendingData (m_connected);
 
   //NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
   //               "In flight (" << BytesInFlight () <<
