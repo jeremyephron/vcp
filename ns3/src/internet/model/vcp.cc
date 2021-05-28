@@ -181,6 +181,7 @@ Vcp::CongControl(
     m_mdFreeze = false;
     m_mdTimer.SetFunction(&Vcp::Noop, this);
     m_mdTimer.Schedule(rtt);
+    NS_LOG_DEBUG("(VCP) set additive increase RTT=" << rtt);
   }
 
   // Perform AI for one RTT after 
