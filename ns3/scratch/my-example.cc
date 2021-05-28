@@ -362,6 +362,9 @@ main (int argc, char *argv[])
   //       you have actually not run the simulation yet. Complete the command
   //       below to run it.
   Simulator::Run();
+
+  flowMonitor->SerializeToXmlFile(dir + "flow_stats.xml");
+
   Simulator::Destroy ();
   return 0;
 }
