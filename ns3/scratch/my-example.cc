@@ -363,7 +363,7 @@ main (int argc, char *argv[])
   //       below to run it.
   Simulator::Run();
 
-  flowMonitor->SerializeToXmlFile(dir + "flow_stats.xml");
+  flowMonitor->SerializeToXmlFile(dir + "flow_stats.xml", true, true);
 
   Simulator::Destroy ();
   return 0;
