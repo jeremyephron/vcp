@@ -40,7 +40,6 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
-#include "ns3/flow-monitor-helper.h"
 
 using namespace ns3;
 
@@ -328,9 +327,8 @@ main (int argc, char *argv[])
   sourceApp.Start (Seconds (0.0));
   sourceApp.Stop (Seconds ((double)time));
 
-  Ptr<FlowMonitor> flowMonitor;
-  FlowMonitorHelper flowHelper;
-  flowMonitor = flowHelper.InstallAll();
+  hostLink.EnableAsciiAll(asciiTraceHelper.createFileStream(dir + "p2p.tr"));
+  hostLink.EnablePcapAll("p2pCap");
 
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
@@ -346,9 +344,6 @@ main (int argc, char *argv[])
   //       you have actually not run the simulation yet. Complete the command
   //       below to run it.
   Simulator::Run();
-
-  flowMonitor->SerializeToXmlFile("flow_monitor.xml", true, true);
-
   Simulator::Destroy ();
   return 0;
 }
