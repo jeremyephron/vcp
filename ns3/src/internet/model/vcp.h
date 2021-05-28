@@ -60,7 +60,7 @@ private:
   const double m_xi {0.0325}; // TODO: changed from correct val of 0.0625
 
   /* Load factor estimation interval in ms. */
-  const int64_t m_estInterval {200};
+  const int64_t m_estInterval {100};
 
   /* MI, AI, and MD algorithms. */
   void MultiplicativeIncrease(Ptr<TcpSocketState> tcb);
