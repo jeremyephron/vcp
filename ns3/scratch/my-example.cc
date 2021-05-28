@@ -40,6 +40,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
+#include "ns3/flow-monitor-helper.h"
 
 using namespace ns3;
 
@@ -118,6 +119,15 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
                                  MakeBoundCallback (&RttTracer, rttStream));
 }
 
+static void
+TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
+{
+  FlowMonitor::FlowStats stats = flowMonitor->GetStatsForFlow(1);
+  *stream->GetStream() << stats.txBytes << std::endl;
+
+  Simulator::Schedule(Seconds(1.0), &TraceThroughput, flowMonitor, stream);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -182,6 +192,10 @@ main (int argc, char *argv[])
   std::string rttStreamName = dir + "rtt.tr";
   Ptr<OutputStreamWrapper> rttStream;
   rttStream = asciiTraceHelper.CreateFileStream (rttStreamName);
+
+  std::string throughputStreamName = dir + "throughput.tr";
+  Ptr<OutputStreamWrapper> throughputStream;
+  throughputStream = asciiTraceHelper.CreateFileStream(throughputStreamName);
 
   /* In order to run simulations in NS-3, you need to set up your network all
    * the way from the physical layer to the application layer. But don't worry!
@@ -327,14 +341,18 @@ main (int argc, char *argv[])
   sourceApp.Start (Seconds (0.0));
   sourceApp.Stop (Seconds ((double)time));
 
-  hostLink.EnableAsciiAll(asciiTraceHelper.CreateFileStream(dir + "p2p.tr"));
-  hostLink.EnablePcapAll(dir + "p2pCap");
-
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
 
   /* Start tracing the RTT after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceRtt, rttStream);
+
+
+  Ptr<FlowMonitor> flowMonitor;
+  FlowMonitorHelper flowHelper;
+  flowMonitor = flowHelper.InstallAll();
+
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream);
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
