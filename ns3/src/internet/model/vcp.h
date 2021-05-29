@@ -76,7 +76,7 @@ private:
     return std::max(
       pow(1 + m_xi, static_cast<double>(rtt) / m_estInterval) - 1,
       0.0125 // (VCP) artificially chosen
-    )
+    );
   }
 
   inline double GetScaledAlpha(int64_t rtt) {
