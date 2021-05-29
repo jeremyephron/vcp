@@ -57,8 +57,8 @@ private:
   const double m_beta {0.875};
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
-  const double m_xi {0.00625}; // TODO: changed from correct val of 0.0625
-  const double m_xiBound {0.00625}; // (VCP) artificially chosen
+  const double m_xi {0.0125}; // TODO: changed from correct val of 0.0625
+  const double m_xiBound {1.0}; // (VCP) artificially chosen
 
   /* Load factor estimation interval in ms. */
   const int64_t m_estInterval {200};
