@@ -169,7 +169,7 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
   double tmp = m_cWndFractional * (1.f + GetScaledXi(m_lastRtt));
   
   // Avoid overflow
-  if (tmp < tcb->m_cWnd) {
+  if (static_cast<uint32_t>(tmp) < tcb->m_cWnd) {
     NS_LOG_DEBUG("(VCP) cwnd overflow!");
     return;
   }
@@ -190,7 +190,7 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
   double tmp = m_cWndFractional + GetScaledAlpha(m_lastRtt);
 
   // Avoid overflow
-  if (tmp < tcb->m_cWnd) {
+  if (static_cast<uint32_t>(tmp) < tcb->m_cWnd) {
     NS_LOG_DEBUG("(VCP) cwnd overflow!");
     return;
   }
