@@ -270,7 +270,7 @@ main (int argc, char *argv[])
                       TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0)); 
   Config::SetDefault ("ns3::TcpSocket::DelAckTimeout", TimeValue (Time (0)));
-  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (10));
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
   Config::SetDefault ("ns3::TcpSocketState::EnablePacing", BooleanValue (false));
 
   // Select TCP variant
