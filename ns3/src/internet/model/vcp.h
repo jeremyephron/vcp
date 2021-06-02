@@ -50,11 +50,11 @@ private:
     LOAD_OVERLOAD      = 0x3,
   } LoadState_t;
 
-  static const int64_t kDefaultEstInterval = 200000000; // ns
-  static const double kDefaultAlpha = 1.0;
-  static const double kDefaultXi = 0.0625;
-  static const double kDefaultBeta = 0.875;
-  static const double kDefaultXiBound = 1.0;
+  static constexpr int64_t kDefaultEstInterval = 200000000; // ns
+  static constexpr double kDefaultAlpha = 1.0;
+  static constexpr double kDefaultXi = 0.0625;
+  static constexpr double kDefaultBeta = 0.875;
+  static constexpr double kDefaultXiBound = 1.0;
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
   double m_xi {kDefaultXi};
