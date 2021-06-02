@@ -280,9 +280,9 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
-  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0)); 
-  Config::SetDefault ("ns3::TcpSocket::DelAckTimeout", TimeValue (Time (0)));
-  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
+  // Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (0)); 
+  // Config::SetDefault ("ns3::TcpSocket::DelAckTimeout", TimeValue (Time (0)));
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (10));
   Config::SetDefault ("ns3::TcpSocketState::EnablePacing", BooleanValue (false));
 
   // Select TCP variant
