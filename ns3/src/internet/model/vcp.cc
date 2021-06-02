@@ -23,27 +23,27 @@ Vcp::GetTypeId()
     .AddConstructor<Vcp>()
     .AddAttribute("EstimationInterval",
                   "Interval over which load factor is estimated.",
-                  TimeValue(NanoSeconds(kDefaultEstInterval)),
+                  TimeValue(MilliSeconds(200)),
                   MakeTimeAccessor(&Vcp::m_estInterval),
                   MakeTimeChecker())
     .AddAttribute("MIFactor",
                   "The multiplicative increase factor.",
-                  DoubleValue(Vcp::kDefaultXi),
+                  DoubleValue(0.0625),
                   MakeDoubleAccessor(&Vcp::m_xi),
                   MakeDoubleChecker<double>())
     .AddAttribute("AIFactor",
                   "The additive increase factor.",
-                  DoubleValue(Vcp::kDefaultAlpha),
+                  DoubleValue(1.0),
                   MakeDoubleAccessor(&Vcp::m_alpha),
                   MakeDoubleChecker<double>())
     .AddAttribute("MDFactor",
                   "The multiplicate decrease factor.",
-                  DoubleValue(Vcp::kDefaultBeta),
+                  DoubleValue(0.875),
                   MakeDoubleAccessor(&Vcp::m_beta),
                   MakeDoubleChecker<double>())
     .AddAttribute("ScaledMIBound",
                   "The upper bound on the scaled MI factor.",
-                  DoubleValue(Vcp::kDefaultXiBound),
+                  DoubleValue(1.0),
                   MakeDoubleAccessor(&Vcp::m_xiBound),
                   MakeDoubleChecker<double>())
   ;
