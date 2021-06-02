@@ -120,7 +120,7 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 }
 
 static void
-TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
+TraceThroughput1 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
 {
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[1].rxBytes << std::endl;
@@ -129,7 +129,7 @@ TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
 }
 
 static void
-TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
+TraceThroughput2 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
 {
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[3].rxBytes << std::endl;
