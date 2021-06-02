@@ -352,9 +352,9 @@ main (int argc, char *argv[])
     sourceApp.Stop (Seconds ((double)time));
   } 
 
-  Simulator::Schedule (Seconds (time / 5), &BytesSentTracer, bytesSentStream, tchPfifo2);
-  Simulator::Schedule (Seconds (time), &BytesSentTracer, bytesSentStream, tchPfifo2);
-  Simulator::Schedule (Seconds (time), &PacketDropsTracer, packetDropsStream, tchPfifo2);
+  Simulator::Schedule (Seconds (time / 5), &BytesSentTracer, bytesSentStream, s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (time), &BytesSentTracer, bytesSentStream, s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (time), &PacketDropsTracer, packetDropsStream, s0h2_QueueDiscs.Get(0));
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
