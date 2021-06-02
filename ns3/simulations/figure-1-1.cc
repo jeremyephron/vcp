@@ -258,9 +258,9 @@ main (int argc, char *argv[])
   NS_LOG_DEBUG("Configuring Channels...");
 
   PointToPointHelper host1Link;
-  hostLink.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
-  hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
-  hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
+  host1Link.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
+  host1Link.SetChannelAttribute ("Delay", StringValue (delayStr));
+  host1Link.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
   PointToPointHelper host2Link;
   host2Link.SetDeviceAttribute("DataRate", StringValue(bwHostStr));
@@ -370,7 +370,7 @@ main (int argc, char *argv[])
   address.NewNetwork ();
   Ipv4InterfaceContainer h2s0_interfaces = address.Assign (h2s0_NetDevices);
   address.NewNetwork ();
-  Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h3_NetDevices);
+  Ipv4InterfaceContainer s0h3_interfaces = address.Assign (s0h3_NetDevices);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
