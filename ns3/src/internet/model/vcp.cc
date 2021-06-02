@@ -55,7 +55,7 @@ Vcp::GetTypeId()
                   "TCP segment size",
                   UintegerValue(948),
                   MakeUintegerAccessor(&Vcp::m_segSize),
-                  MakeUintegerChecker())
+                  MakeUintegerChecker<uint32_t>())
   ;
 
   return tid;
