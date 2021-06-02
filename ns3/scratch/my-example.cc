@@ -141,6 +141,11 @@ main (int argc, char *argv[])
   int delay = 1; // milliseconds
   int time = 60; // seconds
   int maxQ = 100; // packets
+  int estInterval = 100; // ms
+  double xi = 0.0625;
+  double alpha = 1.0;
+  double beta = 0.875;
+  double xiBound = 1.0;
   std::string transport_prot = "Vcp";
 
   CommandLine cmd (__FILE__);
@@ -154,6 +159,11 @@ main (int argc, char *argv[])
                 "TcpScalable, TcpVeno, TcpBic, TcpYeah, TcpIllinois, "
                 "TcpWestwood, TcpLedbat, TcpLp, TcpDctcp, Vcp",
                 transport_prot);
+  cmd.AddValue ("estInterval", "VCP estimation interval (ms)", estInterval);
+  cmd.AddValue ("xi", "MI factor", xi);
+  cmd.AddValue ("alpha", "AI factor", alpha);
+  cmd.AddValue ("beta", "MD factor", beta);
+  cmd.AddValue ("xiBound", "Upper bound on scaled MI factor", xiBound);
   cmd.Parse (argc, argv);
 
   /* NS-3 is great when it comes to logging. It allows logging in different
@@ -280,6 +290,18 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType",
                       TypeIdValue (TypeId::LookupByName (transport_prot)));
 
+  // Set VCP params
+  Config::SetDefault ("ns3::Vcp::EstimationInterval",
+                      TimeValue(Milliseconds(estInterval)));
+  Config::SetDefault ("ns3::Vcp::MIFactor",
+                      DoubleValue(xi));
+  Config::SetDefault ("ns3::Vcp::AIFactor",
+                      DoubleValue(alpha));
+  Config::SetDefault ("ns3::Vcp::MDFactor",
+                      DoubleValue(beta));
+  Config::SetDefault ("ns3::Vcp::ScaledMIBound",
+                      DoubleValue(xiBound));
+
   /******** Install Internet Stack ********/
   NS_LOG_DEBUG("Installing Internet Stack...");
 
@@ -291,14 +313,17 @@ main (int argc, char *argv[])
   TrafficControlHelper tchPfifo;
   tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
-                             "LinkBandwidth", StringValue(bwHostStr));
+                             "LinkBandwidth", StringValue(bwHostStr),
+                             "TimeInterval", TimeValue(Milliseconds(estInterval)));
 
   tchPfifo.Install (h1s0_NetDevices);
 
   TrafficControlHelper tchPfifo2;
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
-                             "LinkBandwidth", StringValue(bwNetStr));
+                             "LinkBandwidth", StringValue(bwNetStr),
+                             "TimeInterval", TimeValue(Milliseconds(estInterval)));
+
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
   s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",

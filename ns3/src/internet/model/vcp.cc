@@ -21,6 +21,31 @@ Vcp::GetTypeId()
     .SetParent<TcpCongestionOps>()
     .SetGroupName("Internet")
     .AddConstructor<Vcp>()
+    .AddAttribute("EstimationInterval",
+                  "Interval over which load factor is estimated.",
+                  TimeValue(Nanoseconds(kEstIntervalDefault)),
+                  MakeTimeAccessor(&Vcp::m_estInterval),
+                  MakeTimeChecker())
+    .AddAttribute("MIFactor",
+                  "The multiplicative increase factor.",
+                  DoubleValue(kDefaultXi),
+                  MakeDoubleAccessor(&Vcp::m_xi),
+                  MakeDoubleChecker())
+    .AddAttribute("AIFactor",
+                  "The additive increase factor.",
+                  DoubleValue(kDefaultAlpha),
+                  MakeDoubleAccessor(&Vcp::m_alpha),
+                  MakeDoubleChecker())
+    .AddAttribute("MDFactor",
+                  "The multiplicate decrease factor.",
+                  DoubleValue(kDefaultBeta),
+                  MakeDoubleAccessor(&Vcp::m_beta),
+                  MakeDoubleChecker())
+    .AddAttribute("ScaledMIBound",
+                  "The upper bound on the scaled MI factor.",
+                  DoubleValue(kDefaultXiBound),
+                  MakeDoubleAccessor(&Vcp::m_xiBound),
+                  MakeDoubleChecker())
   ;
 
   return tid;

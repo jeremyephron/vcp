@@ -50,18 +50,25 @@ private:
     LOAD_OVERLOAD      = 0x3,
   } LoadState_t;
 
-  /* Additive increase factor: cwnd(t + 1) := cwnd(t) + alpha. */
-  const double m_alpha {1.0};
-
-  /* Multiplicative decrease factor: cwnd(t + 1) := cwnd(t) * beta. */
-  const double m_beta {0.875};
+  const int64_t kDefaultEstInterval {200000000}; // ns
+  const double kDefaultAlpha {1.0};
+  const double kDefaultXi {0.0625};
+  const double kDefaultBeta {0.875};
+  const double kDefaultXiBound {1.0};
 
   /* Multiplicative increase factor: cwnd(t + 1) := cwnd(t) * (1 + xi). */
-  const double m_xi {0.0125}; // TODO: changed from correct val of 0.0625
-  const double m_xiBound {1.0}; // (VCP) artificially chosen
+  double m_xi {kDefaultXi};
 
-  /* Load factor estimation interval in ms. */
-  const int64_t m_estInterval {200};
+  /* Additive increase factor: cwnd(t + 1) := cwnd(t) + alpha. */
+  double m_alpha {kDefaultAlpha};
+
+  /* Multiplicative decrease factor: cwnd(t + 1) := cwnd(t) * beta. */
+  double m_beta {kDefaultBeta};
+
+  double m_xiBound {kDefaultXiBound};
+
+  /* Load factor estimation interval in ns. */
+  Time m_estInterval {Time(kEstIntervalDefault)};
 
   /* MI, AI, and MD algorithms. */
   void MultiplicativeIncrease(Ptr<TcpSocketState> tcb);
