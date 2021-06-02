@@ -112,7 +112,7 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 bool
 Vcp::HasCongControl() const
 {
-  return false;
+  return true;
 }
 
 void
@@ -121,7 +121,7 @@ Vcp::CongControl(
     const TcpRateOps::TcpRateConnection &rc,
     const TcpRateOps::TcpRateSample &rs)
 {
-  return;
+  // return;
   // (VCP) TODO: potential place to do CC
 
   // Update RTT
@@ -190,7 +190,7 @@ Vcp::CongControl(
 void
 Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
-  // return;
+  return;
   // (VCP) TODO: potential place to do CC
 
   // Update RTT
