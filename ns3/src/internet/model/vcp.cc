@@ -316,6 +316,11 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
     return;
   }
 
+  if (tmp - m_prevCWnd > m_segSize) {
+    NS_LOG_DEBUG("(VCP) hit max cwnd additive increase, tmp=" << tmp << ", m_prevCwnd=" << m_prevCWnd);
+    tmp = std::max(m_prevCWnd + m_segSize, tcb->m_cWnd);
+  }
+
   m_cWndFractional = tmp;
   NS_LOG_DEBUG("New cwndFrac = " << m_cWndFractional);
   tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
