@@ -62,9 +62,6 @@ static void
 QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
                      uint32_t oldval, uint32_t newval)
 {
-  NS_LOG_INFO (Simulator::Now ().GetSeconds () <<
-               " Queue Disc size from " << oldval << " to " << newval);
-
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                         << newval << std::endl;
 }
