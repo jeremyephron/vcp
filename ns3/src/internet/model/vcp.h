@@ -62,7 +62,7 @@ private:
   double m_xiBound {1.0};
 
   /* Load factor estimation interval in ns. */
-  Time m_estInterval {Milliseconds(200)};
+  Time m_estInterval {MilliSeconds(200)};
 
   /* MI, AI, and MD algorithms. */
   void MultiplicativeIncrease(Ptr<TcpSocketState> tcb);
