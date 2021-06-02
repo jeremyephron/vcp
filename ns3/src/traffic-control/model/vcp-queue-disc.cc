@@ -59,12 +59,15 @@ VcpQueueDisc::VcpQueueDisc () :
   NS_LOG_FUNCTION (this);
   m_queue_size_sample_timer.SetFunction(&VcpQueueDisc::SampleQueueSize, this);
   m_queue_size_sample_timer.Schedule(m_QueueSampleInterval);
+  m_load_factor_timer.SetFactor(&VcpQueueDisc::CalcLoadFactor, this);
+  m_load_factor_timer.Schedule(m+timeInterval);
 }
 
 VcpQueueDisc::~VcpQueueDisc ()
 {
-    NS_LOG_FUNCTION (this);
-    m_queue_size_sample_timer.Cancel();
+  NS_LOG_FUNCTION (this);
+  m_queue_size_sample_timer.Cancel();
+  m_load_factor_timer.Cancel();
 }
 
 void
@@ -82,41 +85,9 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_DEBUG("(VCP) packet=" << item->GetPacket()->ToString());
   NS_LOG_DEBUG("(VCP) VcpQueueDisc::this=" << this);
 
-  // add to recent arrivals queue
-  Time now = Simulator::Now();
-  recent_packet_arrivals.push(now);
+  // add to recent arrivals counter
+  m_recent_arrivals++;
 
-  // remove old (no longer recent arrivals)
-  if (!recent_packet_arrivals.empty()) {
-    while (now.GetMilliSeconds() - recent_packet_arrivals.front().GetMilliSeconds()
-           > m_timeInterval.GetMilliSeconds()) {
-      recent_packet_arrivals.pop();
-    }
-  }
-
-  double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
-  int recent_arrivals = recent_packet_arrivals.size ();
-
-  // Use naming convention from paper for clarity
-  double lambda_l = recent_arrivals;
-  double kappa_q = m_kq;
-  double q_tilde_l = persist_q_size;
-  double gamma_l = m_target_util;
-  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.); // TODO: divide by 1000?
-  double t_rho = m_timeInterval.GetMilliSeconds() / 1000.;
-  double load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
-
-  // TODO: address this below
-  load_factor = load_factor * 1.;
-
-  NS_LOG_DEBUG("(VCP) lambda_l=" << lambda_l
-               << ", kappa_q=" << kappa_q
-               << ", q_tilde_l=" << q_tilde_l
-               << ", gamma_l=" << gamma_l
-               << ", C_l=" << C_l
-               << ", t_rho=" << t_rho
-               << ", load_factor=" << load_factor);
-  
   // Update vcp tag with worst load (highest load factor bits)
   VcpPacketTag vcpTag;
   VcpPacketTag::LoadType prevLoad = VcpPacketTag::LOAD_NOT_SUPPORTED;
@@ -124,17 +95,17 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     prevLoad = vcpTag.GetLoad();
   }
 
-  if (load_factor < .8) {
+  if (m_load_factor < .8) {
     if (prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
       vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
       NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
     }
-  } else if (load_factor < 1.) {
+  } else if (m_load_factor < 1.) {
     if (prevLoad <= VcpPacketTag::LOAD_LOW) {
       vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
       NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
     }
-  } else if (load_factor >= 1.) {
+  } else if (m_load_factor >= 1.) {
     vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
     NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
   }
@@ -193,6 +164,31 @@ VcpQueueDisc::SampleQueueSize()
   m_queue_size_sample_timer.SetFunction(&VcpQueueDisc::SampleQueueSize, this);
   m_queue_size_sample_timer.Cancel();
   m_queue_size_sample_timer.Schedule(m_QueueSampleInterval);
+}
+
+void
+VcpQueueDisc::CalcLoadFactor()
+{
+  Time now = Simulator::Now();
+
+  double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
+
+  // Use naming convention from paper for clarity
+  double lambda_l = m_recent_arrivals;
+  m_recent_arrivals = 0;
+  double kappa_q = m_kq;
+  double q_tilde_l = persist_q_size;
+  double gamma_l = m_target_util;
+  double C_l = m_linkBandwidth.GetBitRate() / (1000. * 8.); // TODO: divide by 1000?
+  double t_rho = m_timeInterval.GetMilliSeconds() / 1000.;
+  m_load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
+
+  // TODO: address this below
+  m_load_factor = load_factor * 1.;
+
+  m_load_factor_timer.SetFunction(&VcpQueueDisc::CalcLoadFactor, this);
+  m_load_factor_timer.Cancel();
+  m_load_factor_timer.Schedule(m_timeInterval);
 }
 
 } // namespace ns3
