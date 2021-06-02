@@ -186,7 +186,7 @@ VcpQueueDisc::CalcLoadFactor()
   m_load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
 
   // TODO: address this below
-  m_load_factor = m_load_factor * 1. + 0.1;
+  m_load_factor = m_load_factor * 1. + 0.0;
 
   NS_LOG_DEBUG("lambda_l=" << lambda_l << ", m_load_factor=" << m_load_factor);
 
