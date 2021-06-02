@@ -202,9 +202,7 @@ main (int argc, char *argv[])
    */
   NS_LOG_DEBUG("Configuring Channels...");
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.0.0.0", "255.255.255.0");
-  
+  std::vector<NetDeviceContainer> netDevices; 
   uint32_t tcpSegmentSize;
   for (int i = 2; i < numFlows + 2; i++) {
     Ptr<Node> h1 = nodes.Get(i); // sender
@@ -214,29 +212,17 @@ main (int argc, char *argv[])
     hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
     NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
+    netDevices.push_back(h1s0_NetDevices);
     
     PppHeader ppph;
     Ipv4Header ipv4h;
     TcpHeader tcph;
-
+    
     tcpSegmentSize = h1s0_NetDevices.Get (0)->GetMtu ()
                             - ppph.GetSerializedSize ()
                             - ipv4h.GetSerializedSize ()
                             - tcph.GetSerializedSize ();
 
-    // DONE: Read documentation for PfifoFastQueueDisc and use the correct
-    //       attribute name to set the size of the bottleneck queue.
-    NS_LOG_DEBUG("Line 229");
-    TrafficControlHelper tchPfifo;
-    tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
-                               "MaxSize", StringValue(maxQStr),
-                               "LinkBandwidth", StringValue(bwNonBottleneckStr),
-                               "TimeInterval", TimeValue(MilliSeconds(estInterval)));
-    NS_LOG_DEBUG("Line 235");
-    tchPfifo.Install(h1s0_NetDevices);
-
-    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
-    address.NewNetwork ();
   } 
 
   PointToPointHelper bottleneckLink;
@@ -305,14 +291,29 @@ main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.InstallAll ();
 
-  NS_LOG_DEBUG("Line 308");
+  Ipv4AddressHelper address;
+  address.SetBase ("10.0.0.0", "255.255.255.0");
+  for (int i = 2; i < numFlows + 2; i++) {
+    // DONE: Read documentation for PfifoFastQueueDisc and use the correct
+    //       attribute name to set the size of the bottleneck queue.
+    TrafficControlHelper tchPfifo;
+    tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
+                               "MaxSize", StringValue(maxQStr),
+                               "LinkBandwidth", StringValue(bwNonBottleneckStr),
+                               "TimeInterval", TimeValue(MilliSeconds(estInterval)));
+    tchPfifo.Install(h1s0_NetDevices);
+
+    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
+    address.NewNetwork ();
+  } 
+
+
   TrafficControlHelper tchPfifo2;
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "LinkBandwidth", StringValue(bwBottleneckStr),
                              "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
-  NS_LOG_DEBUG("Line 315");
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
   s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
