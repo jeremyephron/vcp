@@ -116,7 +116,7 @@ Vcp::CwndEvent (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t even
   NS_LOG_FUNCTION (this);
   if (event == TcpSocketState::TcpCAEvent_t::CA_EVENT_LOSS) {
     NS_LOG_DEBUG ("Received a LOSS event, performing MD");
-    tcb->m_vcpLoadIn = VcpPacketTag::OVERLOAD;
+    tcb->m_vcpLoadIn = VcpPacketTag::LOAD_OVERLOAD;
     TcpRateOps::TcpRateConnection rc;
     TcpRateOps::TcpRateSample rs;
     CongControl (tcb, rc, rs);
