@@ -148,6 +148,7 @@ Vcp::CongControl(
   m_lastRtt = rtt.GetMilliSeconds();
 
   if (!m_cWndIncreaseTimer.IsRunning()) {
+    NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
     m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
     m_cWndIncreaseTimer.Schedule(Milliseconds(m_lastRtt));
   }
@@ -211,7 +212,7 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
   }
   
   if (tmp / m_prevCWnd > m_maxCWndIncreasePerRtt) {
-    NS_LOG_DEBUG("(VCP) hit max cwnd increase");
+    NS_LOG_DEBUG("(VCP) hit max cwnd increase, tmp=" << tmp << ", m_prevCwnd=" << m_prevCWnd);
     return;
   }
 
