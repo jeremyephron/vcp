@@ -23,7 +23,7 @@ Vcp::GetTypeId()
     .AddConstructor<Vcp>()
     .AddAttribute("EstimationInterval",
                   "Interval over which load factor is estimated.",
-                  TimeValue(Nanoseconds(kEstIntervalDefault)),
+                  TimeValue(NanoSeconds(kDefaultEstInterval)),
                   MakeTimeAccessor(&Vcp::m_estInterval),
                   MakeTimeChecker())
     .AddAttribute("MIFactor",

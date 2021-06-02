@@ -292,7 +292,7 @@ main (int argc, char *argv[])
 
   // Set VCP params
   Config::SetDefault ("ns3::Vcp::EstimationInterval",
-                      TimeValue(Milliseconds(estInterval)));
+                      TimeValue(MilliSeconds(estInterval)));
   Config::SetDefault ("ns3::Vcp::MIFactor",
                       DoubleValue(xi));
   Config::SetDefault ("ns3::Vcp::AIFactor",
@@ -314,7 +314,7 @@ main (int argc, char *argv[])
   tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "LinkBandwidth", StringValue(bwHostStr),
-                             "TimeInterval", TimeValue(Milliseconds(estInterval)));
+                             "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
   tchPfifo.Install (h1s0_NetDevices);
 
@@ -322,7 +322,7 @@ main (int argc, char *argv[])
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "LinkBandwidth", StringValue(bwNetStr),
-                             "TimeInterval", TimeValue(Milliseconds(estInterval)));
+                             "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
