@@ -87,7 +87,62 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   // add to recent arrivals counter
   m_recent_arrivals++;
+  /*
+  // Update vcp tag with worst load (highest load factor bits)
+  VcpPacketTag vcpTag;
+  VcpPacketTag::LoadType prevLoad = VcpPacketTag::LOAD_NOT_SUPPORTED;
+  if (item->GetPacket()->PeekPacketTag(vcpTag)) {
+    prevLoad = vcpTag.GetLoad();
+  }
 
+  if (m_load_factor < .8) {
+    if (prevLoad == VcpPacketTag::LOAD_NOT_SUPPORTED) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_LOW); 
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=LOW");
+    }
+  } else if (m_load_factor < 1.) {
+    if (prevLoad <= VcpPacketTag::LOAD_LOW) {
+      vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_HIGH);
+      NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=HIGH");
+    }
+  } else if (m_load_factor >= 1.) {
+    vcpTag.SetLoad (VcpPacketTag::LoadType::LOAD_OVERLOAD);
+    NS_LOG_DEBUG("(VCP) previousLoad=" << prevLoad << ", newLoad=OVERLOAD");
+  }
+
+  item->GetPacket ()->ReplacePacketTag (vcpTag);
+  */
+  if (GetCurrentSize () + item > GetMaxSize ())
+    {
+      NS_LOG_LOGIC ("Queue full -- dropping pkt");
+      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
+      return false;
+    }
+
+  bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
+
+  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
+  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
+
+  return retval; 
+}
+
+Ptr<QueueDiscItem>
+VcpQueueDisc::DoDequeue (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
+
+  if (!item)
+    {
+      NS_LOG_LOGIC ("Queue empty");
+      return 0;
+    }
+  
   // Update vcp tag with worst load (highest load factor bits)
   VcpPacketTag vcpTag;
   VcpPacketTag::LoadType prevLoad = VcpPacketTag::LOAD_NOT_SUPPORTED;
@@ -112,22 +167,7 @@ VcpQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   item->GetPacket ()->ReplacePacketTag (vcpTag);
 
-  if (GetCurrentSize () + item > GetMaxSize ())
-    {
-      NS_LOG_LOGIC ("Queue full -- dropping pkt");
-      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
-      return false;
-    }
-
-  bool retval = GetInternalQueue (0)->Enqueue (item);
-
-  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
-  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
-
-  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
-  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
-
-  return retval; 
+  return item;
 }
 
 void
