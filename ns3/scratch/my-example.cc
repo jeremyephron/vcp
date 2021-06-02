@@ -123,7 +123,7 @@ static void
 TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
 {
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
-  *stream->GetStream() << stats[1].txBytes << std::endl;
+  *stream->GetStream() << stats[1].rxBytes << std::endl;
 
   Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
 }
