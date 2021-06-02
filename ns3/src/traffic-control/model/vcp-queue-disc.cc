@@ -144,7 +144,7 @@ VcpQueueDisc::SampleQueueSize()
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_DEBUG("(VCP) this=" << this); // TODO: delete
+  // NS_LOG_DEBUG("(VCP) this=" << this); // TODO: delete
 
   if (recent_queue_sizes.size () >=
           (size_t) (m_timeInterval.ToInteger(Time::Unit::MS) /
@@ -156,7 +156,7 @@ VcpQueueDisc::SampleQueueSize()
 
   uint32_t cur_size = GetCurrentSize ().GetValue ();
 
-  NS_LOG_DEBUG ("(VCP) Current queue size=" << cur_size);
+  // NS_LOG_DEBUG ("(VCP) Current queue size=" << cur_size);
   
   recent_queue_sizes.push (cur_size);
   m_qsizes_sum += cur_size;
@@ -169,6 +169,8 @@ VcpQueueDisc::SampleQueueSize()
 void
 VcpQueueDisc::CalcLoadFactor()
 {
+  NS_LOG_FUNCTION(this);
+
   Time now = Simulator::Now();
 
   double persist_q_size = (double) m_qsizes_sum / recent_queue_sizes.size ();
@@ -185,6 +187,8 @@ VcpQueueDisc::CalcLoadFactor()
 
   // TODO: address this below
   m_load_factor = m_load_factor * 1.;
+
+  NS_LOG_DEBUG("lambda_l=" << lambda_l << ", m_load_factor=" << m_load_factor);
 
   m_load_factor_timer.SetFunction(&VcpQueueDisc::CalcLoadFactor, this);
   m_load_factor_timer.Cancel();
