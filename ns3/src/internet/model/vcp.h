@@ -68,7 +68,7 @@ private:
   double m_xiBound {kDefaultXiBound};
 
   /* Load factor estimation interval in ns. */
-  Time m_estInterval {Time(kEstIntervalDefault)};
+  Time m_estInterval {Time(kDefaultEstInterval)};
 
   /* MI, AI, and MD algorithms. */
   void MultiplicativeIncrease(Ptr<TcpSocketState> tcb);
