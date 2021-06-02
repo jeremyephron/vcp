@@ -406,10 +406,10 @@ main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream);
 
-  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
-  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get (0));
+  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
