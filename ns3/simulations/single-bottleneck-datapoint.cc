@@ -46,7 +46,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SingleBottleneckDatapoint");
 
-static double TRACE_START_TIME = 0.05;
 
 /* Tracing is one of the most valuable features of a simulation environment.
  * It means we can get to see evolution of any value / state we are interested
@@ -81,7 +80,7 @@ PacketDropsTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 {
   QueueDisc::Stats stats = q->GetStats();
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
-                       << stats->nTotalDroppedPackets << " drops" << std::endl;
+                       << stats.nTotalDroppedPackets << " drops" << std::endl;
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                        << stats.nTotalDroppedPackets + stats.nTotalSentPackets
                        << " total" << std::endl;
