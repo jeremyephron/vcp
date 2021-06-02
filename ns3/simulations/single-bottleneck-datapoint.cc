@@ -226,12 +226,13 @@ main (int argc, char *argv[])
 
     // DONE: Read documentation for PfifoFastQueueDisc and use the correct
     //       attribute name to set the size of the bottleneck queue.
+    NS_LOG_DEBUG("Line 229");
     TrafficControlHelper tchPfifo;
     tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                                "MaxSize", StringValue(maxQStr),
                                "LinkBandwidth", StringValue(bwNonBottleneckStr),
                                "TimeInterval", TimeValue(MilliSeconds(estInterval)));
-
+    NS_LOG_DEBUG("Line 235");
     tchPfifo.Install(h1s0_NetDevices);
 
     Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
@@ -304,12 +305,14 @@ main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.InstallAll ();
 
+  NS_LOG_DEBUG("Line 308");
   TrafficControlHelper tchPfifo2;
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "LinkBandwidth", StringValue(bwBottleneckStr),
                              "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
+  NS_LOG_DEBUG("Line 315");
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
   s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
