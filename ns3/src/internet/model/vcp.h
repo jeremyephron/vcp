@@ -99,7 +99,7 @@ private:
 
   Timer m_cWndIncreaseTimer;
   uint32_t m_prevCWnd;
-  double m_maxCWndIncreasePerRtt {2.0};
+  double m_maxCWndIncreasePerRtt {1.0625};
 
   /* Fractional cwnd. */
   double m_cWndFractional;

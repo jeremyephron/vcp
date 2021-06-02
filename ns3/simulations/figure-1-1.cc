@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   double alpha = 1.0;
   double beta = 0.875;
   double xiBound = 1.0;
-  double maxCwndInc = 2.0;
+  double maxCwndInc = 1 + xi;
   std::string transport_prot = "Vcp";
 
   CommandLine cmd (__FILE__);

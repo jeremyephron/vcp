@@ -48,7 +48,7 @@ Vcp::GetTypeId()
                   MakeDoubleChecker<double>())
     .AddAttribute("MaxCWndIncreasePerRtt",
                   "The maximum fraction by which cwnd can increase in one RTT.",
-                  DoubleValue(2.0),
+                  DoubleValue(1.0625),
                   MakeDoubleAccessor(&Vcp::m_maxCWndIncreasePerRtt),
                   MakeDoubleChecker<double>())
     .AddAttribute("SegSize",
