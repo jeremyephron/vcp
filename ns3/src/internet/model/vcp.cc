@@ -210,7 +210,7 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
   
   if (tmp / m_prevCWnd > m_maxCWndIncreasePerRtt) {
     NS_LOG_DEBUG("(VCP) hit max cwnd increase, tmp=" << tmp << ", m_prevCwnd=" << m_prevCWnd);
-    tmp = m_prevCwnd * m_maxCWndIncreasePerRtt;
+    tmp = m_prevCWnd * m_maxCWndIncreasePerRtt;
   }
 
   m_cWndFractional = tmp;
