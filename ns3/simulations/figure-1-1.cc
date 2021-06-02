@@ -125,7 +125,7 @@ TraceThroughput1 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[1].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput1, flowMonitor, stream);
 }
 
 static void
@@ -134,7 +134,7 @@ TraceThroughput2 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[3].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput2, flowMonitor, stream);
 }
 
 static void
