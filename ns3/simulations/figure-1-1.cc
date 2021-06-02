@@ -418,8 +418,10 @@ main (int argc, char *argv[])
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream, &1);
-  Simulator::Schedule (Seconds (120), &TraceThroughput, flowMonitor, throughputStream2, &3);
+  int idx1 = 1;
+  int idx2 = 3;
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream, &idx1);
+  Simulator::Schedule (Seconds (120), &TraceThroughput, flowMonitor, throughputStream2, &idx2);
 
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
   Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
