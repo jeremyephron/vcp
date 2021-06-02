@@ -32,6 +32,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include "ns3/core-module.h"
 #include "ns3/applications-module.h"
@@ -301,9 +302,9 @@ main (int argc, char *argv[])
                                "MaxSize", StringValue(maxQStr),
                                "LinkBandwidth", StringValue(bwNonBottleneckStr),
                                "TimeInterval", TimeValue(MilliSeconds(estInterval)));
-    tchPfifo.Install(h1s0_NetDevices);
+    tchPfifo.Install(netDevices[i]);
 
-    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
+    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (netDevices[i]);
     address.NewNetwork ();
   } 
 
