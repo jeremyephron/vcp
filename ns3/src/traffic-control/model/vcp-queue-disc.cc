@@ -59,8 +59,8 @@ VcpQueueDisc::VcpQueueDisc () :
   NS_LOG_FUNCTION (this);
   m_queue_size_sample_timer.SetFunction(&VcpQueueDisc::SampleQueueSize, this);
   m_queue_size_sample_timer.Schedule(m_QueueSampleInterval);
-  m_load_factor_timer.SetFactor(&VcpQueueDisc::CalcLoadFactor, this);
-  m_load_factor_timer.Schedule(m+timeInterval);
+  m_load_factor_timer.SetFunction(&VcpQueueDisc::CalcLoadFactor, this);
+  m_load_factor_timer.Schedule(m_timeInterval);
 }
 
 VcpQueueDisc::~VcpQueueDisc ()
@@ -184,7 +184,7 @@ VcpQueueDisc::CalcLoadFactor()
   m_load_factor = (lambda_l + kappa_q * q_tilde_l) / (gamma_l * C_l * t_rho);
 
   // TODO: address this below
-  m_load_factor = load_factor * 1.;
+  m_load_factor = m_load_factor * 1.;
 
   m_load_factor_timer.SetFunction(&VcpQueueDisc::CalcLoadFactor, this);
   m_load_factor_timer.Cancel();

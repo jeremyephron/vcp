@@ -72,7 +72,7 @@ private:
   uint32_t m_qsizes_sum {0};            //!< Sum of queue sizes queue
   std::queue<uint32_t> recent_queue_sizes; //!< recent samples of queue size
   size_t m_recent_arrivals {0}; //!< number of packet arrivals during current time interval
-  double m_load_factor {0.0} //!< current load factor for most recent time interval
+  double m_load_factor {0.0}; //!< current load factor for most recent time interval
   Timer m_queue_size_sample_timer; //!< time interval for sampling queue size
   Timer m_load_factor_timer; //!< time interval for re-calculating load factor
 
