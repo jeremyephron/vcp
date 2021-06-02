@@ -170,7 +170,7 @@ Vcp::CongControl(
       MultiplicativeDecrease(tcb);
       m_mdFreeze = true;
       m_mdTimer.SetFunction(&Vcp::Noop, this);
-      m_mdTimer.Schedule(Time(m_estInterval * 1000000));
+      m_mdTimer.Schedule(m_estInterval);
       break;
     default:
       NS_LOG_DEBUG("loadState = " << m_loadState << ", something went wrong.");
