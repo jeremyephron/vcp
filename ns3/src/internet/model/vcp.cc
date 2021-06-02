@@ -135,7 +135,10 @@ Vcp::CongControl(
   if (!m_cWndFractionalInit) {
     m_cWndFractional = static_cast<double>(tcb->m_cWnd);
     m_cWndFractionalInit = true;
+
     m_prevCWnd = tcb->m_cWnd;
+    m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
+    m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
@@ -147,12 +150,6 @@ Vcp::CongControl(
 
   // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
-
-  if (!m_cWndIncreaseTimer.IsRunning()) {
-    NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
-    m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
-    m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
-  }
 
   // Freeze cwnd after MD
   if (m_mdFreeze && m_mdTimer.IsRunning()) {
@@ -270,7 +267,15 @@ Vcp::EndMdFreezePeriod()
 void
 Vcp::StorePrevCwnd()
 {
+  NS_LOG_FUNCTION(this);
+
   m_prevCWnd = static_cast<uint32_t>(m_cWndFractional);
+  NS_LOG_DEBUG("(VCP) stored m_prevCWnd=" << m_prevCWnd);
+
+  NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
+  m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
+  m_cWndIncreaseTimer.Cancel();
+  m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
 }
 
 } // namespace ns3
