@@ -120,13 +120,12 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 }
 
 static void
-TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream, Ptr<OutputStreamWrapper> stream2)
+TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream, int idx)
 {
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
-  *stream->GetStream() << stats[1].rxBytes << std::endl;
-  *stream2->GetStream() << stats[2].rxBytes << std::endl;
+  *stream->GetStream() << stats[idx].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream, stream2);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
 }
 
 static void
@@ -419,7 +418,8 @@ main (int argc, char *argv[])
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream, throughputStream2);
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream, 1);
+  Simulator::Schedule (Seconds (120), &TraceThroughput, flowMonitor, throughputStream2, 3);
 
   Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
   Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
