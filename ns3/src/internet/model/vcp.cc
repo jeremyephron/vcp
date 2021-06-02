@@ -51,6 +51,11 @@ Vcp::GetTypeId()
                   DoubleValue(2.0),
                   MakeDoubleAccessor(&Vcp::m_maxCWndIncreasePerRtt),
                   MakeDoubleChecker<double>())
+    .AddAttribute("SegSize",
+                  "TCP segment size",
+                  UintegerValue(948),
+                  MakeUintegerAccessor(&Vcp::m_segSize),
+                  MakeUintegerChecker())
   ;
 
   return tid;
@@ -303,7 +308,7 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
   NS_LOG_DEBUG("Previous cwndFrac = " << m_cWndFractional);
 
-  double tmp = m_cWndFractional + GetScaledAlpha(m_lastRtt);
+  double tmp = m_cWndFractional + GetScaledAlpha(m_lastRtt) * m_segSize;
 
   // Avoid overflow
   if (static_cast<uint32_t>(tmp) < tcb->m_cWnd) {

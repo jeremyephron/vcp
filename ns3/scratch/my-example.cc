@@ -305,6 +305,8 @@ main (int argc, char *argv[])
                       DoubleValue(xiBound));
   Config::SetDefault ("ns3::Vcp::MaxCWndIncreasePerRtt",
                       DoubleValue(maxCwndInc));
+  Config::SetDefault ("ns3::Vcp::SegSize",
+                      UintegerValue(tcpSegmentSize));
 
   /******** Install Internet Stack ********/
   NS_LOG_DEBUG("Installing Internet Stack...");

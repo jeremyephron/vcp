@@ -105,6 +105,8 @@ private:
   double m_cWndFractional;
   bool m_cWndFractionalInit {false};
 
+  uint32_t m_segSize {948};
+
 };
 
 } // namespace ns3
