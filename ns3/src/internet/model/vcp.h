@@ -89,7 +89,7 @@ private:
 
   inline double GetScaledAlpha(int64_t rtt) {
     return (m_alpha * (static_cast<double>(rtt) / m_estInterval.GetMilliSeconds()) 
-                    * (static_cast<double>(rtt) / m_estInterval.GetMilliSeconds));
+                    * (static_cast<double>(rtt) / m_estInterval.GetMilliSeconds()));
   }
 
   /* The load state of the connection. */
