@@ -123,7 +123,9 @@ Vcp::CongControl(
 {
   // return;
   // (VCP) TODO: potential place to do CC
-  Time rtt = tcb->m_lastRtt.Get();
+
+  // Update RTT
+  m_lastRtt = tcb->m_lastRtt.Get().GetMilliSeconds();
 
   NS_LOG_FUNCTION(this << tcb << &rc << &rs);
   NS_LOG_DEBUG("(VCP) tcb->m_cWnd=" << tcb->m_cWnd);
@@ -148,9 +150,6 @@ Vcp::CongControl(
     return;
   }
 
-  // Update RTT
-  m_lastRtt = rtt.GetMilliSeconds();
-
   // Freeze cwnd after MD
   if (m_mdFreeze && m_mdTimer.IsRunning()) {
     NS_LOG_DEBUG("(VCP) freezing cwnd after MD");
@@ -158,8 +157,8 @@ Vcp::CongControl(
   } else if (m_mdFreeze && m_mdTimer.IsExpired()) {
     m_mdFreeze = false;
     m_mdTimer.SetFunction(&Vcp::Noop, this);
-    m_mdTimer.Schedule(rtt);
-    NS_LOG_DEBUG("(VCP) set additive increase RTT=" << rtt);
+    m_mdTimer.Schedule(MilliSeconds(m_lastRtt));
+    NS_LOG_DEBUG("(VCP) set additive increase RTT=" << m_lastRtt);
   }
 
   // Perform AI for one RTT after 
