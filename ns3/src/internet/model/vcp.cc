@@ -109,6 +109,20 @@ Vcp::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
   return;
 }
 
+void
+Vcp::CwndEvent (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event)
+{
+  // (VCP): Take into account packet losses by performing MD
+  NS_LOG_FUNCTION (this);
+  if (event == TcpSocketState::TcpCAEvent_t::CA_EVENT_LOSS) {
+    NS_LOG_DEBUG ("Received a LOSS event, performing MD");
+    tcb->m_vcpLoadIn = VcpPacketTag::OVERLOAD;
+    TcpRateOps::TcpRateConnection rc;
+    TcpRateOps::TcpRateSample rs;
+    CongControl (tcb, rc, rs);
+  }
+}
+
 bool
 Vcp::HasCongControl() const
 {
