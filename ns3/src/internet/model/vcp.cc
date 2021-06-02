@@ -30,22 +30,22 @@ Vcp::GetTypeId()
                   "The multiplicative increase factor.",
                   DoubleValue(kDefaultXi),
                   MakeDoubleAccessor(&Vcp::m_xi),
-                  MakeDoubleChecker())
+                  MakeDoubleChecker<double>())
     .AddAttribute("AIFactor",
                   "The additive increase factor.",
                   DoubleValue(kDefaultAlpha),
                   MakeDoubleAccessor(&Vcp::m_alpha),
-                  MakeDoubleChecker())
+                  MakeDoubleChecker<double>())
     .AddAttribute("MDFactor",
                   "The multiplicate decrease factor.",
                   DoubleValue(kDefaultBeta),
                   MakeDoubleAccessor(&Vcp::m_beta),
-                  MakeDoubleChecker())
+                  MakeDoubleChecker<double>())
     .AddAttribute("ScaledMIBound",
                   "The upper bound on the scaled MI factor.",
                   DoubleValue(kDefaultXiBound),
                   MakeDoubleAccessor(&Vcp::m_xiBound),
-                  MakeDoubleChecker())
+                  MakeDoubleChecker<double>())
   ;
 
   return tid;

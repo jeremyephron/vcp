@@ -82,21 +82,21 @@ private:
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline double GetScaledXi(int64_t rtt) {
     return std::min(
-      pow(1 + m_xi, static_cast<double>(rtt) / m_estInterval) - 1,
+      pow(1 + m_xi, static_cast<double>(rtt) / m_estInterval.GetMilliSeconds()) - 1,
       m_xiBound
     );
   }
 
   inline double GetScaledAlpha(int64_t rtt) {
-    return (m_alpha * (static_cast<double>(rtt) / m_estInterval) 
-                    * (static_cast<double>(rtt) / m_estInterval));
+    return (m_alpha * (static_cast<double>(rtt) / m_estInterval.GetMilliSeconds()) 
+                    * (static_cast<double>(rtt) / m_estInterval.GetMilliSeconds));
   }
 
   /* The load state of the connection. */
   LoadState_t m_loadState {LOAD_LOW};
 
   /* The last recorded RTT for the connection. */
-  int64_t m_lastRtt {m_estInterval};
+  int64_t m_lastRtt {0};
 
   /* Timer to freeze cwnd after decreasing. */
   Timer m_mdTimer;
