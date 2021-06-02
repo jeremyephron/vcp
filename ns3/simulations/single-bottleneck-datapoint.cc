@@ -44,8 +44,6 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Figure1");
-
 static double TRACE_START_TIME = 0.05;
 
 /* Tracing is one of the most valuable features of a simulation environment.
@@ -75,7 +73,7 @@ static void
 BytesSentTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 {
   QueueDisc::Stats stats = q->GetStats();
-  stream->GetStream () << Simulator::Now ().GetSeconds () << " "
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                        << stats.nTotalSentBytes << std::endl;
 }
 
@@ -83,9 +81,9 @@ static void
 PacketDropsTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 {
   QueueDisc::Stats stats = q->GetStats();
-  stream->GetStream () << Simulator::Now ().GetSeconds () << " "
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                        << stats->nTotalDroppedPackets << " drops" << std::endl;
-  stream->GetStream () << Simulator::Now ().GetSeconds () << " "
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                        << stats.nTotalDroppedPackets + stats.nTotalSentPackets
                        << " total" << std::endl;
 }
@@ -137,7 +135,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // calculate max queue size according to formula from paper: 
-  int maxQ = GetMaxQ(delay, bw, numFlows); // packets
+  int maxQ = GetMaxQ(delay, bwBottleneck, numFlows); // packets
 
   int bwNonBottleneck = bwBottleneck * 100;
 
@@ -158,7 +156,7 @@ main (int argc, char *argv[])
   transport_prot = std::string("ns3::") + transport_prot;
 
   NS_LOG_DEBUG("Sinlge Bottleneck Simulation for:" <<
-               " bwBottleneck=" << bwBottleneckStr
+               " bwBottleneck=" << bwBottleneckStr <<
                " delay=" << delayStr << 
                " numFlows=" << numFlows <<
                " time=" << time << "sec" <<
@@ -166,7 +164,7 @@ main (int argc, char *argv[])
 
   /******** Declare output files ********/
   /* Traces will be written on these files for postprocessing. */
-  std::string dir = "outputs/singe-bottle" + "/"; //TODO
+  std::string dir = "outputs/singe-bottle/"; //TODO what is the right name here
 
   std::string qStreamName = dir + "q.tr";
   Ptr<OutputStreamWrapper> qStream;
@@ -176,9 +174,9 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> bytesSentStream;
   bytesSentStream = asciiTraceHelper.CreateFileStream(bytesSentStreamName);
 
-  //std::string packetDropsStreamName = dir + "drops.tr";
-  //Ptr<OutputStreamWrapper> packetDropsStream;
-  //packetDropsStream = asciiTraceHelper.CreateFileStream(packetDropsStreamName);
+  std::string packetDropsStreamName = dir + "drops.tr";
+  Ptr<OutputStreamWrapper> packetDropsStream;
+  packetDropsStream = asciiTraceHelper.CreateFileStream(packetDropsStreamName);
 
   /* In order to run simulations in NS-3, you need to set up your network all
    * the way from the physical layer to the application layer. But don't worry!
@@ -208,14 +206,25 @@ main (int argc, char *argv[])
 
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");
-  for (size_t i = 2; i < numFlows + 2; i++) {
-    Ptr<Node> h0 = nodes.Get(i); // sender
+  
+  uint32_t tcpSegmentSize;
+  for (int i = 2; i < numFlows + 2; i++) {
+    Ptr<Node> h1 = nodes.Get(i); // sender
     PointToPointHelper hostLink;
     hostLink.SetDeviceAttribute ("DataRate", StringValue (bwNonBottleneckStr));
     hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
     hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
     NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
+    
+    PppHeader ppph;
+    Ipv4Header ipv4h;
+    TcpHeader tcph;
+
+    tcpSegmentSize = h1s0_NetDevices.Get (0)->GetMtu ()
+                            - ppph.GetSerializedSize ()
+                            - ipv4h.GetSerializedSize ()
+                            - tcph.GetSerializedSize ();
 
     // DONE: Read documentation for PfifoFastQueueDisc and use the correct
     //       attribute name to set the size of the bottleneck queue.
@@ -246,17 +255,9 @@ main (int argc, char *argv[])
    */
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
-  NetDeviceContainer h1s0_NetDevices = host1Link.Install(h1, s0);
   NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
 
   /******** Set TCP defaults ********/
-  PppHeader ppph;
-  Ipv4Header ipv4h;
-  TcpHeader tcph;
-  uint32_t tcpSegmentSize = h1s0_NetDevices.Get (0)->GetMtu ()
-                            - ppph.GetSerializedSize ()
-                            - ipv4h.GetSerializedSize ()
-                            - tcph.GetSerializedSize ();
   tcpSegmentSize -= 10; // (VCP): TODO
   // TODO what is this
   tcpSegmentSize -= 448;
@@ -347,7 +348,7 @@ main (int argc, char *argv[])
   ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
 
   // DONE: Install the source application on the correct host.
-  for (size_t i = 2; i < numFlows + 2; i++) {
+  for (int i = 2; i < numFlows + 2; i++) {
     ApplicationContainer sourceApp = ftp.Install (nodes.Get(i));
     sourceApp.Start (Seconds (0.0));
     sourceApp.Stop (Seconds ((double)time));
@@ -355,7 +356,7 @@ main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (time / 5), &BytesSentTracer, bytesSentStream, tchPfifo2);
   Simulator::Schedule (Seconds (time), &BytesSentTracer, bytesSentStream, tchPfifo2);
-  Simulator::Schedule (Seconds (time), &PacketDropsTracer, packetDropsStream, tcpPfifo2);
+  Simulator::Schedule (Seconds (time), &PacketDropsTracer, packetDropsStream, tchPfifo2);
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
