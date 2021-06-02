@@ -44,6 +44,8 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("SingleBottleneckDatapoint");
+
 static double TRACE_START_TIME = 0.05;
 
 /* Tracing is one of the most valuable features of a simulation environment.
