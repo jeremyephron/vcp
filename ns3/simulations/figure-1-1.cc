@@ -223,9 +223,9 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> throughputStream;
   throughputStream = asciiTraceHelper.CreateFileStream(throughputStreamName);
 
-  std::string throughputStreamName = dir + "throughput.tr";
-  Ptr<OutputStreamWrapper> throughputStream;
-  throughputStream = asciiTraceHelper.CreateFileStream(throughputStreamName);
+  std::string throughputStreamName2 = dir + "throughput2.tr";
+  Ptr<OutputStreamWrapper> throughputStream2;
+  throughputStream2 = asciiTraceHelper.CreateFileStream(throughputStreamName2);
 
 
   /* In order to run simulations in NS-3, you need to set up your network all
