@@ -120,12 +120,13 @@ TraceRtt (Ptr<OutputStreamWrapper> rttStream)
 }
 
 static void
-TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
+TraceThroughput (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream, Ptr<OutputStreamWrapper> stream2)
 {
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[1].rxBytes << std::endl;
+  *stream2->GetStream() << stats[2].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput, flowMonitor, stream, stream2);
 }
 
 static void
@@ -239,11 +240,12 @@ main (int argc, char *argv[])
 
   NodeContainer nodes;
   // DONE: Read documentation for NodeContainer object and create 3 nodes.
-  nodes.Create(3);
+  nodes.Create(4);
 
   Ptr<Node> h1 = nodes.Get(0);
-  Ptr<Node> s0 = nodes.Get(1);
-  Ptr<Node> h2 = nodes.Get(2);
+  Ptr<Node> h2 = nodes.Get(1);
+  Ptr<Node> s0 = nodes.Get(2);
+  Ptr<Node> h3 = nodes.Get(3);
 
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
@@ -255,10 +257,15 @@ main (int argc, char *argv[])
    */
   NS_LOG_DEBUG("Configuring Channels...");
 
-  PointToPointHelper hostLink;
+  PointToPointHelper host1Link;
   hostLink.SetDeviceAttribute ("DataRate", StringValue (bwHostStr));
   hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
   hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
+
+  PointToPointHelper host2Link;
+  host2Link.SetDeviceAttribute("DataRate", StringValue(bwHostStr));
+  host2Link.SetChannelAttribute("Delay", StringValue(delayStr));
+  host2Link.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
 
   PointToPointHelper bottleneckLink;
   bottleneckLink.SetDeviceAttribute ("DataRate", StringValue (bwNetStr));
@@ -275,8 +282,9 @@ main (int argc, char *argv[])
    */
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
-  NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
-  NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
+  NetDeviceContainer h1s0_NetDevices = host1Link.Install(h1, s0);
+  NetDeviceContainer h2s0_NetDevices = host2Link.Install(h2, s0);
+  NetDeviceContainer s0h3_NetDevices = bottleneckLink.Install(s0, h3);
 
   /******** Set TCP defaults ********/
   PppHeader ppph;
@@ -341,7 +349,8 @@ main (int argc, char *argv[])
                              "LinkBandwidth", StringValue(bwHostStr),
                              "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
-  tchPfifo.Install (h1s0_NetDevices);
+  tchPfifo.Install(h1s0_NetDevices);
+  tchPfifo.Install(h2s0_NetDevices);
 
   TrafficControlHelper tchPfifo2;
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
@@ -349,9 +358,9 @@ main (int argc, char *argv[])
                              "LinkBandwidth", StringValue(bwNetStr),
                              "TimeInterval", TimeValue(MilliSeconds(estInterval)));
 
-  QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
+  QueueDiscContainer s0h3_QueueDiscs = tchPfifo2.Install (s0h3_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
-  s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
+  s0h3_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
                             MakeBoundCallback (&QueueOccupancyTracer, qStream));
 
   /* Set IP addresses of the nodes in the network */
@@ -359,7 +368,9 @@ main (int argc, char *argv[])
   address.SetBase ("10.0.0.0", "255.255.255.0");
   Ipv4InterfaceContainer h1s0_interfaces = address.Assign (h1s0_NetDevices);
   address.NewNetwork ();
-  Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h2_NetDevices);
+  Ipv4InterfaceContainer h2s0_interfaces = address.Assign (h2s0_NetDevices);
+  address.NewNetwork ();
+  Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h3_NetDevices);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -369,7 +380,7 @@ main (int argc, char *argv[])
   /* The receiver application */
   uint16_t receiverPort = 5001;
   // DONE: Provide the correct IP address below for the receiver
-  AddressValue receiverAddress (InetSocketAddress (s0h2_interfaces.GetAddress(1),
+  AddressValue receiverAddress (InetSocketAddress (s0h3_interfaces.GetAddress(1),
                                                    receiverPort));
   PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
                                    receiverAddress.Get());
@@ -377,7 +388,7 @@ main (int argc, char *argv[])
                                TypeIdValue (TcpSocketFactory::GetTypeId ()));
 
   // DONE: Install the receiver application on the correct host.
-  ApplicationContainer receiverApp = receiverHelper.Install (h2);
+  ApplicationContainer receiverApp = receiverHelper.Install (h3);
   receiverApp.Start (Seconds (0.0));
   receiverApp.Stop (Seconds ((double)time));
 
@@ -393,6 +404,10 @@ main (int argc, char *argv[])
   sourceApp.Start (Seconds (0.0));
   sourceApp.Stop (Seconds ((double)time));
 
+  ApplicationContainer sourceApp2 = ftp.Install (h2);
+  sourceApp2.Start (Seconds (120));
+  sourceApp2.Stop (Seconds ((double)time));
+
   /* Start tracing cwnd of the connection after the connection is established */
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceCwnd, cwndStream);
 
@@ -404,12 +419,12 @@ main (int argc, char *argv[])
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream);
+  Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput, flowMonitor, throughputStream, throughputStream2);
 
-  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get (0));
-  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
-  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h2_NetDevices.Get(0), s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (40), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get (0));
+  Simulator::Schedule (Seconds (80), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (180), &UpgradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
+  Simulator::Schedule (Seconds (220), &DowngradeLinkCapacity, s0h3_NetDevices.Get(0), s0h3_QueueDiscs.Get(0));
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
