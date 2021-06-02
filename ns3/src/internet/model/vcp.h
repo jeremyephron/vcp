@@ -72,6 +72,7 @@ private:
   /* Timer functions */
   void Noop();
   void EndMdFreezePeriod();
+  void StorePrevCwnd();
 
   /* Scaled MI and AI params based on flow-specific RTT. */
   inline double GetScaledXi(int64_t rtt) {
