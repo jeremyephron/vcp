@@ -46,6 +46,11 @@ Vcp::GetTypeId()
                   DoubleValue(1.0),
                   MakeDoubleAccessor(&Vcp::m_xiBound),
                   MakeDoubleChecker<double>())
+    .AddAttribute("MaxCWndIncreasePerRtt",
+                  "The maximum fraction by which cwnd can increase in one RTT.",
+                  DoubleValue(2.0),
+                  MakeDoubleAccessor(&Vcp::m_maxCWndIncreasePerRtt),
+                  MakeDoubleChecker<double>())
   ;
 
   return tid;
@@ -63,6 +68,7 @@ Vcp::Vcp(const Vcp& sock) : TcpCongestionOps(sock)
 
 Vcp::~Vcp() {
   m_mdTimer.Cancel();
+  m_cWndIncreaseTimer.Cancel();
 }
 
 //void
@@ -141,6 +147,11 @@ Vcp::CongControl(
   // Update RTT
   m_lastRtt = rtt.GetMilliSeconds();
 
+  if (!m_cWndIncreaseTimer.IsRunning()) {
+    m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
+    m_cWndIncreaseTimer.Schedule(Milliseconds(m_lastRtt));
+  }
+
   // Freeze cwnd after MD
   if (m_mdFreeze && m_mdTimer.IsRunning()) {
     NS_LOG_DEBUG("(VCP) freezing cwnd after MD");
@@ -199,6 +210,11 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
     return;
   }
   
+  if (tmp / m_prevCWnd > m_maxCWndIncreasePerRtt) {
+    NS_LOG_DEBUG("(VCP) hit max cwnd increase");
+    return;
+  }
+
   m_cWndFractional = tmp;
   tcb->m_cWnd = static_cast<uint32_t>(m_cWndFractional);
 
@@ -247,6 +263,12 @@ Vcp::Noop()
 void
 Vcp::EndMdFreezePeriod()
 {
+}
+
+void
+Vcp::StorePrevCwnd()
+{
+  m_prevCWnd = static_cast<uint32_t>(m_cWndFractional);
 }
 
 } // namespace ns3

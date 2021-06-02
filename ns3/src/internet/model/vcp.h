@@ -96,6 +96,10 @@ private:
   Timer m_mdTimer;
   bool m_mdFreeze {false};
 
+  Timer m_cWndIncreaseTimer;
+  uint32_t m_prevCWnd;
+  double m_maxCWndIncreasePerRtt {2.0};
+
   /* Fractional cwnd. */
   double m_cWndFractional;
   bool m_cWndFractionalInit {false};

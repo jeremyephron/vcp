@@ -146,6 +146,7 @@ main (int argc, char *argv[])
   double alpha = 1.0;
   double beta = 0.875;
   double xiBound = 1.0;
+  double maxCwndInc = 2.0;
   std::string transport_prot = "Vcp";
 
   CommandLine cmd (__FILE__);
@@ -164,6 +165,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("alpha", "AI factor", alpha);
   cmd.AddValue ("beta", "MD factor", beta);
   cmd.AddValue ("xiBound", "Upper bound on scaled MI factor", xiBound);
+  cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
   cmd.Parse (argc, argv);
 
   /* NS-3 is great when it comes to logging. It allows logging in different
@@ -301,6 +303,8 @@ main (int argc, char *argv[])
                       DoubleValue(beta));
   Config::SetDefault ("ns3::Vcp::ScaledMIBound",
                       DoubleValue(xiBound));
+  Config::SetDefault ("ns3::Vcp::MaxCWndIncreasePerRtt",
+                      DoubleValue(maxCwndInc));
 
   /******** Install Internet Stack ********/
   NS_LOG_DEBUG("Installing Internet Stack...");
