@@ -135,6 +135,7 @@ Vcp::CongControl(
   if (!m_cWndFractionalInit) {
     m_cWndFractional = static_cast<double>(tcb->m_cWnd);
     m_cWndFractionalInit = true;
+    m_prevCWnd = tcb->m_cWnd;
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
