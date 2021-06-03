@@ -144,10 +144,12 @@ TraceUtil (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
                       q);
 } 
 
+
 int
 GetMaxQ(int delay, int bw, int numFlows) {
-  return (int) std::max((double) numFlows * 2 * 2, bw * 1e-3 * (delay * 6 * 1e-3) / 8);
+  return (int) std::max((double) numFlows * 2 * 2, bw * 1e6 * (delay * 4 * 1e-3) / (8 * 1000));
 }
+
 
 int
 main (int argc, char *argv[])
