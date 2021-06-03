@@ -282,7 +282,7 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
   NS_LOG_FUNCTION(this << tcb);
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
 
-  double tmp = m_cWndFractional * std::pow((1.f + GetScaledXi(m_lastRtt)), ((double)m_segSize / tcb->m_cWnd));
+  double tmp = m_cWndFractional * (1.f + GetScaledXi(m_lastRtt));
   
   // Avoid overflow
   if (static_cast<uint32_t>(tmp) < tcb->m_cWnd) {
