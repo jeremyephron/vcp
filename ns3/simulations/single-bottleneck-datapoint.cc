@@ -208,7 +208,7 @@ main (int argc, char *argv[])
   nodes.Create(numFlows * 2 + 2);
 
   Ptr<Node> s0 = nodes.Get(0);
-  Ptr<Node> s1 = nodes.Get(1)
+  Ptr<Node> s1 = nodes.Get(1);
 
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
