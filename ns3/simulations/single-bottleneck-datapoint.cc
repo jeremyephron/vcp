@@ -89,7 +89,7 @@ PacketDropsTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 
 int
 GetMaxQ(int delay, int bw, int numFlows) {
-  return std::max(numFlows * 2 * 2, bw * (delay * 4) / 8);
+  return std::max(numFlows * 2 * 2, bw * (delay * 4) / 8 / 1000);
 }
 
 int
