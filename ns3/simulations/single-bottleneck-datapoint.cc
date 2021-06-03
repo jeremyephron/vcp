@@ -47,6 +47,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SingleBottleneckDatapoint");
 
+static double QUEUE_TRACE_INTERVAL_MS = 10;
+
 
 /* Tracing is one of the most valuable features of a simulation environment.
  * It means we can get to see evolution of any value / state we are interested
@@ -59,13 +61,25 @@ NS_LOG_COMPONENT_DEFINE ("SingleBottleneckDatapoint");
  * https://www.nsnam.org/docs/tutorial/html/tracing.html If you are going to
  * work with NS-3 in the future, you will definitely need to read this page.
  */
-
+/*
 static void
 QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
                      uint32_t oldval, uint32_t newval)
 {
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                         << newval << std::endl;
+} */
+
+static void
+QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
+                      Ptr<QueueDisc> q)
+{
+ *stream->GetStream() << Simulator::Now().GetSeconds () << " "
+                      << q->GetCurrentSize().GetValue() << std::endl;
+  Simulator::Schedule (MilliSeconds(Simulator::Now().GetMilliseconds() + QUEUE_TRACE_INTERVAL_MS), 
+                       &QueueOccupancyTracer,
+                       stream,
+                       q);
 }
 
 static void
@@ -318,8 +332,8 @@ main (int argc, char *argv[])
 
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */
-  s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
-                            MakeBoundCallback (&QueueOccupancyTracer, qStream));
+  //s0h2_QueueDiscs.Get(0)->TraceConnectWithoutContext ("PacketsInQueue",
+  //                          MakeBoundCallback (&QueueOccupancyTracer, qStream));
 
   /* Set IP addresses of the nodes in the network */
   Ipv4InterfaceContainer s0h2_interfaces = address.Assign (s0h2_NetDevices);
@@ -361,6 +375,11 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (time / 5), &BytesSentTracer, bytesSentStream, s0h2_QueueDiscs.Get(0));
   Simulator::Schedule (Seconds (time), &BytesSentTracer, bytesSentStream, s0h2_QueueDiscs.Get(0));
   Simulator::Schedule (Seconds (time), &PacketDropsTracer, packetDropsStream, s0h2_QueueDiscs.Get(0));
+  Simulator::Schedule (MilliSeconds(QUEUE_TRACE_INTERVAL_MS), 
+                       &QueueOccupancyTracer,
+                       qStream,
+                       s0h2_QueueDiscs.Get(0));
+
 
   /******** Run the Actual Simulation ********/
   NS_LOG_DEBUG("Running the Simulation...");
