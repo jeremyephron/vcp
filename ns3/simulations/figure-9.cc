@@ -483,21 +483,21 @@ main (int argc, char *argv[])
   sourceApp2.Start (Seconds (100));
   sourceApp2.Stop (Seconds ((double)time));
 
-  ApplicationContainer sourceApp2 = ftp.Install (h3);
-  sourceApp2.Start (Seconds (200));
-  sourceApp2.Stop (Seconds ((double)time));
+  ApplicationContainer sourceApp3 = ftp.Install (h3);
+  sourceApp3.Start (Seconds (200));
+  sourceApp3.Stop (Seconds ((double)time));
 
-  ApplicationContainer sourceApp2 = ftp.Install (h4);
-  sourceApp2.Start (Seconds (300));
-  sourceApp2.Stop (Seconds ((double)time));
+  ApplicationContainer sourceApp4 = ftp.Install (h4);
+  sourceApp4.Start (Seconds (300));
+  sourceApp4.Stop (Seconds ((double)time));
 
-  ApplicationContainer sourceApp2 = ftp.Install (h5);
-  sourceApp2.Start (Seconds (400));
-  sourceApp2.Stop (Seconds ((double)time));
+  ApplicationContainer sourceApp5 = ftp.Install (h5);
+  sourceApp5.Start (Seconds (400));
+  sourceApp5.Stop (Seconds ((double)time));
 
-  ApplicationContainer sourceApp2 = ftp.Install (h6);
-  sourceApp2.Start (Seconds (500));
-  sourceApp2.Stop (Seconds ((double)time));
+  ApplicationContainer sourceApp6 = ftp.Install (h6);
+  sourceApp6.Start (Seconds (500));
+  sourceApp6.Stop (Seconds ((double)time));
 
   // Flow tracing
   Ptr<FlowMonitor> flowMonitor;
