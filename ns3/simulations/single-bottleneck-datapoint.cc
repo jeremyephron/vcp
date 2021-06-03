@@ -87,9 +87,10 @@ PacketDropsTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
                        << " total" << std::endl;
 }
 
+// bw in Kb/s
 int
 GetMaxQ(int delay, int bw, int numFlows) {
-  return std::max(numFlows * 2 * 2, bw * (delay * 4) / 8 / 1000);
+  return std::max(numFlows * 2 * 2, bw * (delay * 4 * 0.001) / 8);
 }
 
 int
@@ -100,7 +101,7 @@ main (int argc, char *argv[])
   /* Start by setting default variables. Feel free to play with the input
    * arguments below to see what happens.
    */
-  int bwBottleneck = 150; // Mbps
+  int bwBottleneck = 150; // Kbps
   int delay = 20; // milliseconds
   int time = 120; // seconds
   int numFlows = 50;
@@ -114,7 +115,7 @@ main (int argc, char *argv[])
 
   CommandLine cmd (__FILE__);
   // varied in each of Figure 3, 4, 5:
-  cmd.AddValue ("bwBottleneck", "Bandwidth of bottleneck links (Mb/s)", bwBottleneck);
+  cmd.AddValue ("bwBottleneck", "Bandwidth of bottleneck links (Kb/s)", bwBottleneck);
   cmd.AddValue("numFlows", "Number of forward and reverse flows (each)", numFlows);
   cmd.AddValue ("delay", "Link propagation delay (ms)", delay);
   
@@ -136,7 +137,7 @@ main (int argc, char *argv[])
   // calculate max queue size according to formula from paper: 
   int maxQ = GetMaxQ(delay, bwBottleneck, numFlows); // packets
 
-  int bwNonBottleneck = bwBottleneck;// * 100;
+  int bwNonBottleneck = bwBottleneck; // Kbps
 
   /* NS-3 is great when it comes to logging. It allows logging in different
    * levels for different component (scripts/modules). You can read more
