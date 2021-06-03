@@ -136,7 +136,7 @@ main (int argc, char *argv[])
   // calculate max queue size according to formula from paper: 
   int maxQ = GetMaxQ(delay, bwBottleneck, numFlows); // packets
 
-  int bwNonBottleneck = bwBottleneck * 100;
+  int bwNonBottleneck = bwBottleneck;// * 100;
 
   /* NS-3 is great when it comes to logging. It allows logging in different
    * levels for different component (scripts/modules). You can read more
