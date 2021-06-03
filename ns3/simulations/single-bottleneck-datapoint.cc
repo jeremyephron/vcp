@@ -75,7 +75,7 @@ QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
                       Ptr<QueueDisc> q)
 {
  *stream->GetStream() << Simulator::Now().GetSeconds () << " "
-                      << q->GetCurrentSize().GetValue () << std::endl;
+                      << (double) q->GetCurrentSize().GetValue () / q->GetMaxSize().GetValue() << std::endl;
   Simulator::Schedule (MilliSeconds(QUEUE_TRACE_INTERVAL_MS), 
                        &QueueOccupancyTracer,
                        stream,
