@@ -327,7 +327,7 @@ main (int argc, char *argv[])
                                "TimeInterval", TimeValue(MilliSeconds(estInterval)));
     tchPfifo.Install(netDevices[i]);
 
-    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (netDevices[i]);
+    Ipv4InterfaceContainer h1s0_interfaces = address.Assign (netDevices[i - 2]);
     address.NewNetwork ();
     interfaces.push_back(h1s0_interfaces);
   } 
