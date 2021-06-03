@@ -2,9 +2,14 @@ import glob
 from os import listdir
 from os.path import isfile, join
 
+from matplotlib import pyplot as plt
+
+
 util_trace_files = glob.glob(f'outputs/fig3-*-1/bytesSent.tr')
 q_trace_files = glob.glob(f'outputs/fig3-*-1/q.tr')
 drop_trace_files = glob.glob(f'outputs/fig3-*-1/drop.tr')
+
+bottleneck_capacity = []
 
 utils = []
 q_avgs = []
@@ -19,7 +24,8 @@ for filename in util_trace_files:
     bits_per_sec = (late_bytes_sent * 8) / (0.8 * 120)
     util = float(bits_per_sec) / (float(bwBottleneck) * 1000)
 
-    utils.append((float(bwBottleneck) / 1000, util))
+    utils.append(util)
+    bottleneck_capacity.append(bwBottleneck)
 
 for filename in q_trace_files:
     bwBottleneck = filename.split("-")[1]
@@ -30,7 +36,7 @@ for filename in q_trace_files:
         avgs_sum += float(line.split()[1])
     q_avg = avgs_sum / len(lines)
 
-    q_avgs.append((float(bwBottleneck) / 1000, q_avg))
+    q_avgs.append(q_avg)
 
 for filename in drop_trace_files:
     bwBottleneck = filename.split("-")[1]
@@ -40,31 +46,28 @@ for filename in drop_trace_files:
     total_sent= int(lines[1].split()[1])
     drop_pct = float(packet_drops) / float(total_sent)
 
-    drops.append((float(bwBottleneck) / 1000, drop_pct))
+    drops.append(drop_pct)
 
-utils.sort()
-q_avgs.sort()
-drops.sort()
-print(utils)
-print(drops)
-print(q_avgs)
-
-'''
-qFileName = "outputs/fig3/util.png"
-utilBWs = [bw for (bw, util) in utils]
-utils = [util for (bw, util) in utils]
-
-plt.figure()
-plt.plot(utilBWs, utils, c="C2")
+plt.figure(figsize=(10, 4))
+plt.semilogx(bottleneck_capacity, utils, 'kD', label='VCP Utilization')
 plt.ylabel('Bottleneck Utilization')
 plt.xlabel('Bottleneck Capacity (Mbps)')
-plt.set_xscale('log')
-plt.grid()
-plt.savefig(qFileName)
-print('Saving ' + qFileName)
-'''
+plt.legend()
+plt.savefig('figure3_util_reproduction.png')
+plt.close()
 
+plt.figure(figsize=(10, 4))
+plt.semilogx(bottleneck_capacity, q_avgs, 'kD', label='VCP Avg Queue')
+plt.ylabel('Bottleneck Queue (% Buf)')
+plt.xlabel('Bottleneck Capacity (Mbps)')
+plt.legend()
+plt.savefig('figure3_q_avg_reproduction.png')
+plt.close()
 
-
-
-    
+plt.figure(figsize=(10, 4))
+plt.semilogx(bottleneck_capacity, drops, 'kD', label='VCP Drop Rate')
+plt.ylabel('Bottleneck Drops (% Pkt Sent)')
+plt.xlabel('Bottleneck Capacity (Mbps)')
+plt.legend()
+plt.savefig('figure3_drop_reproduction.png')
+plt.close()
