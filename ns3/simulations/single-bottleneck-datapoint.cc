@@ -229,13 +229,13 @@ main (int argc, char *argv[])
     hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
     hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
-    NetDevice h1s0_NetDevices;
     if (i % 2 == 1) {
       NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
+      netDevices.push_back(h1s0_NetDevices);
     } else {
       NetDeviceContainer h1s0_NetDevices = hostLink.Install(s1, h1);
+      netDevices.push_back(h1s0_NetDevices);
     }
-    netDevices.push_back(h1s0_NetDevices);
     
     PppHeader ppph;
     Ipv4Header ipv4h;
