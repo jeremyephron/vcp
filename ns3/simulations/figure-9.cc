@@ -263,7 +263,7 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> utilStream;
   utilStream = asciiTraceHelper.CreateFileStream(utilStreamName);
 
-  *utilStream << "0 0" << endl;
+  *utilStream->GetStream () << "0 0" << endl;
 
 
   /* In order to run simulations in NS-3, you need to set up your network all
