@@ -48,6 +48,7 @@ NS_LOG_COMPONENT_DEFINE ("Figure1");
 
 static int UTIL_TRACE_INTERVAL_MS = 500;
 static int QUEUE_TRACE_INTERVAL_MS = 10;
+static int TRACE_START_TIME = 0.5;
 
 static int last_bytes_sent = 0;
 
@@ -196,7 +197,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
   cmd.Parse (argc, argv);
 
-  maxQ = GetMaxQueue(delay, bwNet, 6);
+  maxQ = GetMaxQ(delay, bwNet, 6);
 
   /* NS-3 is great when it comes to logging. It allows logging in different
    * levels for different component (scripts/modules). You can read more
@@ -263,7 +264,7 @@ main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> utilStream;
   utilStream = asciiTraceHelper.CreateFileStream(utilStreamName);
 
-  *utilStream->GetStream () << "0 0" << endl;
+  *utilStream->GetStream () << "0 0" << std::endl;
 
 
   /* In order to run simulations in NS-3, you need to set up your network all
