@@ -144,14 +144,6 @@ TraceUtil (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
                       q);
 } 
 
-
-static void
-BytesSentTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
-{
-  QueueDisc::Stats stats = q->GetStats();
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
-                       << stats.nTotalSentBytes << std::endl;
-}
 int
 GetMaxQ(int delay, int bw, int numFlows) {
   return (int) std::max((double) numFlows * 2 * 2, bw * 1e-3 * (delay * 6 * 1e-3) / 8);
