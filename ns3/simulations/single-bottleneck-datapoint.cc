@@ -353,7 +353,7 @@ main (int argc, char *argv[])
   // DONE: Install the source application on the correct host.
   for (int i = 2; i < numFlows + 2; i++) {
     ApplicationContainer sourceApp = ftp.Install (nodes.Get(i));
-    sourceApp.Start (Seconds (0.0));
+    sourceApp.Start (Seconds ((double) (delay / 1000) * ((i - 2) / numFlows)));
     sourceApp.Stop (Seconds ((double)time));
   } 
 
