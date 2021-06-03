@@ -361,7 +361,7 @@ Vcp::StorePrevCwnd()
   NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
   m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
   m_cWndIncreaseTimer.Cancel();
-  m_cWndIncreaseTimer.Schedule(m_lastRtt);
+  m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
 }
 
 } // namespace ns3
