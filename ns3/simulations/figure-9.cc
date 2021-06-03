@@ -500,7 +500,7 @@ main (int argc, char *argv[])
   flowMonitor = flowHelper.InstallAll();
 
   Simulator::Schedule(MilliSeconds(UTIL_TRACE_INTERVAL_MS), &TraceUtil, utilStream, s0h7_QueueDiscs.Get(0)) ;
-  Simulator::Schedule(MilliSeconds(QUEUE_TRACE_INTERVAL_MS, &QueueOccupancyTracer, qStream, s0h7_QueueDiscs.Get(0)); 
+  Simulator::Schedule(MilliSeconds(QUEUE_TRACE_INTERVAL_MS), &QueueOccupancyTracer, qStream, s0h7_QueueDiscs.Get(0)); 
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput1, flowMonitor, throughputStream);
   Simulator::Schedule (Seconds (100), &TraceThroughput2, flowMonitor, throughputStream2);
   Simulator::Schedule (Seconds (200), &TraceThroughput3, flowMonitor, throughputStream3);
