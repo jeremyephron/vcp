@@ -241,7 +241,7 @@ main (int argc, char *argv[])
     Ipv4Header ipv4h;
     TcpHeader tcph;
     
-    tcpSegmentSize = h1s0_NetDevices.Get (0)->GetMtu ()
+    tcpSegmentSize = netDevices[i].Get (0)->GetMtu ()
                             - ppph.GetSerializedSize ()
                             - ipv4h.GetSerializedSize ()
                             - tcph.GetSerializedSize ();
