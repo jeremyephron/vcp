@@ -228,7 +228,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
     m_prevCWnd = tcb->m_cWnd;
     m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
-    m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
+    m_cWndIncreaseTimer.Schedule(m_estInterval);
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
@@ -290,9 +290,9 @@ Vcp::MultiplicativeIncrease(Ptr<TcpSocketState> tcb)
     return;
   }
   
-  if (tmp / m_prevCWnd > 1. + GetScaledXi(m_lastRtt)) {
+  if (tmp / m_prevCWnd > m_maxCWndIncreasePerRtt) {
     NS_LOG_DEBUG("(VCP) hit max cwnd increase, tmp=" << tmp << ", m_prevCwnd=" << m_prevCWnd);
-    tmp = m_prevCWnd * (1. + GetScaledXi(m_lastRtt));
+    tmp = m_prevCWnd * m_maxCWndIncreasePerRtt;
   }
 
   m_cWndFractional = tmp;
@@ -316,7 +316,7 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
     return;
   }
 
-  if (tmp - m_prevCWnd > (GetScaledAlpha(m_lastRtt) * m_segSize)) {
+  if (tmp - m_prevCWnd > m_segSize) {
     NS_LOG_DEBUG("(VCP) hit max cwnd additive increase, tmp=" << tmp << ", m_prevCwnd=" << m_prevCWnd);
     tmp = std::max(m_prevCWnd + m_segSize, tcb->m_cWnd.Get());
   }
@@ -358,10 +358,10 @@ Vcp::StorePrevCwnd()
   m_prevCWnd = static_cast<uint32_t>(m_cWndFractional);
   NS_LOG_DEBUG("(VCP) stored m_prevCWnd=" << m_prevCWnd);
 
-  NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
+  NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_estInterval);
   m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
   m_cWndIncreaseTimer.Cancel();
-  m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
+  m_cWndIncreaseTimer.Schedule(m_estInterval);
 }
 
 } // namespace ns3
