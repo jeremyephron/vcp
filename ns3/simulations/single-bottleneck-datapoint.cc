@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   // calculate max queue size according to formula from paper: 
   int maxQ = GetMaxQ(delay, bwBottleneck, numFlows); // packets
 
-  int bwNonBottleneck = bwBottleneck; // Kbps
+  int bwNonBottleneck = bwBottleneck * 10; // Kbps
 
   /* NS-3 is great when it comes to logging. It allows logging in different
    * levels for different component (scripts/modules). You can read more
@@ -205,10 +205,10 @@ main (int argc, char *argv[])
 
   NodeContainer nodes;
   // DONE: Read documentation for NodeContainer object and create 3 nodes.
-  nodes.Create(numFlows + 2);
+  nodes.Create(numFlows * 2 + 2);
 
   Ptr<Node> s0 = nodes.Get(0);
-  Ptr<Node> h2 = nodes.Get(1); // receiver
+  Ptr<Nodes> s1 = nodes.Get(1)
 
   /******** Create Channels ********/
   /* Channels are used to connect different nodes in the network. There are
@@ -222,14 +222,19 @@ main (int argc, char *argv[])
 
   std::vector<NetDeviceContainer> netDevices; 
   uint32_t tcpSegmentSize;
-  for (int i = 2; i < numFlows + 2; i++) {
+  for (int i = 2; i < numFlows * 2 + 2; i++) {
     Ptr<Node> h1 = nodes.Get(i); // sender
     PointToPointHelper hostLink;
     hostLink.SetDeviceAttribute ("DataRate", StringValue (bwNonBottleneckStr));
     hostLink.SetChannelAttribute ("Delay", StringValue (delayStr));
     hostLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
-    NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
+    NetDevice h1s0_NetDevices;
+    if (i % 2 == 1) {
+      NetDeviceContainer h1s0_NetDevices = hostLink.Install(h1, s0);
+    } else {
+      NetDeviceContainer h1s0_NetDevices = hostLink.Install(s1, h1);
+    }
     netDevices.push_back(h1s0_NetDevices);
     
     PppHeader ppph;
@@ -258,7 +263,7 @@ main (int argc, char *argv[])
    */
   // DONE: Read documentation for PointToPointHelper object and install the
   //       links created above in between correct nodes.
-  NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, h2);
+  NetDeviceContainer s0h2_NetDevices = bottleneckLink.Install(s0, s1);
 
   /******** Set TCP defaults ********/
   tcpSegmentSize -= 10; // (VCP): TODO
@@ -310,8 +315,9 @@ main (int argc, char *argv[])
   stack.InstallAll ();
 
   Ipv4AddressHelper address;
+  std::vector<Ipv4InterfaceContainer> interfaces;
   address.SetBase ("10.0.0.0", "255.255.255.0");
-  for (int i = 2; i < numFlows + 2; i++) {
+  for (int i = 2; i < numFlows * 2 + 2; i++) {
     // DONE: Read documentation for PfifoFastQueueDisc and use the correct
     //       attribute name to set the size of the bottleneck queue.
     TrafficControlHelper tchPfifo;
@@ -323,6 +329,7 @@ main (int argc, char *argv[])
 
     Ipv4InterfaceContainer h1s0_interfaces = address.Assign (netDevices[i]);
     address.NewNetwork ();
+    interfaces.push_back(h1s0_interfaces);
   } 
 
 
@@ -360,15 +367,61 @@ main (int argc, char *argv[])
   receiverApp.Start (Seconds (0.0));
   receiverApp.Stop (Seconds ((double)time));
 
-  /* The sender Application */
-  BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
-  // DONE: Read documentation for BulkSendHelper to figure out the name of the
-  //       Attribute for setting the destination address for the sender.
-  ftp.SetAttribute ("Remote", receiverAddress);
-  ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
-
   // DONE: Install the source application on the correct host.
-  for (int i = 2; i < numFlows + 2; i++) {
+  for (int i = 2; i < numFlows * 2 + 2; i += 2) {
+
+    /* The receiver application */
+    uint16_t receiverPort = 5001;
+    // DONE: Provide the correct IP address below for the receiver
+    AddressValue receiverAddress (InetSocketAddress (interfaces[i].GetAddress(1),
+                                                     receiverPort));
+    PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
+                                     receiverAddress.Get());
+    receiverHelper.SetAttribute ("Protocol",
+                                 TypeIdValue (TcpSocketFactory::GetTypeId ()));
+
+    // DONE: Install the receiver application on the correct host.
+    ApplicationContainer receiverApp = receiverHelper.Install (nodes.get(i));
+    receiverApp.Start (Seconds (0.0));
+    receiverApp.Stop (Seconds ((double)time));
+
+    /* The sender Application */
+    BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
+    // DONE: Read documentation for BulkSendHelper to figure out the name of the
+    //       Attribute for setting the destination address for the sender.
+    ftp.SetAttribute ("Remote", receiverAddress);
+    ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
+
+
+    ApplicationContainer sourceApp = ftp.Install (nodes.Get(i + 1));
+    sourceApp.Start (Seconds ((double) (delay * 4 / 1000) * ((i - 2) / numFlows)));
+    sourceApp.Stop (Seconds ((double)time));
+  } 
+
+  for (int i = 2; i < numFlows * 2 + 2; i += 2) {
+    /* The receiver application */
+    uint16_t receiverPort = 5001;
+    // DONE: Provide the correct IP address below for the receiver
+    AddressValue receiverAddress (InetSocketAddress (interfaces[i + 1].GetAddress(0),
+                                                     receiverPort));
+    PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
+                                     receiverAddress.Get());
+    receiverHelper.SetAttribute ("Protocol",
+                                 TypeIdValue (TcpSocketFactory::GetTypeId ()));
+
+    // DONE: Install the receiver application on the correct host.
+    ApplicationContainer receiverApp = receiverHelper.Install (nodes.get(i));
+    receiverApp.Start (Seconds (0.0));
+    receiverApp.Stop (Seconds ((double)time));
+
+    /* The sender Application */
+    BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
+    // DONE: Read documentation for BulkSendHelper to figure out the name of the
+    //       Attribute for setting the destination address for the sender.
+    ftp.SetAttribute ("Remote", receiverAddress);
+    ftp.SetAttribute ("SendSize", UintegerValue (tcpSegmentSize));
+
+
     ApplicationContainer sourceApp = ftp.Install (nodes.Get(i));
     sourceApp.Start (Seconds ((double) (delay * 4 / 1000) * ((i - 2) / numFlows)));
     sourceApp.Stop (Seconds ((double)time));
