@@ -163,7 +163,7 @@ main (int argc, char *argv[])
 
   /******** Declare output files ********/
   /* Traces will be written on these files for postprocessing. */
-  std::string dir = "outputs/singe-bottle/"; //TODO what is the right name here
+  std::string dir = "outputs/single-bottle/"; //TODO what is the right name here
 
   std::string qStreamName = dir + "q.tr";
   Ptr<OutputStreamWrapper> qStream;
