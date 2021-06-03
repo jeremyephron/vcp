@@ -228,7 +228,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
     m_prevCWnd = tcb->m_cWnd;
     m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
-    m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
+    m_cWndIncreaseTimer.Schedule(m_estInterval);
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
@@ -308,7 +308,7 @@ Vcp::AdditiveIncrease(Ptr<TcpSocketState> tcb)
   NS_LOG_DEBUG("Previous cwnd = " << tcb->m_cWnd);
   NS_LOG_DEBUG("Previous cwndFrac = " << m_cWndFractional);
 
-  double tmp = m_cWndFractional + GetScaledAlpha(m_lastRtt) * m_segSize;
+  double tmp = m_cWndFractional + (GetScaledAlpha(m_lastRtt) * m_segSize);
 
   // Avoid overflow
   if (static_cast<uint32_t>(tmp) < tcb->m_cWnd) {
@@ -358,10 +358,10 @@ Vcp::StorePrevCwnd()
   m_prevCWnd = static_cast<uint32_t>(m_cWndFractional);
   NS_LOG_DEBUG("(VCP) stored m_prevCWnd=" << m_prevCWnd);
 
-  NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_lastRtt);
+  NS_LOG_DEBUG("(VCP) scheduling StorePrevCwnd with rtt=" << m_estInterval);
   m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
   m_cWndIncreaseTimer.Cancel();
-  m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
+  m_cWndIncreaseTimer.Schedule(m_estInterval);
 }
 
 } // namespace ns3
