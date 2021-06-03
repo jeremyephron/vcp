@@ -104,7 +104,7 @@ PacketDropsTracer (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 // bw in Kb/s
 int
 GetMaxQ(int delay, int bw, int numFlows) {
-  return (int) std::max((double) numFlows * 2 * 2, bw * (delay * 4 * 0.001) / 8);
+  return (int) std::max((double) numFlows * 2 * 2, bw * (delay * 6 * 1e-9) / 8);
 }
 
 int
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
    * arguments below to see what happens.
    */
   int bwBottleneck = 150; // Kbps
-  int delay = 20; // milliseconds
+  int delay = 13333333; // nanoseconds
   int time = 120; // seconds
   int numFlows = 50;
   int estInterval = 200; // ms
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
   Packet::EnableChecking();
 
   std::string bwBottleneckStr = std::to_string(bwBottleneck) + "Kbps";
-  std::string delayStr = std::to_string(delay) + "ms";
+  std::string delayStr = std::to_string(delay) + "ns";
   std::string maxQStr = std::to_string(maxQ) + "p";
   std::string bwNonBottleneckStr = std::to_string(bwNonBottleneck) + "Kbps";
   transport_prot = std::string("ns3::") + transport_prot;
