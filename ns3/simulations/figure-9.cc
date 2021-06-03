@@ -135,8 +135,7 @@ TraceUtil (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
   QueueDisc::Stats stats = q->GetStats();
   double util = ((double) (stats.nTotalSentBytes - last_bytes_sent) / ( UTIL_TRACE_INTERVAL_MS * 1e-3)) / (45 * 1e-6); 
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
-                        << ((double) (stats.nTotalSentBytes - last_bytes_sent) / ( UTIL_TRACE_INTERVAL_MS * 1e-3))
-                        << std::endl;
+                        << util << std::endl;
   last_bytes_sent = stats.nTotalSentBytes;
   Simulator::Schedule(MilliSeconds(UTIL_TRACE_INTERVAL_MS),
                       &TraceUtil,
@@ -197,7 +196,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
   cmd.Parse (argc, argv);
 
-  maxQ = GetMaxQueue(delay, bwNet, 6)
+  maxQ = GetMaxQueue(delay, bwNet, 6);
 
   /* NS-3 is great when it comes to logging. It allows logging in different
    * levels for different component (scripts/modules). You can read more
