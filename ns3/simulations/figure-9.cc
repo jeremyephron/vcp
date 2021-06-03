@@ -47,6 +47,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Figure1");
 
 static int UTIL_TRACE_INTERVAL_MS = 500;
+static int QUEUE_TRACE_INTERVAL_MS = 10;
 
 static int last_bytes_sent = 0;
 
