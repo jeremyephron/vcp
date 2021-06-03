@@ -126,7 +126,7 @@ main (int argc, char *argv[])
   double xiBound = 1.0;
   double maxCwndInc = 1 + xi;
   std::string transport_prot = "Vcp";
-  std::string dir = "outputs/single-bottle";
+  std::string dir = "outputs/single-bottle/";
 
   CommandLine cmd (__FILE__);
   // varied in each of Figure 3, 4, 5:
