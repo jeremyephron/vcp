@@ -148,10 +148,10 @@ main (int argc, char *argv[])
   Packet::EnablePrinting();
   Packet::EnableChecking();
 
-  std::string bwBottleneckStr = std::to_string(bwBottleneck) + "Mbps";
+  std::string bwBottleneckStr = std::to_string(bwBottleneck) + "Kbps";
   std::string delayStr = std::to_string(delay) + "ms";
   std::string maxQStr = std::to_string(maxQ) + "p";
-  std::string bwNonBottleneckStr = std::to_string(bwNonBottleneck) + "Mbps";
+  std::string bwNonBottleneckStr = std::to_string(bwNonBottleneck) + "Kbps";
   transport_prot = std::string("ns3::") + transport_prot;
 
   NS_LOG_DEBUG("Sinlge Bottleneck Simulation for:" <<
