@@ -69,7 +69,7 @@ QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
                       Ptr<QueueDisc> q)
 {
  *stream->GetStream() << Simulator::Now().GetSeconds () << " "
-                      << (double) q->GetCurrentSize().GetValue () / q->GetMaxSize().GetValue() << std::endl;
+                      << (double) q->GetCurrentSize().GetValue () << std::endl;
   Simulator::Schedule (MilliSeconds(QUEUE_TRACE_INTERVAL_MS), 
                        &QueueOccupancyTracer,
                        stream,
@@ -134,7 +134,7 @@ static void
 TraceUtil (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 {
   QueueDisc::Stats stats = q->GetStats();
-  double util = ((double) (stats.nTotalSentBytes - last_bytes_sent) / ( UTIL_TRACE_INTERVAL_MS * 1e-3)) / (45 * 1e-6); 
+  double util = ((double) (stats.nTotalSentBytes - last_bytes_sent) / ( UTIL_TRACE_INTERVAL_MS * 1e-3)) / (45 * 1e6); 
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
                         << util << std::endl;
   last_bytes_sent = stats.nTotalSentBytes;
@@ -500,7 +500,7 @@ main (int argc, char *argv[])
   flowMonitor = flowHelper.InstallAll();
 
   Simulator::Schedule(MilliSeconds(UTIL_TRACE_INTERVAL_MS), &TraceUtil, utilStream, s0h7_QueueDiscs.Get(0)) ;
-
+  Simulator::Schedule(MilliSeconds(QUEUE_TRACE_INTERVAL_MS, &QueueOccupancyTracer, qStream, s0h7_QueueDiscs.Get(0)); 
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceThroughput1, flowMonitor, throughputStream);
   Simulator::Schedule (Seconds (100), &TraceThroughput2, flowMonitor, throughputStream2);
   Simulator::Schedule (Seconds (200), &TraceThroughput3, flowMonitor, throughputStream3);
