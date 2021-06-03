@@ -366,7 +366,7 @@ main (int argc, char *argv[])
                                  TypeIdValue (TcpSocketFactory::GetTypeId ()));
 
     // DONE: Install the receiver application on the correct host.
-    ApplicationContainer receiverApp = receiverHelper.Install (nodes.get(i));
+    ApplicationContainer receiverApp = receiverHelper.Install (nodes.Get(i));
     receiverApp.Start (Seconds (0.0));
     receiverApp.Stop (Seconds ((double)time));
 
@@ -395,7 +395,7 @@ main (int argc, char *argv[])
                                  TypeIdValue (TcpSocketFactory::GetTypeId ()));
 
     // DONE: Install the receiver application on the correct host.
-    ApplicationContainer receiverApp = receiverHelper.Install (nodes.get(i));
+    ApplicationContainer receiverApp = receiverHelper.Install (nodes.Get(i));
     receiverApp.Start (Seconds (0.0));
     receiverApp.Stop (Seconds ((double)time));
 
