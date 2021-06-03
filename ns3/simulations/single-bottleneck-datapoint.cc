@@ -76,7 +76,7 @@ QueueOccupancyTracer (Ptr<OutputStreamWrapper> stream,
 {
  *stream->GetStream() << Simulator::Now().GetSeconds () << " "
                       << q->GetCurrentSize().GetValue () << std::endl;
-  Simulator::Schedule (MilliSeconds(Simulator::Now().GetMilliSeconds() + QUEUE_TRACE_INTERVAL_MS), 
+  Simulator::Schedule (MilliSeconds(QUEUE_TRACE_INTERVAL_MS), 
                        &QueueOccupancyTracer,
                        stream,
                        q);
@@ -126,6 +126,7 @@ main (int argc, char *argv[])
   double xiBound = 1.0;
   double maxCwndInc = 1 + xi;
   std::string transport_prot = "Vcp";
+  std::string dir = "outputs/single-bottle";
 
   CommandLine cmd (__FILE__);
   // varied in each of Figure 3, 4, 5:
@@ -146,6 +147,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("beta", "MD factor", beta);
   cmd.AddValue ("xiBound", "Upper bound on scaled MI factor", xiBound);
   cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
+  cmd.AddValue ("dir", "The directory to write outputs to", dir);
   cmd.Parse (argc, argv);
 
   // calculate max queue size according to formula from paper: 
@@ -178,7 +180,7 @@ main (int argc, char *argv[])
 
   /******** Declare output files ********/
   /* Traces will be written on these files for postprocessing. */
-  std::string dir = "outputs/single-bottle/"; //TODO what is the right name here
+  //std::string dir = "outputs/single-bottle/"; //TODO what is the right name here
 
   std::string qStreamName = dir + "q.tr";
   Ptr<OutputStreamWrapper> qStream;
