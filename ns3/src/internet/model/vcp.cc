@@ -228,7 +228,7 @@ Vcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 
     m_prevCWnd = tcb->m_cWnd;
     m_cWndIncreaseTimer.SetFunction(&Vcp::StorePrevCwnd, this);
-    m_cWndIncreaseTimer.Schedule(m_lastRtt);
+    m_cWndIncreaseTimer.Schedule(MilliSeconds(m_lastRtt));
   }
 
   // If the load bits are not supported, fall back to TCP New Reno
