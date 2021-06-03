@@ -358,7 +358,7 @@ main (int argc, char *argv[])
     /* The receiver application */
     uint16_t receiverPort = 5001;
     // DONE: Provide the correct IP address below for the receiver
-    AddressValue receiverAddress (InetSocketAddress (interfaces[i].GetAddress(1),
+    AddressValue receiverAddress (InetSocketAddress (interfaces[i - 2].GetAddress(1),
                                                      receiverPort));
     PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
                                      receiverAddress.Get());
@@ -387,7 +387,7 @@ main (int argc, char *argv[])
     /* The receiver application */
     uint16_t receiverPort = 5001;
     // DONE: Provide the correct IP address below for the receiver
-    AddressValue receiverAddress (InetSocketAddress (interfaces[i + 1].GetAddress(0),
+    AddressValue receiverAddress (InetSocketAddress (interfaces[i - 2 + 1].GetAddress(0),
                                                      receiverPort));
     PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
                                      receiverAddress.Get());
