@@ -352,21 +352,6 @@ main (int argc, char *argv[])
   /******** Setting up the Application ********/
   NS_LOG_DEBUG("Setting up the Applications...");
 
-  /* The receiver application */
-  uint16_t receiverPort = 5001;
-  // DONE: Provide the correct IP address below for the receiver
-  AddressValue receiverAddress (InetSocketAddress (s0h2_interfaces.GetAddress(1),
-                                                   receiverPort));
-  PacketSinkHelper receiverHelper ("ns3::TcpSocketFactory",
-                                   receiverAddress.Get());
-  receiverHelper.SetAttribute ("Protocol",
-                               TypeIdValue (TcpSocketFactory::GetTypeId ()));
-
-  // DONE: Install the receiver application on the correct host.
-  ApplicationContainer receiverApp = receiverHelper.Install (h2);
-  receiverApp.Start (Seconds (0.0));
-  receiverApp.Stop (Seconds ((double)time));
-
   // DONE: Install the source application on the correct host.
   for (int i = 2; i < numFlows * 2 + 2; i += 2) {
 
