@@ -23,6 +23,7 @@ def build(bld):
         'model/tag.cc',
         'model/tag-buffer.cc',
         'model/trailer.cc',
+        'model/vcp-packet-tag.cc', # custom tag
         'utils/address-utils.cc',
         'utils/crc32.cc',
         'utils/data-rate.cc',
@@ -117,6 +118,7 @@ def build(bld):
         'model/tag.h',
         'model/tag-buffer.h',
         'model/trailer.h',
+        'model/vcp-packet-tag.h', # custom tag
         'utils/address-utils.h',
         'utils/crc32.h',
         'utils/data-rate.h',

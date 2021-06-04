@@ -29,6 +29,8 @@
 #include "queue-disc.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/queue.h"
+#include "ns3/vcp-packet-tag.h"
+#include "ns3/ipv4-queue-disc-item.h"
 
 namespace ns3 {
 
@@ -918,6 +920,13 @@ QueueDisc::Dequeue (void)
   else
     {
       item = DoDequeue ();
+
+      // (VCP): TODO check more info
+      if (item) {
+        VcpPacketTag vcpTag;
+        bool hasVcpTag = item->GetPacket()->PeekPacketTag(vcpTag);
+        NS_LOG_DEBUG("(VCP) hasVcpTag=" << hasVcpTag);
+      }
     }
 
   NS_ASSERT (m_nPackets == m_stats.nTotalEnqueuedPackets - m_stats.nTotalDequeuedPackets);
@@ -1047,6 +1056,12 @@ QueueDisc::DequeuePacket ()
           // If the item is not null, add the header to the packet.
           if (item != 0)
             {
+              Ipv4Header ipHeader;
+              if (DynamicCast<Ipv4QueueDiscItem>(item)) {
+                ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
+                NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+              }
+
               item->AddHeader ();
             }
           // Here, Linux tries bulk dequeues

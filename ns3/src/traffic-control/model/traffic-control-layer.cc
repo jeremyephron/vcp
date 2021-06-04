@@ -18,12 +18,14 @@
  */
 
 #include "traffic-control-layer.h"
+#include "ns3/ipv4-queue-disc-item.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/log.h"
 #include "ns3/object-map.h"
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/queue-disc.h"
+#include "ns3/ipv4-header.h"
 #include <tuple>
 
 namespace ns3 {
@@ -316,6 +318,10 @@ TrafficControlLayer::Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
 
   bool found = false;
 
+  Ipv4Header ipHeader;
+  p->PeekHeader(ipHeader);
+  NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
        i != m_handlers.end (); i++)
     {
@@ -387,12 +393,21 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
     }
   else
     {
+      NS_LOG_DEBUG("(VCP) ELSE");
       // Enqueue the packet in the queue disc associated with the netdevice queue
       // selected for the packet and try to dequeue packets from such queue disc
       item->SetTxQueueIndex (txq);
 
       Ptr<QueueDisc> qDisc = ndi->second.m_queueDiscsToWake[txq];
       NS_ASSERT (qDisc);
+
+
+      Ipv4Header ipHeader;
+      if (DynamicCast<Ipv4QueueDiscItem>(item)) {
+        ipHeader = DynamicCast<Ipv4QueueDiscItem>(item)->GetHeader();
+        NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+      }
+
       qDisc->Enqueue (item);
       qDisc->Run ();
     }

@@ -35,6 +35,8 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/traffic-control-layer.h"
+#include "ns3/vcp-packet-tag.h"
+#include "ns3/tcp-header.h"
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
@@ -574,8 +576,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << 
                 m_node->GetId ());
-
-
+ 
   int32_t interface = GetInterfaceForDevice(device);
   NS_ASSERT_MSG (interface != -1, "Received a packet from an interface that is not known to IPv4");
 
@@ -660,7 +661,16 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       return;
     }
 
+  NS_LOG_DEBUG("routing protocol: " << m_routingProtocol->GetInstanceTypeId());
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
+
+  // (VCP): Setting IP header ecn bits from packet tag (set by queue)
+  VcpPacketTag vcpTag;
+  if (p->PeekPacketTag(vcpTag)) {
+    ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+    NS_LOG_DEBUG("(VCP) after setting: ipHeader.GetEcn()=" << ipHeader.GetEcn() << ", packet=" << p->ToString()); // TODO: delete
+  }
+
   if (!m_routingProtocol->RouteInput (packet, ipHeader, device,
                                       MakeCallback (&Ipv4L3Protocol::IpForward, this),
                                       MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),
@@ -778,7 +788,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
   // can construct the header here
   Ipv4Header ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
-
+  
   // Handle a few cases:
   // 1) packet is passed in with a route entry
   // 1a) packet is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
@@ -1003,6 +1013,9 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       else
         {
           CallTxTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
+
+          NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
+
           outInterface->Send (packet, ipHeader, target);
         }
     }
@@ -1051,9 +1064,24 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
 {
   NS_LOG_FUNCTION (this << rtentry << p << header);
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
+
   // Forwarding
   Ipv4Header ipHeader = header;
   Ptr<Packet> packet = p->Copy ();
+
+  //NS_LOG_DEBUG("(VCP) ip ecn=" << ipHeader.GetEcn() << ", ip header: " << ipHeader);
+  //NS_LOG_DEBUG("(VCP) packet=" << p->ToString());
+
+  //// (VCP): TODO
+  //VcpPacketTag vcpTag;
+  //if (packet->PeekPacketTag(vcpTag)) {
+  //  NS_LOG_DEBUG("(VCP) vcp tag exists with load " << (Ipv4Header::EcnType)vcpTag.GetLoad());
+  //  ipHeader.SetEcn((Ipv4Header::EcnType)vcpTag.GetLoad());
+  //  packet->RemovePacketTag(vcpTag);
+  //} else {
+  //  NS_LOG_DEBUG("(VCP) vcp tag doesn't exist");
+  //}
+
   int32_t interface = GetInterfaceForDevice (rtentry->GetOutputDevice ());
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   if (ipHeader.GetTtl () == 0)
@@ -1081,6 +1109,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
     }
 
   m_unicastForwardTrace (ipHeader, packet, interface);
+
   SendRealOut (rtentry, packet, ipHeader);
 }
 

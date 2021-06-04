@@ -22,6 +22,7 @@
 #include "ns3/data-rate.h"
 #include "ns3/traced-value.h"
 #include "ns3/sequence-number.h"
+#include "ns3/vcp-packet-tag.h"
 #include "tcp-rx-buffer.h"
 
 namespace ns3 {
@@ -203,6 +204,10 @@ public:
   UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
 
   EcnCodePoint_t         m_ectCodePoint {Ect0};  //!< ECT code point to use
+
+  // (VCP)
+  VcpPacketTag::LoadType m_vcpLoadIn {VcpPacketTag::LOAD_NOT_SUPPORTED};
+  VcpPacketTag::LoadType m_vcpLoadOut {VcpPacketTag::LOAD_NOT_SUPPORTED};
 
   /**
    * \brief Get cwnd in segments rather than bytes

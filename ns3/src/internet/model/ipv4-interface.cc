@@ -213,6 +213,9 @@ void
 Ipv4Interface::Send (Ptr<Packet> p, const Ipv4Header & hdr, Ipv4Address dest)
 {
   NS_LOG_FUNCTION (this << *p << dest);
+
+  NS_LOG_DEBUG("(VCP) ip header ecn=" << hdr.GetEcn());
+
   if (!IsUp ())
     {
       return;

@@ -25,6 +25,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
+#include "ns3/ipv4-header.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 #include "ppp-header.h"
@@ -367,6 +368,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
       //
       ProcessHeader (packet, protocol);
 
+      // (VCP): TODO: delete
+      Ipv4Header ipHeader;
+      packet->PeekHeader(ipHeader);
+      NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn());
+
       if (!m_promiscCallback.IsNull ())
         {
           m_macPromiscRxTrace (originalPacket);
@@ -512,6 +518,10 @@ PointToPointNetDevice::Send (
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+
+  Ipv4Header ipHeader;
+  packet->PeekHeader(ipHeader);
+  NS_LOG_DEBUG("(VCP) ip header ecn=" << ipHeader.GetEcn()); // TODO: delete
 
   //
   // If IsLinkUp() is false it means there is no channel to send any packet 

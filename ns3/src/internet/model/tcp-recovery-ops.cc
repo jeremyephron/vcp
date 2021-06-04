@@ -100,8 +100,9 @@ TcpClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount
   NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount);
   NS_UNUSED (unAckDataCount);
   NS_UNUSED (deliveredBytes);
-  tcb->m_cWnd = tcb->m_ssThresh;
-  tcb->m_cWndInfl = tcb->m_ssThresh + (dupAckCount * tcb->m_segmentSize);
+  // (VCP): TODO: don't want to reset cwnd. safe to comment out?
+  // tcb->m_cWnd = tcb->m_ssThresh;
+  // tcb->m_cWndInfl = tcb->m_ssThresh + (dupAckCount * tcb->m_segmentSize);
 }
 
 void

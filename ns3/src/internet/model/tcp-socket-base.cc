@@ -43,6 +43,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/data-rate.h"
 #include "ns3/object.h"
+#include "ns3/vcp-packet-tag.h"
 #include "tcp-socket-base.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -1152,6 +1153,7 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   TcpHeader tcpHeader;
   uint32_t bytesRemoved = packet->PeekHeader (tcpHeader);
 
+  // TODO: need to change existing behavior with ip ecn bits?
   if (!IsValidTcpSegment (tcpHeader.GetSequenceNumber (), bytesRemoved,
                           packet->GetSize () - bytesRemoved))
     {
@@ -1170,6 +1172,10 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     {
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_ECN_NO_CE);
     }
+
+  // (VCP): set state for ip header ecn bits (affects the outgoing VCP info)
+  m_tcb->m_vcpLoadOut = (VcpPacketTag::LoadType)header.GetEcn();
+  NS_LOG_DEBUG("(VCP) m_tcb->m_vcpLoadOut=" << m_tcb->m_vcpLoadOut);
 
   DoForwardUp (packet, fromAddress, toAddress);
 }
@@ -1451,6 +1457,23 @@ void
 TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
   NS_LOG_FUNCTION (this << tcpHeader);
+  NS_LOG_DEBUG("(VCP) tcpFlags=" << TcpHeader::FlagsToString(tcpHeader.GetFlags())
+               << ", tcpHeader=" << tcpHeader); // TODO: delete
+
+
+  // (VCP): Set state from ecn bits in tcp header (affects incoming VCP info)
+  uint8_t vcpFlags = tcpHeader.GetFlags();
+  if ((vcpFlags & TcpHeader::ECE) && (vcpFlags & TcpHeader::CWR)) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_OVERLOAD;
+  } else if (vcpFlags & TcpHeader::CWR) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_HIGH;
+  } else if (vcpFlags & TcpHeader::ECE) {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_LOW;
+  } else {
+    m_tcb->m_vcpLoadIn = VcpPacketTag::LOAD_NOT_SUPPORTED;
+  }
+
+  NS_LOG_DEBUG("(VCP): m_tcb->m_vcpLoadIn=" << m_tcb->m_vcpLoadIn);
 
   // Extract the flags. PSH, URG, CWR and ECE are disregarded.
   uint8_t tcpflags = tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG | TcpHeader::CWR | TcpHeader::ECE);
@@ -1769,7 +1792,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
-
+  
   uint32_t previousLost = m_txBuffer->GetLost ();
   uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
 
@@ -1933,6 +1956,8 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
       && ackNumber == m_tcb->m_highTxMark)
     {
       // Dupack, but the ACK is precisely equal to the nextTxSequence
+      // TODO: should we call PktsAcked below?
+      // m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
       return;
     }
   else if (ackNumber == oldHeadSequence
@@ -2673,6 +2698,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
 
   Ptr<Packet> p = Create<Packet> ();
+  
   TcpHeader header;
   SequenceNumber32 s = m_tcb->m_nextTxSequence;
 
@@ -2684,6 +2710,23 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     {
       ++s;
     }
+
+  // (VCP)
+  if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_LOW) {
+    flags |= TcpHeader::ECE;
+  } else if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_HIGH) {
+    flags |= TcpHeader::CWR;
+  } else if (m_tcb->m_vcpLoadOut == VcpPacketTag::LOAD_OVERLOAD) {
+    flags |= (TcpHeader::ECE | TcpHeader::CWR);
+  } else {
+    flags &= ~(TcpHeader::ECE | TcpHeader::CWR);
+  }
+
+  header.SetFlags(flags);
+
+  NS_LOG_DEBUG("(VCP) packet has vcp tag, vcpLoad=" << m_tcb->m_vcpLoadOut
+               << ", tcpFlags=" << TcpHeader::FlagsToString(flags)
+               << ", tcpHeader=" << header); // TODO: delete
 
   AddSocketTags (p);
 
@@ -3737,24 +3780,24 @@ TcpSocketBase::ReTxTimeout ()
   m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_LOSS);
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
   m_tcb->m_congState = TcpSocketState::CA_LOSS;
-  m_tcb->m_cWnd = m_tcb->m_segmentSize;
-  m_tcb->m_cWndInfl = m_tcb->m_cWnd;
+  //m_tcb->m_cWnd = m_tcb->m_segmentSize;
+  //m_tcb->m_cWndInfl = m_tcb->m_cWnd;
 
   m_pacingTimer.Cancel ();
 
-  NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
-                m_tcb->m_ssThresh << ", restart from seqnum " <<
-                m_txBuffer->HeadSequence () << " doubled rto to " <<
-                m_rto.Get ().GetSeconds () << " s");
+  //NS_LOG_DEBUG ("RTO. Reset cwnd to " <<  m_tcb->m_cWnd << ", ssthresh to " <<
+  //              m_tcb->m_ssThresh << ", restart from seqnum " <<
+  //              m_txBuffer->HeadSequence () << " doubled rto to " <<
+  //              m_rto.Get ().GetSeconds () << " s");
 
-  NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
-                 BytesInFlight ());
+  //NS_ASSERT_MSG (BytesInFlight () == 0, "There are some bytes in flight after an RTO: " <<
+  //               BytesInFlight ());
 
   SendPendingData (m_connected);
 
-  NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
-                 "In flight (" << BytesInFlight () <<
-                 ") there is more than one segment (" << m_tcb->m_segmentSize << ")");
+  //NS_ASSERT_MSG (BytesInFlight () <= m_tcb->m_segmentSize,
+  //               "In flight (" << BytesInFlight () <<
+  //               ") there is more than one segment (" << m_tcb->m_segmentSize << ")");
 }
 
 void

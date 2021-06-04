@@ -438,6 +438,13 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 {
   NS_LOG_FUNCTION (this << packet << incomingIpHeader << incomingInterface);
 
+  // (VCP): TODO check more info
+  //if (packet) {
+    // VcpPacketTag vcpTag;
+    // bool hasVcpTag = packet->PeekPacketTag(vcpTag);
+    NS_LOG_DEBUG("(VCP) ip header ecn: " << incomingIpHeader.GetEcn());
+  //}
+
   TcpHeader incomingTcpHeader;
   IpL4Protocol::RxStatus checksumControl;
 
@@ -564,8 +571,9 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
                                  << " flags " << TcpHeader::FlagsToString (outgoing.GetFlags ())
                                  << " data size " << packet->GetSize ());
   // XXX outgoingHeader cannot be logged
-
+  
   TcpHeader outgoingHeader = outgoing;
+
   /** \todo UrgentPointer */
   /* outgoingHeader.SetUrgentPointer (0); */
   if (Node::ChecksumEnabled ())
@@ -584,6 +592,8 @@ TcpL4Protocol::SendPacketV4 (Ptr<Packet> packet, const TcpHeader &outgoing,
       header.SetSource (saddr);
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);
+
+      
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       if (ipv4->GetRoutingProtocol () != 0)
