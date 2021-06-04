@@ -171,6 +171,7 @@ main (int argc, char *argv[])
   double xiBound = 1.0;
   double maxCwndInc = 1 + xi;
   std::string transport_prot = "Vcp";
+  std::string dir = "outputs/figure1/";
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("bwHost", "Bandwidth of host links (Mb/s)", bwHost);
@@ -189,6 +190,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("beta", "MD factor", beta);
   cmd.AddValue ("xiBound", "Upper bound on scaled MI factor", xiBound);
   cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
+  cmd.AddValue ("dir", "The directory to write outputs to", dir);
   cmd.Parse (argc, argv);
 
   /* NS-3 is great when it comes to logging. It allows logging in different
@@ -214,7 +216,7 @@ main (int argc, char *argv[])
 
   /******** Declare output files ********/
   /* Traces will be written on these files for postprocessing. */
-  std::string dir = "outputs/bb-q" + std::to_string(maxQ) + "/";
+  // std::string dir = "outputs/bb-q" + std::to_string(maxQ) + "/";
 
   std::string qStreamName = dir + "q.tr";
   Ptr<OutputStreamWrapper> qStream;

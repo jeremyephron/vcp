@@ -125,6 +125,8 @@ main (int argc, char *argv[])
   double beta = 0.875;
   double xiBound = 1.0;
   double maxCwndInc = 1 + xi;
+  double maxQCoeff = 1;
+  double kappa = 0.5;
   std::string transport_prot = "Vcp";
   std::string dir = "outputs/single-bottle/";
 
@@ -148,10 +150,12 @@ main (int argc, char *argv[])
   cmd.AddValue ("xiBound", "Upper bound on scaled MI factor", xiBound);
   cmd.AddValue ("maxCwndInc", "Maximum fraction by which cwnd can increase per RTT", maxCwndInc);
   cmd.AddValue ("dir", "The directory to write outputs to", dir);
+  cmd.AddValue ("maxQCoeff", "", maxQCoeff);
+  cmd.AddValue ("kappa", "", kappa);
   cmd.Parse (argc, argv);
 
   // calculate max queue size according to formula from paper: 
-  int maxQ = GetMaxQ(delay, bwBottleneck, numFlows); // packets
+  int maxQ = GetMaxQ(delay, bwBottleneck, numFlows) * maxQCoeff; // packets
 
   int bwNonBottleneck = bwBottleneck * 10; // Kbps
 
@@ -171,7 +175,7 @@ main (int argc, char *argv[])
   std::string bwNonBottleneckStr = std::to_string(bwNonBottleneck) + "Kbps";
   transport_prot = std::string("ns3::") + transport_prot;
 
-  NS_LOG_DEBUG("Sinlge Bottleneck Simulation for:" <<
+  NS_LOG_DEBUG("Single Bottleneck Simulation for:" <<
                " bwBottleneck=" << bwBottleneckStr <<
                " delay=" << delayStr << 
                " numFlows=" << numFlows <<
@@ -324,7 +328,8 @@ main (int argc, char *argv[])
     tchPfifo.SetRootQueueDisc ("ns3::VcpQueueDisc",
                                "MaxSize", StringValue(maxQStr),
                                "LinkBandwidth", StringValue(bwNonBottleneckStr),
-                               "TimeInterval", TimeValue(MilliSeconds(estInterval)));
+                               "TimeInterval", TimeValue(MilliSeconds(estInterval)),
+                               "K_q", DoubleValue(kappa));
     tchPfifo.Install(netDevices[i]);
 
     Ipv4InterfaceContainer h1s0_interfaces = address.Assign (netDevices[i - 2]);
@@ -337,7 +342,8 @@ main (int argc, char *argv[])
   tchPfifo2.SetRootQueueDisc ("ns3::VcpQueueDisc",
                              "MaxSize", StringValue(maxQStr),
                              "LinkBandwidth", StringValue(bwBottleneckStr),
-                             "TimeInterval", TimeValue(MilliSeconds(estInterval)));
+                             "TimeInterval", TimeValue(MilliSeconds(estInterval)),
+                             "K_q", DoubleValue(kappa));
 
   QueueDiscContainer s0h2_QueueDiscs = tchPfifo2.Install (s0h2_NetDevices);
   /* Trace Bottleneck Queue Occupancy */

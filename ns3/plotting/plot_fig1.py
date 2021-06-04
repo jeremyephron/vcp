@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from matplotlib import pyplot as plt
 
-assert sys.argv == 4
+assert len(sys.argv) == 4, sys.argv
 
 fpaths = sys.argv[1:3]
 output_path = sys.argv[3]
@@ -53,5 +53,6 @@ def plot_figure_1(throughput1, throughput2):
     plt.title('Throughput Dynamics of VCP')
 
 
-plot_figure_1(throughput1, throughput2)
-plt.savefig(output_path)
+plot_figure_1(*throughputs)
+plt.savefig(output_path, bbox_inches='tight')
+print(output_path)

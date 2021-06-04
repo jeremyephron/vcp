@@ -100,7 +100,7 @@ TraceThroughput3 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[5].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput2, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput3, flowMonitor, stream);
 }
 
 static void
@@ -109,7 +109,7 @@ TraceThroughput4 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[7].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput2, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput4, flowMonitor, stream);
 }
 
 static void
@@ -118,7 +118,7 @@ TraceThroughput5 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[9].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput2, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput5, flowMonitor, stream);
 }
 
 static void
@@ -127,16 +127,15 @@ TraceThroughput6 (Ptr<FlowMonitor> flowMonitor, Ptr<OutputStreamWrapper> stream)
   FlowMonitor::FlowStatsContainer stats = flowMonitor->GetFlowStats();
   *stream->GetStream() << stats[11].rxBytes << std::endl;
 
-  Simulator::Schedule(Seconds(0.5), &TraceThroughput2, flowMonitor, stream);
+  Simulator::Schedule(Seconds(0.5), &TraceThroughput6, flowMonitor, stream);
 }
 
 static void
 TraceUtil (Ptr<OutputStreamWrapper> stream, Ptr<QueueDisc> q)
 {
   QueueDisc::Stats stats = q->GetStats();
-  double util = ((double) (stats.nTotalSentBytes - last_bytes_sent) / ( UTIL_TRACE_INTERVAL_MS * 1e-3)) / (45 * 1e6); 
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " "
-                        << util << std::endl;
+                        << stats.nTotalSentBytes << std::endl;
   last_bytes_sent = stats.nTotalSentBytes;
   Simulator::Schedule(MilliSeconds(UTIL_TRACE_INTERVAL_MS),
                       &TraceUtil,
